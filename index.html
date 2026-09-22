@@ -26,7 +26,7 @@
   <!-- Main Container -->
   <main class="main-container">
     
-    <!-- Filter Bar (Department, Section, Course) -->
+    <!-- Filter Bar -->
     <section class="filters-bar">
       <div class="filter-group">
         <label for="dept-select">Department:</label>
@@ -46,10 +46,10 @@
     <!-- Content Grid -->
     <div class="content-grid">
       
-      <!-- Left Card: Dual View (Full Calendar OR Specific Course Dates) -->
+      <!-- Left Card: Dual View -->
       <section class="card calendar-card">
         
-        <!-- 1. Full Monthly Calendar View (When 'All Courses' is selected) -->
+        <!-- 1. Full Monthly Calendar View -->
         <div id="full-calendar-view">
           <div class="calendar-header">
             <h2 id="calendar-month-year" class="month-year-title"></h2>
@@ -69,7 +69,7 @@
           </div>
         </div>
 
-        <!-- 2. Specific Course Dates View (When a specific Course is selected) -->
+        <!-- 2. Specific Course Dates View -->
         <div id="course-dates-view" style="display: none;">
           <div class="course-dates-header">
             <div>
@@ -140,6 +140,33 @@
         <div class="modal-actions">
           <button type="button" id="cancel-modal" class="btn btn-secondary">Cancel</button>
           <button type="submit" id="submit-btn" class="btn btn-primary">Submit Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Report Issue Modal (ড্রপডাউন ছাড়া একদম সহজ) -->
+  <div id="report-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Report Note Link</h3>
+        <button id="close-report-modal" class="btn-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="report-form" class="modal-form">
+        <div class="report-meta-box">
+          <div><strong>Note:</strong> <span id="report-target-title"></span></div>
+          <div class="report-meta-sub"><span id="report-target-meta"></span></div>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0;">
+          Are you having trouble opening this link (Access Denied or Broken)? Report it to alert the class.
+        </p>
+
+        <div id="report-status" class="form-status"></div>
+
+        <div class="modal-actions">
+          <button type="button" id="cancel-report-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="submit-report-btn" class="btn btn-primary">Report Link</button>
         </div>
       </form>
     </div>
