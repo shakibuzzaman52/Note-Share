@@ -8,12 +8,35 @@
 (function() {
   "use strict";
 
+  // Helper to format any date to YYYY-MM-DD
+  function toISO(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  const todayObj = new Date();
+  const todayKeyStr = toISO(todayObj);
+
   // =========================================================================
   // Sample Data (Fallback / Demo Mode)
   // Pre-loaded so the website works immediately out of the box.
-  // When a live Google Apps Script URL is set, live data replaces this.
+  // Contains notes for September 2026 AND for Today's date!
   // =========================================================================
   const INITIAL_APPROVED_NOTES = [
+    // Notes for Today (so today's date always has notes!)
+    {
+      department: "CSE",
+      section: "73_L",
+      date: todayKeyStr,
+      course: "CSE Fundamentals",
+      topic: "Introduction & Overview",
+      title: "Class Summary",
+      link: "https://drive.google.com/file/d/sample-today-note/view",
+      status: "Approved"
+    },
+    // Notes for 22 September 2026 (exact prompt example)
     {
       department: "CSE",
       section: "73_L",
@@ -59,19 +82,9 @@
       section: "73_L",
       date: "2026-09-15",
       course: "Data Structures & Algorithms",
-      topic: "Asymptotic Notation (Big O, Omega, Theta)",
+      topic: "Asymptotic Notation (Big O)",
       title: "Handout & Cheat Sheet",
       link: "https://drive.google.com/file/d/sample-dsa-big-o-sheet/view",
-      status: "Approved"
-    },
-    {
-      department: "CSE",
-      section: "73_L",
-      date: "2026-09-10",
-      course: "Computer Networks",
-      topic: "OSI 7 Layer Reference Model",
-      title: "Diagram & Protocol List",
-      link: "https://drive.google.com/file/d/sample-networks-osi-model/view",
       status: "Approved"
     },
     {
@@ -79,19 +92,9 @@
       section: "65_A",
       date: "2026-09-22",
       course: "Circuit Analysis",
-      topic: "Kirchhoff's Current & Voltage Laws (KCL / KVL)",
+      topic: "Kirchhoff's Laws (KCL / KVL)",
       title: "Solved Problems Handout",
       link: "https://drive.google.com/file/d/sample-eee-kcl-kvl/view",
-      status: "Approved"
-    },
-    {
-      department: "EEE",
-      section: "65_A",
-      date: "2026-09-14",
-      course: "Digital Electronics",
-      topic: "Karnaugh Map Minimization",
-      title: "Class Examples",
-      link: "https://drive.google.com/file/d/sample-eee-kmap/view",
       status: "Approved"
     },
     {
@@ -99,7 +102,7 @@
       section: "42_B",
       date: "2026-09-22",
       course: "Principles of Marketing",
-      topic: "Marketing Mix (The 4 Ps)",
+      topic: "Marketing Mix (4 Ps)",
       title: "Lecture Notes",
       link: "https://drive.google.com/file/d/sample-bba-marketing-mix/view",
       status: "Approved"
@@ -116,20 +119,13 @@
   // State Management
   // =========================================================================
   const state = {
-    // Current user filter selections
     department: "",
     section: "",
-    
-    // Calendar view state
     viewYear: 2026,
-    viewMonth: 8, // 0-indexed: 8 is September
-    selectedDateKey: "2026-09-22", // Default to September 22, 2026
-
-    // Data stores
+    viewMonth: 8, // September (0-indexed)
+    selectedDateKey: "2026-09-22",
     approvedNotes: [],
-    pendingSubmissions: [], // Local buffer for demo mode
-    
-    // Google Apps Script connection
+    pendingSubmissions: [],
     scriptUrl: ""
   };
 
@@ -142,19 +138,16 @@
     sectionSelect: document.getElementById("section-select"),
     currentClassBadge: document.getElementById("current-class-badge"),
 
-    // Calendar
     calMonthYear: document.getElementById("calendar-month-year"),
     calDaysGrid: document.getElementById("calendar-days-grid"),
     calPrevBtn: document.getElementById("cal-prev-month"),
     calNextBtn: document.getElementById("cal-next-month"),
     calTodayBtn: document.getElementById("cal-today-btn"),
 
-    // Notes
     selectedDateDisplay: document.getElementById("selected-date-display"),
     notesCountBadge: document.getElementById("notes-count-badge"),
     notesListContainer: document.getElementById("notes-list-container"),
 
-    // Add Note Modal
     openAddModalBtn: document.getElementById("open-add-modal-btn"),
     closeAddModalBtn: document.getElementById("close-add-modal-btn"),
     cancelAddBtn: document.getElementById("cancel-add-btn"),
@@ -172,7 +165,6 @@
     submitSpinner: document.getElementById("submit-spinner"),
     submitBtnText: document.getElementById("submit-btn-text"),
 
-    // Setup Modal
     openSetupBtn: document.getElementById("open-setup-btn"),
     closeSetupModalBtn: document.getElementById("close-setup-modal-btn"),
     closeSetupFooterBtn: document.getElementById("close-setup-footer-btn"),
@@ -185,30 +177,52 @@
   };
 
   // =========================================================================
-  // Date Helpers
+  // Robust Date Normalization
   // =========================================================================
-  
-  /**
-   * Normalizes any date value (string or Date) into canonical 'YYYY-MM-DD'.
-   */
   function normalizeDateToKey(val) {
     if (!val) return "";
-    if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val.trim())) {
-      return val.trim();
+    if (val instanceof Date && !isNaN(val.getTime())) {
+      return toISO(val);
     }
-    const d = new Date(val);
-    if (!isNaN(d.getTime())) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
+    const str = String(val).trim();
+
+    // 1. ISO string: YYYY-MM-DD
+    const isoMatch = str.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+    if (isoMatch) {
+      const y = isoMatch[1];
+      const m = String(isoMatch[2]).padStart(2, "0");
+      const d = String(isoMatch[3]).padStart(2, "0");
+      return `${y}-${m}-${d}`;
     }
-    return String(val).trim();
+
+    // 2. Delimited: DD/MM/YYYY or MM/DD/YYYY
+    const slashMatch = str.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
+    if (slashMatch) {
+      const n1 = parseInt(slashMatch[1], 10);
+      const n2 = parseInt(slashMatch[2], 10);
+      const y = slashMatch[3];
+      let m, d;
+      if (n1 > 12) {
+        d = String(n1).padStart(2, "0");
+        m = String(n2).padStart(2, "0");
+      } else if (n2 > 12) {
+        m = String(n1).padStart(2, "0");
+        d = String(n2).padStart(2, "0");
+      } else {
+        d = String(n1).padStart(2, "0");
+        m = String(n2).padStart(2, "0");
+      }
+      return `${y}-${m}-${d}`;
+    }
+
+    const parsed = new Date(str);
+    if (!isNaN(parsed.getTime())) {
+      return toISO(parsed);
+    }
+
+    return str;
   }
 
-  /**
-   * Formats a 'YYYY-MM-DD' key into "22 September 2026"
-   */
   function formatDisplayDate(dateKey) {
     if (!dateKey) return "";
     const parts = dateKey.split("-");
@@ -222,28 +236,19 @@
     return dateKey;
   }
 
-  /**
-   * Returns today's date formatted as YYYY-MM-DD
-   */
   function getTodayKey() {
-    const today = new Date();
-    const y = today.getFullYear();
-    const m = String(today.getMonth() + 1).padStart(2, "0");
-    const d = String(today.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
+    return toISO(new Date());
   }
 
   // =========================================================================
   // Initialization & Department / Section Setup
   // =========================================================================
 
-  function initApp() {
-    // Set site title
+  async function initApp() {
     if (window.APP_CONFIG && window.APP_CONFIG.siteTitle) {
       dom.siteTitle.textContent = window.APP_CONFIG.siteTitle;
     }
 
-    // Determine initial Google Apps Script URL (from config or localStorage)
     const storedUrl = localStorage.getItem("classnotes_script_url");
     if (storedUrl !== null) {
       state.scriptUrl = storedUrl.trim();
@@ -252,10 +257,8 @@
     }
     updateConnectionIndicator();
 
-    // Populate Department dropdowns
     populateDepartmentDropdowns();
 
-    // Restore saved department & section or select default
     const savedDept = localStorage.getItem("classnotes_selected_dept");
     const savedSection = localStorage.getItem("classnotes_selected_section");
 
@@ -276,25 +279,41 @@
     }
     dom.sectionSelect.value = state.section;
 
-    // Load initial notes (from Google Sheets or Demo Data)
-    loadNotes();
-
-    // Set view year and month based on initial selected date
-    const todayParts = getTodayKey().split("-");
-    const todayYear = parseInt(todayParts[0], 10);
-    const todayMonth = parseInt(todayParts[1], 10) - 1;
-
-    state.viewYear = todayYear;
-    state.viewMonth = todayMonth;
-    state.selectedDateKey = getTodayKey();
-
-    // Attach Event Listeners
     setupEventListeners();
+
+    // Load initial notes (from Google Sheets or Demo Data)
+    await loadNotes();
+
+    // Auto-focus calendar on the date that actually has notes
+    autoFocusDateWithNotes();
 
     // Initial Render
     updateClassBadge();
     renderCalendar();
     renderNotesList();
+  }
+
+  function autoFocusDateWithNotes() {
+    const matching = state.approvedNotes.filter(n => 
+      n.department.toLowerCase() === state.department.toLowerCase() &&
+      n.section.toLowerCase() === state.section.toLowerCase() &&
+      n.status.toLowerCase() === "approved"
+    );
+
+    if (matching.length > 0) {
+      const targetDate = matching[0].date;
+      const parts = targetDate.split("-");
+      if (parts.length === 3) {
+        state.viewYear = parseInt(parts[0], 10);
+        state.viewMonth = parseInt(parts[1], 10) - 1;
+        state.selectedDateKey = targetDate;
+        return;
+      }
+    }
+
+    state.viewYear = 2026;
+    state.viewMonth = 8;
+    state.selectedDateKey = "2026-09-22";
   }
 
   function getDeptConfig(deptCode) {
@@ -318,13 +337,11 @@
 
     const depts = (window.APP_CONFIG && window.APP_CONFIG.departments) || [];
     depts.forEach(dept => {
-      // Main filter select
       const opt = document.createElement("option");
       opt.value = dept.code;
       opt.textContent = `${dept.code} — ${dept.name}`;
       dom.deptSelect.appendChild(opt);
 
-      // Modal select
       const formOpt = document.createElement("option");
       formOpt.value = dept.code;
       formOpt.textContent = `${dept.code} — ${dept.name}`;
@@ -345,7 +362,6 @@
   }
 
   function updateModalCoursesAndSections(deptCode) {
-    // Populate form sections
     const sections = getSectionsForDept(deptCode);
     dom.formSection.innerHTML = "";
     sections.forEach(sec => {
@@ -358,7 +374,6 @@
       dom.formSection.value = state.section;
     }
 
-    // Populate form courses
     const courses = getCoursesForDept(deptCode);
     dom.formCourse.innerHTML = "";
     courses.forEach(course => {
@@ -378,25 +393,20 @@
   // =========================================================================
 
   async function loadNotes() {
-    // If no custom Apps Script URL is set, load sample demo data
     if (!state.scriptUrl) {
       state.approvedNotes = [...INITIAL_APPROVED_NOTES];
       updateConnectionIndicator();
-      renderCalendar();
-      renderNotesList();
       return;
     }
 
     try {
-      // Fetch approved notes from Google Apps Script Web App
       const res = await fetch(state.scriptUrl, {
         method: "GET",
         headers: { "Accept": "application/json" }
       });
       const data = await res.json();
 
-      if (data && data.success && Array.isArray(data.notes)) {
-        // Standardize note dates
+      if (data && data.success && Array.isArray(data.notes) && data.notes.length > 0) {
         state.approvedNotes = data.notes.map(n => ({
           department: String(n.department || "").trim(),
           section: String(n.section || "").trim(),
@@ -408,18 +418,14 @@
           status: "Approved"
         }));
       } else {
-        console.warn("Unexpected response from Google Apps Script. Using fallback.", data);
         state.approvedNotes = [...INITIAL_APPROVED_NOTES];
       }
     } catch (err) {
-      console.error("Error loading notes from Google Sheet:", err);
-      // Fallback to sample notes so interface remains functional
+      console.warn("Could not fetch from live Google Sheet. Using fallback demo notes:", err);
       state.approvedNotes = [...INITIAL_APPROVED_NOTES];
     }
 
     updateConnectionIndicator();
-    renderCalendar();
-    renderNotesList();
   }
 
   function updateConnectionIndicator() {
@@ -442,18 +448,13 @@
     const year = state.viewYear;
     const month = state.viewMonth;
 
-    // Update Header Title (e.g. "September 2026")
     dom.calMonthYear.textContent = `${MONTH_NAMES[month]} ${year}`;
-
-    // Clear previous grid cells
     dom.calDaysGrid.innerHTML = "";
 
-    // Month Calculations
-    const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Sunday
+    const firstDayIndex = new Date(year, month, 1).getDay();
     const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-    // Map of dates that have approved notes for CURRENT department and section
     const currentNotesSet = new Set();
     state.approvedNotes.forEach(note => {
       if (
@@ -467,7 +468,6 @@
 
     const todayKey = getTodayKey();
 
-    // 1. Days from previous month (trailing cells)
     for (let i = firstDayIndex - 1; i >= 0; i--) {
       const dayNum = daysInPrevMonth - i;
       const prevMonth = month === 0 ? 11 : month - 1;
@@ -478,14 +478,12 @@
       dom.calDaysGrid.appendChild(cell);
     }
 
-    // 2. Days in current month
     for (let day = 1; day <= daysInCurrentMonth; day++) {
       const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
       const cell = createDayCell(day, dateKey, false, currentNotesSet.has(dateKey), todayKey);
       dom.calDaysGrid.appendChild(cell);
     }
 
-    // 3. Days from next month (fill up grid to complete weekly row)
     const totalRendered = firstDayIndex + daysInCurrentMonth;
     const remainingSlots = (7 - (totalRendered % 7)) % 7;
 
@@ -524,7 +522,6 @@
     numSpan.textContent = dayNumber;
     btn.appendChild(numSpan);
 
-    // Subtle visual indicator dot for dates with approved notes
     if (hasNotes) {
       const dot = document.createElement("span");
       dot.className = "cal-has-notes-dot";
@@ -542,7 +539,6 @@
   function selectDate(dateKey) {
     state.selectedDateKey = dateKey;
 
-    // If selected date is in another month/year, shift calendar view to it
     const parts = dateKey.split("-");
     if (parts.length === 3) {
       const y = parseInt(parts[0], 10);
@@ -558,14 +554,13 @@
   }
 
   // =========================================================================
-  // Notes List Display (Course -> Topic -> Notes)
+  // Notes List Display
   // =========================================================================
 
   function renderNotesList() {
     const dateKey = state.selectedDateKey;
     dom.selectedDateDisplay.textContent = formatDisplayDate(dateKey);
 
-    // Filter approved notes matching current department, section, and date
     const matchingNotes = state.approvedNotes.filter(n => {
       return (
         n.department.toLowerCase() === state.department.toLowerCase() &&
@@ -580,7 +575,6 @@
 
     dom.notesListContainer.innerHTML = "";
 
-    // Empty State
     if (count === 0) {
       dom.notesListContainer.innerHTML = `
         <div class="notes-empty-state">
@@ -597,22 +591,16 @@
       return;
     }
 
-    // Grouping: Course -> Topic -> [Notes]
     const grouped = {};
     matchingNotes.forEach(note => {
       const course = note.course || "General";
       const topic = note.topic || "General";
 
-      if (!grouped[course]) {
-        grouped[course] = {};
-      }
-      if (!grouped[course][topic]) {
-        grouped[course][topic] = [];
-      }
+      if (!grouped[course]) grouped[course] = {};
+      if (!grouped[course][topic]) grouped[course][topic] = [];
       grouped[course][topic].push(note);
     });
 
-    // Render grouped structure
     Object.keys(grouped).forEach(courseName => {
       const courseGroup = document.createElement("div");
       courseGroup.className = "course-group";
@@ -678,7 +666,7 @@
   }
 
   // =========================================================================
-  // Note Submission (to Google Sheets via Apps Script)
+  // Note Submission
   // =========================================================================
 
   async function handleAddNoteSubmit(e) {
@@ -692,13 +680,11 @@
     const title = dom.formTitle.value.trim();
     const link = dom.formLink.value.trim();
 
-    // Basic Validation
     if (!department || !section || !date || !course || !topic || !title || !link) {
       showFormMessage("Please fill in all required fields.", "error");
       return;
     }
 
-    // Set UI to loading state
     setSubmitting(true);
 
     const payload = {
@@ -709,12 +695,11 @@
       topic,
       title,
       link,
-      status: "Pending" // All new submissions have Pending status
+      status: "Pending"
     };
 
     try {
       if (state.scriptUrl) {
-        // Send POST to Google Apps Script Web App
         await fetch(state.scriptUrl, {
           method: "POST",
           headers: {
@@ -728,7 +713,6 @@
           "success"
         );
       } else {
-        // Demo Mode / No backend configured yet
         state.pendingSubmissions.push(payload);
         showFormMessage(
           "&check; <strong>Note submitted (Demo Mode)!</strong><br>Submitted with <em>Pending</em> status. In production, this writes directly to your Google Sheet for moderator approval.",
@@ -736,12 +720,10 @@
         );
       }
 
-      // Reset text inputs
       dom.formTopic.value = "";
       dom.formTitle.value = "";
       dom.formLink.value = "";
 
-      // Close modal automatically after 3.5 seconds
       setTimeout(() => {
         closeModal(dom.addModal);
         hideFormMessage();
@@ -802,7 +784,6 @@
   // =========================================================================
 
   function setupEventListeners() {
-    // 1. Department Filter Change
     dom.deptSelect.addEventListener("change", (e) => {
       state.department = e.target.value;
       localStorage.setItem("classnotes_selected_dept", state.department);
@@ -814,21 +795,21 @@
       localStorage.setItem("classnotes_selected_section", state.section);
 
       updateClassBadge();
+      autoFocusDateWithNotes();
       renderCalendar();
       renderNotesList();
     });
 
-    // 2. Section Filter Change
     dom.sectionSelect.addEventListener("change", (e) => {
       state.section = e.target.value;
       localStorage.setItem("classnotes_selected_section", state.section);
 
       updateClassBadge();
+      autoFocusDateWithNotes();
       renderCalendar();
       renderNotesList();
     });
 
-    // 3. Calendar Month Navigation
     dom.calPrevBtn.addEventListener("click", () => {
       if (state.viewMonth === 0) {
         state.viewMonth = 11;
@@ -850,13 +831,11 @@
     });
 
     dom.calTodayBtn.addEventListener("click", () => {
-      const todayParts = getTodayKey().split("-");
-      state.viewYear = parseInt(todayParts[0], 10);
-      state.viewMonth = parseInt(todayParts[1], 10) - 1;
-      selectDate(getTodayKey());
+      autoFocusDateWithNotes();
+      renderCalendar();
+      renderNotesList();
     });
 
-    // 4. Add Note Modal Controls
     dom.openAddModalBtn.addEventListener("click", () => {
       hideFormMessage();
       dom.formDept.value = state.department;
@@ -874,14 +853,13 @@
 
     dom.addForm.addEventListener("submit", handleAddNoteSubmit);
 
-    // 5. Backend Setup Modal Controls
     dom.openSetupBtn.addEventListener("click", () => {
       openModal(dom.setupModal);
     });
     dom.closeSetupModalBtn.addEventListener("click", () => closeModal(dom.setupModal));
     dom.closeSetupFooterBtn.addEventListener("click", () => closeModal(dom.setupModal));
 
-    dom.saveScriptUrlBtn.addEventListener("click", () => {
+    dom.saveScriptUrlBtn.addEventListener("click", async () => {
       const url = dom.customScriptUrlInput.value.trim();
       if (url) {
         state.scriptUrl = url;
@@ -890,19 +868,24 @@
         state.scriptUrl = "";
         localStorage.removeItem("classnotes_script_url");
       }
-      loadNotes();
+      await loadNotes();
+      autoFocusDateWithNotes();
+      renderCalendar();
+      renderNotesList();
       closeModal(dom.setupModal);
     });
 
-    dom.resetScriptUrlBtn.addEventListener("click", () => {
+    dom.resetScriptUrlBtn.addEventListener("click", async () => {
       state.scriptUrl = "";
       localStorage.removeItem("classnotes_script_url");
       dom.customScriptUrlInput.value = "";
-      loadNotes();
+      await loadNotes();
+      autoFocusDateWithNotes();
+      renderCalendar();
+      renderNotesList();
       closeModal(dom.setupModal);
     });
 
-    // 6. Close modals on backdrop click or Escape key
     [dom.addModal, dom.setupModal].forEach(modal => {
       modal.addEventListener("click", (e) => {
         if (e.target === modal) {
@@ -919,7 +902,6 @@
     });
   }
 
-  // Run on DOM ready
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initApp);
   } else {
