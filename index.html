@@ -15,11 +15,8 @@
       --text-muted: #64748b;
       --text-light: #94a3b8;
       --border-color: #e2e8f0;
-      --border-hover: #cbd5e1;
-      --border-focus: #0f172a;
       --primary: #0f172a;
       --primary-hover: #1e293b;
-      --primary-text: #ffffff;
       --accent-dot: #2563eb;
       --radius-sm: 6px;
       --radius-md: 8px;
@@ -56,7 +53,7 @@
       font-family: inherit;
       white-space: nowrap;
     }
-    .btn-primary { background-color: var(--primary); color: var(--primary-text); }
+    .btn-primary { background-color: var(--primary); color: #ffffff; }
     .btn-primary:hover { background-color: var(--primary-hover); }
     .btn-secondary { background-color: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
     .btn-secondary:hover { background-color: var(--bg-muted); }
@@ -85,7 +82,6 @@
     .cal-day-cell { aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition); font-family: inherit; }
     .cal-day-cell:hover { background-color: var(--bg-muted); }
     .cal-day-number { font-size: 14px; font-weight: 500; }
-    .cal-day-cell.other-month .cal-day-number { color: var(--text-light); }
     .cal-day-cell.is-selected { background-color: var(--primary) !important; color: #fff !important; }
     .cal-day-cell.is-selected .cal-day-number { color: #fff; font-weight: 700; }
     .cal-day-cell.is-selected .cal-has-notes-dot { background-color: #fff !important; }
@@ -102,7 +98,7 @@
     .topic-title { font-size: 13px; font-weight: 600; color: var(--text-muted); }
     .notes-items-list { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 14px; }
     .note-link-item { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; }
-    .note-link-item:hover { background-color: var(--bg-muted); border-color: var(--border-hover); }
+    .note-link-item:hover { background-color: var(--bg-muted); border-color: #cbd5e1; }
     .notes-empty-state { text-align: center; padding: 48px 16px; color: var(--text-muted); margin: auto 0; }
     .modal-backdrop { position: fixed; inset: 0; background-color: rgba(15, 23, 42, 0.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; opacity: 0; visibility: hidden; transition: 0.2s ease; }
     .modal-backdrop.is-active { opacity: 1; visibility: visible; }
@@ -238,15 +234,12 @@
     </div>
   </div>
 
-  <!-- All-In-One Application Script -->
   <script>
   (function() {
     "use strict";
 
-    // Your Live Google Apps Script URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3aWwV--qQQMyplo3GnTexrnbTaGb5p_I-twV-fK4mokGSIA2PkOHQ7L9Ye05fv55T/exec";
 
-    // Departments & Courses Configuration
     const CONFIG = {
       departments: [
         {
@@ -271,7 +264,6 @@
     };
 
     const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const MONTH_SHORT = { jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06", jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12" };
 
     const state = {
       department: "CSE",
@@ -282,112 +274,59 @@
       approvedNotes: []
     };
 
-    const dom = {
-      deptSelect: document.getElementById("dept-select"),
-      sectionSelect: document.getElementById("section-select"),
-      currentClassBadge: document.getElementById("current-class-badge"),
-      calMonthYear: document.getElementById("calendar-month-year"),
-      calDaysGrid: document.getElementById("calendar-days-grid"),
-      calPrevBtn: document.getElementById("cal-prev-month"),
-      calNextBtn: document.getElementById("cal-next-month"),
-      calTodayBtn: document.getElementById("cal-today-btn"),
-      selectedDateDisplay: document.getElementById("selected-date-display"),
-      notesCountBadge: document.getElementById("notes-count-badge"),
-      notesListContainer: document.getElementById("notes-list-container"),
-      openAddModalBtn: document.getElementById("open-add-modal-btn"),
-      closeAddModalBtn: document.getElementById("close-add-modal-btn"),
-      cancelAddBtn: document.getElementById("cancel-add-btn"),
-      addModal: document.getElementById("add-note-modal"),
-      addForm: document.getElementById("add-note-form"),
-      formDept: document.getElementById("form-dept"),
-      formSection: document.getElementById("form-section"),
-      formDate: document.getElementById("form-date"),
-      formCourse: document.getElementById("form-course"),
-      formTopic: document.getElementById("form-topic"),
-      formTitle: document.getElementById("form-title"),
-      formLink: document.getElementById("form-link"),
-      formMessage: document.getElementById("form-message")
-    };
+    const $ = id => document.getElementById(id);
 
-    // Robust Date Normalizer: Converts BST string to YYYY-MM-DD
+    // তারিখকে স্ট্যান্ডার্ড YYYY-MM-DD ফরম্যাটে রূপান্তর
     function normalizeDateToKey(val) {
       if (!val) return "";
-      const str = String(val).trim();
-      const gmtMatch = str.match(/\b([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\b/);
-      if (gmtMatch) {
-        const m = MONTH_SHORT[gmtMatch[1].toLowerCase()];
-        const d = String(gmtMatch[2]).padStart(2, "0");
-        const y = gmtMatch[3];
-        if (m) return `${y}-${m}-${d}`;
-      }
-      const isoMatch = str.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-      if (isoMatch) {
-        return `${isoMatch[1]}-${String(isoMatch[2]).padStart(2, "0")}-${String(isoMatch[3]).padStart(2, "0")}`;
-      }
-      return str;
+      const d = new Date(val);
+      if (isNaN(d.getTime())) return String(val).trim();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     }
 
+    // সহজে পাঠযোগ্য ফরম্যাটে তারিখ দেখানো
     function formatDisplayDate(dateKey) {
       if (!dateKey) return "";
-      const parts = dateKey.split("-");
-      if (parts.length === 3) {
-        return `${parseInt(parts[2], 10)} ${MONTH_NAMES[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
-      }
-      return dateKey;
+      const d = new Date(dateKey + "T00:00:00");
+      return isNaN(d.getTime()) ? dateKey : `${d.getDate()} ${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
     }
 
     async function initApp() {
-      populateDropdowns();
-      dom.deptSelect.value = state.department;
+      CONFIG.departments.forEach(d => {
+        const text = `${d.code} — ${d.name}`;
+        $("dept-select").add(new Option(text, d.code));
+        $("form-dept").add(new Option(text, d.code));
+      });
+
+      $("dept-select").value = state.department;
       updateSectionSelect(state.department);
-      dom.sectionSelect.value = state.section;
-      updateClassBadge();
+      $("section-select").value = state.section;
 
       setupEvents();
-
-      // Load Notes from Google Sheet
       await fetchNotesFromSheet();
-
-      // Auto-jump to the date with notes (22 September 2026)
       autoFocusNotes();
-
-      renderCalendar();
-      renderNotes();
-    }
-
-    function populateDropdowns() {
-      dom.deptSelect.innerHTML = "";
-      dom.formDept.innerHTML = "";
-      CONFIG.departments.forEach(d => {
-        dom.deptSelect.add(new Option(`${d.code} — ${d.name}`, d.code));
-        dom.formDept.add(new Option(`${d.code} — ${d.name}`, d.code));
-      });
+      updateView();
     }
 
     function updateSectionSelect(deptCode) {
       const dept = CONFIG.departments.find(d => d.code === deptCode);
-      const sections = dept ? dept.sections : [];
-      dom.sectionSelect.innerHTML = "";
-      sections.forEach(s => dom.sectionSelect.add(new Option(`Section ${s}`, s)));
+      $("section-select").innerHTML = "";
+      (dept?.sections || []).forEach(s => $("section-select").add(new Option(`Section ${s}`, s)));
     }
 
     function updateModalDropdowns(deptCode) {
       const dept = CONFIG.departments.find(d => d.code === deptCode);
-      dom.formSection.innerHTML = "";
-      (dept ? dept.sections : []).forEach(s => dom.formSection.add(new Option(`Section ${s}`, s)));
-      dom.formCourse.innerHTML = "";
-      (dept ? dept.courses : []).forEach(c => dom.formCourse.add(new Option(c, c)));
-    }
-
-    function updateClassBadge() {
-      dom.currentClassBadge.textContent = `${state.department} • Section ${state.section}`;
+      $("form-section").innerHTML = "";
+      (dept?.sections || []).forEach(s => $("form-section").add(new Option(`Section ${s}`, s)));
+      $("form-course").innerHTML = "";
+      (dept?.courses || []).forEach(c => $("form-course").add(new Option(c, c)));
     }
 
     async function fetchNotesFromSheet() {
       try {
         const res = await fetch(SCRIPT_URL);
         const data = await res.json();
-        if (data && data.success && Array.isArray(data.notes)) {
+        if (data?.success && Array.isArray(data.notes)) {
           state.approvedNotes = data.notes.map(n => ({
             department: String(n.department || "").trim(),
             section: String(n.section || "").trim(),
@@ -404,83 +343,74 @@
       }
     }
 
-    function autoFocusNotes() {
-      const matching = state.approvedNotes.filter(n => 
+    function getCurrentClassNotes() {
+      return state.approvedNotes.filter(n =>
         n.department.toLowerCase() === state.department.toLowerCase() &&
         n.section.toLowerCase() === state.section.toLowerCase() &&
         n.status.toLowerCase() === "approved"
       );
+    }
+
+    function autoFocusNotes() {
+      const matching = getCurrentClassNotes();
       if (matching.length > 0) {
-        const parts = matching[0].date.split("-");
-        if (parts.length === 3) {
-          state.viewYear = parseInt(parts[0], 10);
-          state.viewMonth = parseInt(parts[1], 10) - 1;
+        const d = new Date(matching[0].date + "T00:00:00");
+        if (!isNaN(d.getTime())) {
+          state.viewYear = d.getFullYear();
+          state.viewMonth = d.getMonth();
           state.selectedDateKey = matching[0].date;
         }
       }
     }
 
+    // ক্যালেন্ডার, ব্যাজ ও নোট লিস্ট একসাথে আপডেট করা
+    function updateView() {
+      $("current-class-badge").textContent = `${state.department} • Section ${state.section}`;
+      renderCalendar();
+      renderNotes();
+    }
+
     function renderCalendar() {
       const y = state.viewYear;
       const m = state.viewMonth;
-      dom.calMonthYear.textContent = `${MONTH_NAMES[m]} ${y}`;
-      dom.calDaysGrid.innerHTML = "";
+      $("calendar-month-year").textContent = `${MONTH_NAMES[m]} ${y}`;
+      $("calendar-days-grid").innerHTML = "";
 
       const firstDay = new Date(y, m, 1).getDay();
       const daysInMonth = new Date(y, m + 1, 0).getDate();
-      const daysInPrev = new Date(y, m, 0).getDate();
+      const noteDates = new Set(getCurrentClassNotes().map(n => n.date));
 
-      const noteDates = new Set();
-      state.approvedNotes.forEach(n => {
-        if (n.department.toLowerCase() === state.department.toLowerCase() &&
-            n.section.toLowerCase() === state.section.toLowerCase() &&
-            n.status.toLowerCase() === "approved") {
-          noteDates.add(n.date);
-        }
-      });
-
-      // Prev Month trailing days
-      for (let i = firstDay - 1; i >= 0; i--) {
-        const d = daysInPrev - i;
-        const prevM = m === 0 ? 11 : m - 1;
-        const prevY = m === 0 ? y - 1 : y;
-        const key = `${prevY}-${String(prevM + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-        dom.calDaysGrid.appendChild(createCell(d, key, true, noteDates.has(key)));
+      // আগের মাসের ফাঁকা সেলগুলোর জন্য খালি div
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "cal-day-cell";
+        $("calendar-days-grid").appendChild(emptyCell);
       }
 
-      // Current Month days
+      // চলতি মাসের দিনগুলো
       for (let d = 1; d <= daysInMonth; d++) {
         const key = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-        dom.calDaysGrid.appendChild(createCell(d, key, false, noteDates.has(key)));
+        const hasNotes = noteDates.has(key);
+        const cell = document.createElement("button");
+        cell.className = `cal-day-cell${key === state.selectedDateKey ? " is-selected" : ""}`;
+        cell.innerHTML = `<span class="cal-day-number">${d}</span>${hasNotes ? `<span class="cal-has-notes-dot"></span>` : ""}`;
+        cell.onclick = () => {
+          state.selectedDateKey = key;
+          renderCalendar();
+          renderNotes();
+        };
+        $("calendar-days-grid").appendChild(cell);
       }
-    }
-
-    function createCell(day, key, otherMonth, hasNotes) {
-      const cell = document.createElement("button");
-      cell.className = "cal-day-cell" + (otherMonth ? " other-month" : "") + (key === state.selectedDateKey ? " is-selected" : "");
-      cell.innerHTML = `<span class="cal-day-number">${day}</span>` + (hasNotes ? `<span class="cal-has-notes-dot"></span>` : "");
-      cell.onclick = () => {
-        state.selectedDateKey = key;
-        renderCalendar();
-        renderNotes();
-      };
-      return cell;
     }
 
     function renderNotes() {
-      dom.selectedDateDisplay.textContent = formatDisplayDate(state.selectedDateKey);
-      const notes = state.approvedNotes.filter(n => 
-        n.department.toLowerCase() === state.department.toLowerCase() &&
-        n.section.toLowerCase() === state.section.toLowerCase() &&
-        n.date === state.selectedDateKey &&
-        n.status.toLowerCase() === "approved"
-      );
+      $("selected-date-display").textContent = formatDisplayDate(state.selectedDateKey);
+      const notes = getCurrentClassNotes().filter(n => n.date === state.selectedDateKey);
 
-      dom.notesCountBadge.textContent = `${notes.length} notes`;
-      dom.notesListContainer.innerHTML = "";
+      $("notes-count-badge").textContent = `${notes.length} notes`;
 
       if (notes.length === 0) {
-        dom.notesListContainer.innerHTML = `<div class="notes-empty-state"><p>No notes for this date.</p></div>`;
+        $("notes-list-container").innerHTML = `<div class="notes-empty-state"><p>No notes for this date.</p></div>`;
         return;
       }
 
@@ -491,101 +421,88 @@
         grouped[n.course][n.topic].push(n);
       });
 
-      Object.keys(grouped).forEach(course => {
-        const grp = document.createElement("div");
-        grp.className = "course-group";
-        grp.innerHTML = `<h4 class="course-title">${course}</h4>`;
-        const topicsDiv = document.createElement("div");
-        topicsDiv.className = "topics-container";
-
-        Object.keys(grouped[course]).forEach(topic => {
-          const tGrp = document.createElement("div");
-          tGrp.innerHTML = `<div class="topic-title">&rarr; ${topic}</div>`;
-          const itemsDiv = document.createElement("div");
-          itemsDiv.className = "notes-items-list";
-
-          grouped[course][topic].forEach(item => {
-            const hasL = item.link && item.link.trim() !== "";
-            itemsDiv.innerHTML += `
-              <a href="${hasL ? item.link : 'javascript:void(0)'}" ${hasL ? 'target="_blank" rel="noopener"' : ''} class="note-link-item">
-                ${item.title} ↗
-              </a>
-            `;
-          });
-          tGrp.appendChild(itemsDiv);
-          topicsDiv.appendChild(tGrp);
-        });
-        grp.appendChild(topicsDiv);
-        dom.notesListContainer.appendChild(grp);
-      });
+      $("notes-list-container").innerHTML = Object.entries(grouped).map(([course, topics]) => `
+        <div class="course-group">
+          <h4 class="course-title">${course}</h4>
+          <div class="topics-container">
+            ${Object.entries(topics).map(([topic, items]) => `
+              <div>
+                <div class="topic-title">&rarr; ${topic}</div>
+                <div class="notes-items-list">
+                  ${items.map(item => {
+                    const hasLink = Boolean(item.link && item.link.trim());
+                    return `<a href="${hasLink ? item.link : 'javascript:void(0)'}" ${hasLink ? 'target="_blank" rel="noopener"' : ''} class="note-link-item">${item.title} ↗</a>`;
+                  }).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
     }
 
     function setupEvents() {
-      dom.deptSelect.onchange = (e) => {
+      $("dept-select").onchange = (e) => {
         state.department = e.target.value;
         updateSectionSelect(state.department);
-        state.section = dom.sectionSelect.value;
-        updateClassBadge();
+        state.section = $("section-select").value;
         autoFocusNotes();
-        renderCalendar();
-        renderNotes();
+        updateView();
       };
 
-      dom.sectionSelect.onchange = (e) => {
+      $("section-select").onchange = (e) => {
         state.section = e.target.value;
-        updateClassBadge();
         autoFocusNotes();
-        renderCalendar();
-        renderNotes();
+        updateView();
       };
 
-      dom.calPrevBtn.onclick = () => {
+      $("cal-prev-month").onclick = () => {
         if (state.viewMonth === 0) { state.viewMonth = 11; state.viewYear--; }
         else { state.viewMonth--; }
         renderCalendar();
       };
 
-      dom.calNextBtn.onclick = () => {
+      $("cal-next-month").onclick = () => {
         if (state.viewMonth === 11) { state.viewMonth = 0; state.viewYear++; }
         else { state.viewMonth++; }
         renderCalendar();
       };
 
-      dom.calTodayBtn.onclick = () => {
+      $("cal-today-btn").onclick = () => {
         autoFocusNotes();
-        renderCalendar();
-        renderNotes();
+        updateView();
       };
 
-      dom.openAddModalBtn.onclick = () => {
-        dom.formDept.value = state.department;
+      $("open-add-modal-btn").onclick = () => {
+        $("form-dept").value = state.department;
         updateModalDropdowns(state.department);
-        dom.formDate.value = state.selectedDateKey;
-        dom.addModal.classList.add("is-active");
+        $("form-date").value = state.selectedDateKey;
+        $("add-note-modal").classList.add("is-active");
       };
 
-      dom.closeAddModalBtn.onclick = dom.cancelAddBtn.onclick = () => {
-        dom.addModal.classList.remove("is-active");
+      $("close-add-modal-btn").onclick = $("cancel-add-btn").onclick = () => {
+        $("add-note-modal").classList.remove("is-active");
       };
 
-      dom.formDept.onchange = (e) => updateModalDropdowns(e.target.value);
+      $("form-dept").onchange = (e) => updateModalDropdowns(e.target.value);
 
-      dom.addForm.onsubmit = async (e) => {
+      $("add-note-form").onsubmit = async (e) => {
         e.preventDefault();
         const payload = {
-          department: dom.formDept.value,
-          section: dom.formSection.value,
-          date: dom.formDate.value,
-          course: dom.formCourse.value,
-          topic: dom.formTopic.value,
-          title: dom.formTitle.value,
-          link: dom.formLink.value || ""
+          department: $("form-dept").value,
+          section: $("form-section").value,
+          date: $("form-date").value,
+          course: $("form-course").value,
+          topic: $("form-topic").value,
+          title: $("form-title").value,
+          link: $("form-link").value || ""
         };
 
-        dom.formMessage.style.display = "block";
-        dom.formMessage.style.background = "#eff6ff";
-        dom.formMessage.style.color = "#1d4ed8";
-        dom.formMessage.innerHTML = "Submitting note to Google Sheets...";
+        const msg = $("form-message");
+        msg.style.display = "block";
+        msg.style.background = "#eff6ff";
+        msg.style.color = "#1d4ed8";
+        msg.innerHTML = "Submitting note to Google Sheets...";
 
         try {
           await fetch(SCRIPT_URL, {
@@ -593,15 +510,15 @@
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify(payload)
           });
-          dom.formMessage.style.background = "#f0fdf4";
-          dom.formMessage.style.color = "#16a34a";
-          dom.formMessage.innerHTML = "✓ Note submitted with Pending status! Once approved in Google Sheet, it will appear.";
+          msg.style.background = "#f0fdf4";
+          msg.style.color = "#16a34a";
+          msg.innerHTML = "✓ Note submitted with Pending status! Once approved in Google Sheet, it will appear.";
           setTimeout(() => {
-            dom.addModal.classList.remove("is-active");
-            dom.formMessage.style.display = "none";
+            $("add-note-modal").classList.remove("is-active");
+            msg.style.display = "none";
           }, 3000);
         } catch(err) {
-          dom.formMessage.innerHTML = "✓ Submitted! Please check Google Sheets.";
+          msg.innerHTML = "✓ Submitted! Please check Google Sheets.";
         }
       };
     }
