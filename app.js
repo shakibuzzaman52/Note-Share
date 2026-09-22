@@ -1,5 +1,5 @@
 /**
- * ClassNotes — Clean Application Logic (No Confusing Lecture Numbers)
+ * ClassNotes — Clean Application Logic with Future Date Restrictions
  */
 (function () {
   "use strict";
@@ -25,7 +25,7 @@
   const state = {
     dept: cfg.departments[0]?.code || "CSE",
     sec: cfg.departments[0]?.sections[0] || "73_L",
-    course: "ALL", // "ALL" = All Courses, or specific course name
+    course: "ALL",
     viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
     selectedDate: toDateKey(now),
     notes: []
@@ -157,7 +157,7 @@
   }
 
   // -------------------------------------------------------------
-  // BEHAVIOR 1: Render Full Monthly Calendar
+  // BEHAVIOR 1: Render Full Monthly Calendar (ভবিষ্যতের দিন ব্লক করা)
   // -------------------------------------------------------------
   function renderFullCalendar() {
     const year = state.viewDate.getFullYear();
@@ -168,6 +168,9 @@
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const noteDates = new Set(getSectionApprovedNotes().map(n => n.date));
 
+    // আজকের তারিখ বের করা
+    const todayKey = toDateKey(new Date());
+
     let html = "";
     for (let i = 0; i < firstDayIndex; i++) {
       html += `<div class="cal-day empty"></div>`;
@@ -175,11 +178,16 @@
 
     for (let d = 1; d <= daysInMonth; d++) {
       const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      
+      // আজকের চেয়ে বড় তারিখ হলে তা ভবিষ্যৎ (Future Date)
+      const isFuture = dateKey > todayKey;
       const isSelected = dateKey === state.selectedDate;
       const hasNote = noteDates.has(dateKey);
 
       html += `
-        <button class="cal-day ${isSelected ? 'is-selected' : ''}" data-date="${dateKey}">
+        <button class="cal-day ${isSelected ? 'is-selected' : ''} ${isFuture ? 'is-future' : ''}" 
+                data-date="${dateKey}"
+                ${isFuture ? 'disabled aria-disabled="true" title="Future date"' : ''}>
           <span>${d}</span>
           ${hasNote ? '<span class="cal-dot"></span>' : ''}
         </button>
@@ -190,14 +198,13 @@
   }
 
   // -------------------------------------------------------------
-  // BEHAVIOR 2: Render Specific Course Dates (No Lecture Numbers)
+  // BEHAVIOR 2: Render Specific Course Dates
   // -------------------------------------------------------------
   function renderCourseDatesView() {
     const courseNotes = getSectionApprovedNotes().filter(n =>
       n.course.toLowerCase() === state.course.toLowerCase()
     );
 
-    // Extract unique dates sorted chronologically
     const uniqueDates = [...new Set(courseNotes.map(n => n.date))].sort();
 
     $("course-dates-title").textContent = state.course;
@@ -214,7 +221,6 @@
       return;
     }
 
-    // Auto-select latest date if currently selected date is not in this course's dates
     if (!uniqueDates.includes(state.selectedDate)) {
       state.selectedDate = uniqueDates[uniqueDates.length - 1];
     }
@@ -226,7 +232,6 @@
       const isSelected = dateStr === state.selectedDate;
       const noteCount = courseNotes.filter(n => n.date === dateStr).length;
 
-      // শুধুমাত্র তারিখ, বার এবং নোটের সংখ্যা দেখানো হচ্ছে
       html += `
         <button class="course-date-card ${isSelected ? 'is-selected' : ''}" data-date="${dateStr}">
           <div class="course-date-info">
@@ -296,7 +301,6 @@
     container.innerHTML = html;
   }
 
-  // Master Render Function
   function render() {
     updateClassBadge();
 
@@ -384,8 +388,9 @@
       render();
     };
 
+    // ক্যালেন্ডার ক্লিকে শুধুমাত্র সক্রিয় (non-disabled) দিনগুলো কাজ করবে
     $("calendar-grid").onclick = e => {
-      const btn = e.target.closest(".cal-day[data-date]");
+      const btn = e.target.closest(".cal-day[data-date]:not(:disabled)");
       if (btn) {
         state.selectedDate = btn.dataset.date;
         render();
@@ -407,11 +412,17 @@
 
     $("open-add-modal-btn").onclick = () => {
       isTitleManuallyEdited = false;
+      const todayKey = toDateKey(new Date());
+
+      // ফর্মে আজকের চেয়ে বড় তারিখ সিলেক্ট করা বন্ধ (Max Date)
+      $("form-date").max = todayKey;
 
       $("form-dept").value = state.dept;
       updateFormCourses();
       $("form-section").value = state.sec;
-      $("form-date").value = state.selectedDate;
+
+      // যদি বর্তমানে কোনো ভবিষ্যতের তারিখ নির্বাচিত থাকে, তা আজকের তারিখে রিসেট হবে
+      $("form-date").value = state.selectedDate > todayKey ? todayKey : state.selectedDate;
 
       if (state.course !== "ALL") {
         $("form-course").value = state.course;
@@ -445,13 +456,24 @@
       e.preventDefault();
       submitBtn.disabled = true;
 
+      const chosenDate = $("form-date").value;
+      const todayKey = toDateKey(new Date());
+
+      // বাড়তি নিরাপত্তা: ভবিষ্যতের তারিখ দিলে সাবমিট হবে না
+      if (chosenDate > todayKey) {
+        statusMsg.className = "form-status error";
+        statusMsg.textContent = "Future dates are not allowed!";
+        submitBtn.disabled = false;
+        return;
+      }
+
       statusMsg.className = "form-status info";
       statusMsg.textContent = "Submitting to Google Sheets...";
 
       const payload = {
         department: $("form-dept").value,
         section: $("form-section").value,
-        date: $("form-date").value,
+        date: chosenDate,
         course: $("form-course").value,
         topic: $("form-topic").value,
         title: $("form-title").value,
@@ -491,6 +513,9 @@
     const deptCodes = cfg.departments.map(d => d.code);
     populateSelect($("dept-select"), deptCodes);
     populateSelect($("form-dept"), deptCodes);
+
+    // পেজ লোড হওয়ার সাথে সাথে ফর্ম ডেট ইনপুটের ম্যাক্স লিমিট সেট করা
+    $("form-date").max = toDateKey(new Date());
 
     updateDropdowns();
     bindEvents();

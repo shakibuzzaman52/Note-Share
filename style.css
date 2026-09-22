@@ -1,22 +1,22 @@
 /* ==========================================================================
-   ClassNotes — Lightweight & Clean Stylesheet
+   ClassNotes — Plain, Functional & Human-Crafted Academic UI
+   (No transforms, no heavy shadows, no generic AI-style bloat)
    ========================================================================== */
 
 :root {
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --bg-page: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-muted: #f1f5f9;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #0f172a;
-  --primary-hover: #1e293b;
-  --accent: #2563eb;
-  --radius-sm: 6px;
-  --radius-lg: 12px;
+  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --bg-page: #f6f8fa;
+  --bg-box: #ffffff;
+  --bg-subtle: #f6f8fa;
+  --text-dark: #1f2328;
+  --text-muted: #59636e;
+  --border: #d0d7de;
+  --border-dark: #8c959f;
+  --link-color: #0969da;
+  --active-black: #24292f;
 }
 
+/* 1. Base Reset */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -24,316 +24,442 @@
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-base);
   background-color: var(--bg-page);
-  color: var(--text-main);
+  color: var(--text-dark);
   line-height: 1.5;
-  font-size: 15px;
+  font-size: 14px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-a { color: inherit; text-decoration: none; }
+a { color: var(--link-color); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-/* Buttons */
+/* 2. Plain Functional Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 14px;
+  padding: 6px 12px;
   font: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid var(--border-dark);
   cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  background: #f6f8fa;
+  color: var(--text-dark);
 }
 
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn:hover { background: #e6ebee; }
+.btn:active { background: #dce2e6; }
 
-.btn-secondary { background: var(--bg-surface); border-color: var(--border); color: var(--text-main); }
-.btn-secondary:hover { background: var(--bg-muted); }
+.btn-primary {
+  background: var(--active-black);
+  color: #ffffff;
+  border-color: var(--active-black);
+}
+.btn-primary:hover { background: #14171a; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary { background: #ffffff; border-color: var(--border); }
+.btn-secondary:hover { background: #f6f8fa; }
 
 .btn-subtle-sm {
-  background: var(--bg-surface);
+  background: #ffffff;
   border: 1px solid var(--border);
   font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 4px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 3px;
   cursor: pointer;
 }
-.btn-subtle-sm:hover { background: var(--bg-muted); }
+.btn-subtle-sm:hover { background: #f3f4f6; }
 
 .btn-icon {
-  background: transparent;
+  background: #ffffff;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
+  border-radius: 3px;
+  padding: 3px 8px;
   cursor: pointer;
   font-weight: 700;
 }
-.btn-icon:hover { background: var(--bg-muted); }
+.btn-icon:hover { background: #f3f4f6; }
 
-/* Header */
+/* 3. Simple Header */
 .site-header {
-  background: var(--bg-surface);
+  background: var(--bg-box);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 20;
 }
 
 .header-container {
-  max-width: 1040px;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.brand-link { font-weight: 700; font-size: 18px; display: inline-flex; align-items: center; gap: 8px; }
-.header-actions { display: flex; align-items: center; gap: 14px; }
-.sheet-status { font-size: 13px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; }
-.sheet-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
+.brand-link {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-dark);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-link:hover { text-decoration: none; }
 
-/* Main Layout */
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.sheet-status { font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; }
+.sheet-dot { width: 7px; height: 7px; border-radius: 50%; background: #1a7f37; }
+
+/* 4. Layout Container */
 .main-container {
-  max-width: 1040px;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 24px 20px 48px;
+  padding: 18px 16px 40px;
   width: 100%;
   flex: 1;
 }
 
-/* Filters Bar */
+/* 5. Filters Bar */
 .filters-bar {
-  background: var(--bg-surface);
+  background: var(--bg-box);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 18px;
-  margin-bottom: 24px;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
-.filter-group { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.filter-group label { font-weight: 600; color: var(--text-dark); }
 
 select, input {
   font: inherit;
-  font-size: 14px;
-  background: var(--bg-page);
+  font-size: 13px;
+  background: #ffffff;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 6px 10px;
+  border-radius: 3px;
+  padding: 4px 8px;
+  color: var(--text-dark);
   outline: none;
 }
-select:focus, input:focus { border-color: var(--primary); }
+select:focus, input:focus {
+  border-color: var(--active-black);
+}
 
 .class-badge {
   margin-left: auto;
-  background: var(--bg-muted);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
+  color: var(--text-muted);
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
 }
 
-/* Content Grid */
+/* 6. Content Grid */
 .content-grid {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 24px;
+  grid-template-columns: 340px 1fr;
+  gap: 18px;
   align-items: start;
 }
 
 .card {
-  background: var(--bg-surface);
+  background: var(--bg-box);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
+  border-radius: 4px;
+  padding: 16px;
 }
 
-/* Calendar Card (Full View) */
-.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.month-year-title { font-size: 18px; font-weight: 700; }
-.calendar-nav { display: flex; align-items: center; gap: 6px; }
+/* 7. Full Monthly Calendar View */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.month-year-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.calendar-nav { display: flex; align-items: center; gap: 4px; }
 
 .calendar-weekdays, .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 2px;
   text-align: center;
 }
 
 .calendar-weekdays {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
   padding-bottom: 6px;
+  margin-bottom: 4px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 6px;
 }
 
 .cal-day {
-  aspect-ratio: 1;
+  height: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  background: #ffffff;
+  border: 1px solid #f0f2f4;
+  border-radius: 2px;
   cursor: pointer;
   font: inherit;
-  font-size: 14px;
-  transition: 0.15s ease;
+  font-size: 13px;
+  color: var(--text-dark);
 }
 
-.cal-day:hover:not(.empty) { background: var(--bg-muted); }
-.cal-day.empty { cursor: default; }
+/* সাধারণ দিনে হোভার */
+.cal-day:hover:not(.empty):not(:disabled):not(.is-selected) {
+  background: #f1f4f8;
+  border-color: var(--border);
+}
 
-.cal-day.is-selected {
-  background: var(--primary);
-  color: #ffffff;
+.cal-day.empty {
+  border-color: transparent;
+  cursor: default;
+}
+
+/* ফিক্স ১: নির্বাচিত তারিখ এবং তাতে হোভার করলে স্থায়ী কালো থাকবে */
+.cal-day.is-selected,
+.cal-day.is-selected:hover {
+  background: var(--active-black) !important;
+  color: #ffffff !important;
+  border-color: var(--active-black) !important;
   font-weight: 700;
 }
 
-.cal-dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; margin-top: 3px; }
+/* নোট ডট */
+.cal-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--link-color);
+  border-radius: 50%;
+  margin-top: 1px;
+}
 .cal-day.is-selected .cal-dot { background: #ffffff; }
 
+/* ভবিষ্যতের দিন সম্পূর্ণ নিষ্ক্রিয় */
+.cal-day.is-future,
+.cal-day:disabled {
+  background: #fafbfc;
+  color: #c0c6cc;
+  border-color: transparent;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .calendar-footer {
-  margin-top: 14px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f2f4;
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
 }
-.cal-dot-legend { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+.cal-dot-legend { width: 5px; height: 5px; background: var(--link-color); border-radius: 50%; }
 
-/* Specific Course Dates View */
+/* 8. Course Specific Dates View */
 .course-dates-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
 }
 
 .course-dates-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 400px;
+  gap: 4px;
+  max-height: 380px;
   overflow-y: auto;
-  padding-right: 4px;
 }
 
 .course-date-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
+  padding: 8px 10px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg-surface);
+  border-radius: 3px;
+  background: #ffffff;
   cursor: pointer;
   font: inherit;
   text-align: left;
-  transition: all 0.15s ease;
 }
 
-.course-date-card:hover {
-  background: var(--bg-muted);
-  border-color: #cbd5e1;
+.course-date-card:hover:not(.is-selected) { background: #f6f8fa; }
+
+.course-date-card.is-selected,
+.course-date-card.is-selected:hover {
+  background: var(--active-black) !important;
+  color: #ffffff !important;
+  border-color: var(--active-black) !important;
 }
 
-.course-date-card.is-selected {
-  background: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
-}
+.course-date-info { display: flex; flex-direction: column; }
+.date-main { font-weight: 600; font-size: 13px; }
+.date-sub { font-size: 11px; color: var(--text-muted); }
+.course-date-card.is-selected .date-sub { color: #d0d7de; }
 
-.course-date-card.is-selected .date-sub,
-.course-date-card.is-selected .date-badge {
-  color: #e2e8f0;
-}
-
-.course-date-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.date-main { font-weight: 600; font-size: 14px; }
-.date-sub { font-size: 12px; color: var(--text-muted); }
 .date-badge {
   font-size: 11px;
   font-weight: 600;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 4px 8px;
-  border-radius: 20px;
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #f6f8fa;
 }
 .course-date-card.is-selected .date-badge {
-  background: rgba(255, 255, 255, 0.2);
+  border-color: #59636e;
+  background: #32383f;
   color: #ffffff;
 }
 
-/* Notes Display */
-.notes-card { min-height: 380px; }
+/* ==========================================================================
+   ফিক্স ২: সুন্দর, পরিষ্কার ও গোছানো নোটস সেকশন ডিজাইন
+   ========================================================================== */
+.notes-card { min-height: 360px; }
+
 .notes-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
+  align-items: flex-end;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
 }
 
-.notes-label { color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
-.selected-date-title { font-size: 18px; font-weight: 700; }
-.notes-count-badge { background: var(--bg-muted); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.notes-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
 
-.course-group { margin-bottom: 18px; }
-.course-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.topics-container { border-left: 2px solid var(--border); padding-left: 12px; display: flex; flex-direction: column; gap: 10px; }
-.topic-title { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.selected-date-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
 
+.notes-count-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: #f1f4f8;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+/* প্রতিটি কোর্সের পরিচ্ছন্ন কার্ড কনটেইনার */
+.course-group {
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* কোর্সের হেডার স্ট্রিপ */
+.course-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+  background: #f6f8fa;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* টপিকগুলোর কনটেইনার */
+.topics-container {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* টপিক টাইটেল (যেমন: → Logic Gates...) */
+.topic-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* নোট লিংকের গোছানো বাটন স্টাইল */
 .note-link-item {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  background: var(--bg-surface);
+  gap: 6px;
+  padding: 5px 12px;
+  background: #fbfcfd;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
+  border-radius: 4px;
+  font-size: 12px;
   font-weight: 500;
+  color: var(--text-dark);
   margin-right: 6px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.02);
 }
-.note-link-item:hover { background: var(--bg-muted); }
 
-.notes-empty-state { text-align: center; padding: 40px 16px; color: var(--text-muted); }
+/* নোটে মাউস নিলে সুন্দর ক্লিন ফিডব্যাক */
+.note-link-item:hover {
+  background: #f1f4f8;
+  border-color: var(--active-black);
+  color: var(--active-black);
+  text-decoration: none;
+}
 
-/* Modal */
+.notes-empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* 10. Modal */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(27, 31, 36, 0.5);
   display: none;
   align-items: center;
   justify-content: center;
@@ -344,35 +470,44 @@ select:focus, input:focus { border-color: var(--primary); }
 
 .modal-card {
   background: #ffffff;
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
   width: 100%;
-  max-width: 480px;
-  padding: 24px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  max-width: 420px;
+  padding: 18px;
 }
 
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.btn-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); line-height: 1; }
-.modal-form { display: flex; flex-direction: column; gap: 12px; }
-.form-group { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 { font-size: 15px; font-weight: 700; }
+.btn-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); }
+
+.modal-form { display: flex; flex-direction: column; gap: 10px; }
+.form-group { display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: 600; color: var(--text-dark); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 
 .form-status {
   display: none;
-  font-size: 13px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 3px;
 }
-.form-status.info { display: block; background: #eff6ff; color: #1d4ed8; }
-.form-status.success { display: block; background: #f0fdf4; color: #15803d; }
-.form-status.error { display: block; background: #fef2f2; color: #b91c1c; }
+.form-status.info { display: block; background: #ddf4ff; color: #0969da; border: 1px solid #54aeff; }
+.form-status.success { display: block; background: #dafbe1; color: #1a7f37; border: 1px solid #4ac26b; }
+.form-status.error { display: block; background: #ffebe9; color: #cf222e; border: 1px solid #ff8182; }
 
-/* Responsive */
-@media (max-width: 820px) {
+/* 11. Responsive */
+@media (max-width: 768px) {
   .content-grid { grid-template-columns: 1fr; }
   .filters-bar { flex-direction: column; align-items: stretch; }
   .filter-group { justify-content: space-between; }
   .filter-group select { flex: 1; }
-  .class-badge { margin-left: 0; text-align: center; }
+  .class-badge { margin-left: 0; padding-left: 0; border-left: none; text-align: center; }
 }
