@@ -3,8 +3,8 @@
  */
 window.APP_CONFIG = {
   siteTitle: "ClassNotes",
-  
-  // Google Apps Script Web App URL
+
+  // Google Apps Script Web App Endpoint
   googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbw3aWwV--qQQMyplo3GnTexrnbTaGb5p_I-twV-fK4mokGSIA2PkOHQ7L9Ye05fv55T/exec",
 
   departments: [
