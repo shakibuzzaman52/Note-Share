@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClassNotes — Simple Academic Note Sharing</title>
+  <meta name="description" content="A simple, clean, and minimal class-notes sharing website for students.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation / Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand">
+        <a href="./" class="brand-link">
+          <svg class="brand-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span class="brand-name" id="site-title">ClassNotes</span>
+        </a>
+      </div>
+
+      <div class="header-actions">
+        <button id="open-setup-btn" class="btn btn-subtle" title="Google Sheets Backend Settings">
+          <span class="sheet-status-dot" id="sheet-status-indicator"></span>
+          <span id="sheet-status-text">Google Sheet</span>
+        </button>
+        <button id="open-add-modal-btn" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Note
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Filters Bar: Department & Section Selector -->
+    <section class="filters-bar" aria-label="Class Selection">
+      <div class="filter-group">
+        <label for="dept-select">Department</label>
+        <div class="select-wrapper">
+          <select id="dept-select" aria-label="Select Department"></select>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="section-select">Section</label>
+        <div class="select-wrapper">
+          <select id="section-select" aria-label="Select Section"></select>
+        </div>
+      </div>
+
+      <div class="filter-status-info">
+        <span id="current-class-badge" class="class-badge">Loading...</span>
+      </div>
+    </section>
+
+    <!-- Main Content Grid: Calendar + Notes List -->
+    <div class="content-grid">
+
+      <!-- Calendar Column -->
+      <section class="calendar-section" aria-label="Monthly Calendar">
+        <div class="calendar-card">
+          <!-- Calendar Month Navigation -->
+          <div class="calendar-header">
+            <div class="calendar-title-group">
+              <h2 id="calendar-month-year" class="month-year-title">September 2026</h2>
+            </div>
+            <div class="calendar-nav">
+              <button id="cal-prev-month" class="btn-icon" title="Previous Month" aria-label="Previous Month">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button id="cal-today-btn" class="btn btn-subtle-sm">Today</button>
+              <button id="cal-next-month" class="btn-icon" title="Next Month" aria-label="Next Month">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Weekday Headers -->
+          <div class="calendar-weekdays" aria-hidden="true">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+
+          <!-- Calendar Days Grid -->
+          <div id="calendar-days-grid" class="calendar-grid" role="grid" aria-label="Calendar Days">
+            <!-- Dynamically populated by app.js -->
+          </div>
+
+          <!-- Calendar Footer / Legend -->
+          <div class="calendar-footer">
+            <span class="legend-item">
+              <span class="legend-dot"></span>
+              Dates with approved notes
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes Display Column -->
+      <section class="notes-section" aria-label="Notes on Selected Date">
+        <div class="notes-card">
+          <!-- Notes Header -->
+          <div class="notes-header">
+            <div class="notes-header-left">
+              <span class="notes-date-label">Selected Date</span>
+              <h3 id="selected-date-display" class="selected-date-title">22 September 2026</h3>
+            </div>
+            <div id="notes-count-badge" class="notes-count-badge">0 notes</div>
+          </div>
+
+          <!-- Notes Body Container -->
+          <div id="notes-list-container" class="notes-list-container">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Add Note Modal -->
+  <div id="add-note-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-labelledby="modal-add-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-add-title" class="modal-title">Add Note</h3>
+          <p class="modal-subtitle">Share notes with your classmates. Submissions are reviewed in Google Sheets.</p>
+        </div>
+        <button id="close-add-modal-btn" class="btn-close" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="add-note-form" class="modal-form" novalidate>
+        <!-- Department Dropdown -->
+        <div class="form-group">
+          <label for="form-dept">Department <span class="required">*</span></label>
+          <select id="form-dept" name="department" required></select>
+        </div>
+
+        <!-- Section Dropdown -->
+        <div class="form-group">
+          <label for="form-section">Section <span class="required">*</span></label>
+          <select id="form-section" name="section" required></select>
+        </div>
+
+        <!-- Date Picker -->
+        <div class="form-group">
+          <label for="form-date">Date <span class="required">*</span></label>
+          <input type="date" id="form-date" name="date" required>
+        </div>
+
+        <!-- Course Name Dropdown -->
+        <div class="form-group">
+          <label for="form-course">Course Name <span class="required">*</span></label>
+          <select id="form-course" name="course" required></select>
+        </div>
+
+        <!-- Topic Name Input -->
+        <div class="form-group">
+          <label for="form-topic">Topic Name <span class="required">*</span></label>
+          <input type="text" id="form-topic" name="topic" placeholder="e.g. Number System, Big O Notation" required>
+        </div>
+
+        <!-- Note Title Input -->
+        <div class="form-group">
+          <label for="form-title">Note Title <span class="required">*</span></label>
+          <input type="text" id="form-title" name="title" placeholder="e.g. Board Note, Class Note, Lecture Summary" required>
+        </div>
+
+        <!-- Note Link Input -->
+        <div class="form-group">
+          <label for="form-link">Note Link <span class="required">*</span></label>
+          <input type="url" id="form-link" name="link" placeholder="e.g. Google Drive link or Document URL" required>
+          <span class="field-hint">Google Drive, OneDrive, or document URL.</span>
+        </div>
+
+        <!-- Submission Status Message -->
+        <div id="form-message" class="form-message" style="display: none;"></div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions">
+          <button type="button" id="cancel-add-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="submit-note-btn" class="btn btn-primary">
+            <span id="submit-spinner" class="spinner" style="display: none;"></span>
+            <span id="submit-btn-text">Submit Note</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Google Sheets Setup / Connection Modal -->
+  <div id="setup-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-labelledby="modal-setup-title">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-setup-title" class="modal-title">Google Sheets Backend Setup</h3>
+          <p class="modal-subtitle">Connect your Google Sheet as the zero-database backend.</p>
+        </div>
+        <button id="close-setup-modal-btn" class="btn-close" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <div class="modal-body setup-body">
+        <div class="setup-section">
+          <label for="custom-script-url"><strong>Google Apps Script Web App URL</strong></label>
+          <p class="field-hint">Deploy the provided script in Google Sheets and paste your Web App URL here:</p>
+          <div class="input-with-button">
+            <input type="url" id="custom-script-url" placeholder="https://script.google.com/macros/s/.../exec">
+            <button id="save-script-url-btn" class="btn btn-primary">Save & Connect</button>
+          </div>
+          <div class="setup-url-actions">
+            <button id="reset-script-url-btn" class="btn btn-link">Reset to Default / Demo Data</button>
+          </div>
+        </div>
+
+        <div class="setup-instructions">
+          <h4>How it works:</h4>
+          <ol class="setup-steps">
+            <li>
+              <strong>Create a Google Sheet:</strong> Add headers in row 1:
+              <code>Department | Section | Date | Course Name | Topic Name | Note Title | Note Link | Status | Submitted At</code>
+            </li>
+            <li>
+              <strong>Deploy Google Apps Script:</strong> In your Google Sheet, open <em>Extensions &gt; Apps Script</em>, paste the code from <code>google-apps-script.js</code>, and click <em>Deploy &gt; New deployment &gt; Web app</em> (Execute as: <em>Me</em>, Who has access: <em>Anyone</em>).
+            </li>
+            <li>
+              <strong>Approve Notes:</strong> When students submit notes via this website, rows are automatically inserted with <code>Status: Pending</code>. To publish a note, simply change its status to <code>Approved</code> in the sheet!
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="close-setup-footer-btn" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
