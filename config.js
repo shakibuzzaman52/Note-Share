@@ -1,19 +1,12 @@
 /**
  * ClassNotes - Academic Configuration
- * 
- * Update departments, sections, and courses here.
- * Synced directly with your deployed Google Sheet via Google Apps Script.
  */
-
-const APP_CONFIG = {
-  // Website title displayed in the header
+window.APP_CONFIG = {
   siteTitle: "ClassNotes",
   
-  // Your Google Apps Script Web App URL
+  // Google Apps Script Web App URL
   googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbw3aWwV--qQQMyplo3GnTexrnbTaGb5p_I-twV-fK4mokGSIA2PkOHQ7L9Ye05fv55T/exec",
 
-  // Departments, sections, and courses
-  // Add or remove items easily here without modifying any HTML or CSS!
   departments: [
     {
       code: "CSE",
@@ -73,8 +66,3 @@ const APP_CONFIG = {
     }
   ]
 };
-
-// Export for ES modules or global window object
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = APP_CONFIG;
-}

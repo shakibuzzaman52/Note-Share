@@ -1,16 +1,5 @@
 /**
- * ClassNotes - Google Apps Script Backend (Google Sheets)
- * 
- * Column Structure in Google Sheet ("Notes" tab):
- * Col A: Department
- * Col B: Section
- * Col C: Date
- * Col D: Course Name
- * Col E: Topic Name
- * Col F: Note Title
- * Col G: Note Link
- * Col H: Status (Pending, Approved, Rejected)
- * Col I: Submitted At
+ * ClassNotes - Google Apps Script Backend (Optimized & Clean)
  */
 
 function doGet(e) {
@@ -20,40 +9,42 @@ function doGet(e) {
     const data = sheet.getDataRange().getValues();
 
     if (data.length <= 1) {
-      return jsonResponse({ success: true, notes: [] });
+      return jsonResponse({ success: true, count: 0, notes: [] });
     }
 
-    const headers = data[0].map(function(h) {
-      return String(h).trim().toLowerCase();
-    });
+    const headers = data[0].map(h => String(h).trim().toLowerCase());
+    
+    // কলাম সহজে চিনে নেওয়ার লজিক
+    const findCol = names => headers.findIndex(h => names.some(n => h.includes(n)));
+    const deptIdx = findCol(["dept", "department"]);
+    const secIdx = findCol(["sec", "section"]);
+    const dateIdx = findCol(["date"]);
+    const courseIdx = findCol(["course"]);
+    const topicIdx = findCol(["topic"]);
+    const titleIdx = findCol(["title"]);
+    const linkIdx = findCol(["link"]);
+    const statusIdx = findCol(["status"]);
 
-    const deptIdx = headers.indexOf("department");
-    const secIdx = headers.indexOf("section");
-    const dateIdx = headers.indexOf("date");
-    const courseIdx = headers.indexOf("course name");
-    const topicIdx = headers.indexOf("topic name");
-    const titleIdx = headers.indexOf("note title");
-    const linkIdx = headers.indexOf("note link");
-    const statusIdx = headers.indexOf("status");
-
+    const tz = ss.getSpreadsheetTimeZone() || "GMT+6";
     const notes = [];
 
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       const status = String(row[statusIdx] || "").trim();
 
-      // Core Requirement: ONLY Approved notes appear publicly
+      // শুধু Approved নোট ওয়েবসাইটে দেখানো হবে
       if (status.toLowerCase() === "approved") {
-        let dateVal = row[dateIdx];
+        let rawDate = row[dateIdx];
         let dateStr = "";
 
-        if (dateVal instanceof Date) {
-          const y = dateVal.getFullYear();
-          const m = String(dateVal.getMonth() + 1).padStart(2, "0");
-          const d = String(dateVal.getDate()).padStart(2, "0");
-          dateStr = y + "-" + m + "-" + d;
-        } else {
-          dateStr = String(dateVal).trim();
+        if (rawDate) {
+          const d = new Date(rawDate);
+          if (!isNaN(d.getTime())) {
+            // সরাসরি YYYY-MM-DD ফরম্যাটে তৈরি করবে
+            dateStr = Utilities.formatDate(d, tz, "yyyy-MM-dd");
+          } else {
+            dateStr = String(rawDate).trim();
+          }
         }
 
         notes.push({
@@ -69,78 +60,48 @@ function doGet(e) {
       }
     }
 
-    return jsonResponse({
-      success: true,
-      count: notes.length,
-      notes: notes
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.toString() });
+    return jsonResponse({ success: true, count: notes.length, notes: notes });
+  } catch (err) {
+    return jsonResponse({ success: false, error: err.toString() });
   }
 }
 
 function doPost(e) {
   try {
     let payload = null;
-
     if (e.postData && e.postData.contents) {
-      try {
-        payload = JSON.parse(e.postData.contents);
-      } catch (parseErr) {
-        payload = e.parameter;
-      }
+      try { payload = JSON.parse(e.postData.contents); } catch(p) { payload = e.parameter; }
     } else if (e.parameter) {
       payload = e.parameter;
     }
 
-    if (!payload) {
-      return jsonResponse({ success: false, error: "No payload received" });
-    }
-
-    const department = String(payload.department || "").trim();
-    const section = String(payload.section || "").trim();
-    const date = String(payload.date || "").trim();
-    const course = String(payload.course || "").trim();
-    const topic = String(payload.topic || "").trim();
-    const title = String(payload.title || "").trim();
-    const link = String(payload.link || "").trim();
-
-    if (!department || !section || !date || !course || !topic || !title || !link) {
-      return jsonResponse({
-        success: false,
-        error: "All fields are required."
-      });
+    if (!payload || !payload.department || !payload.section || !payload.date || !payload.course || !payload.topic || !payload.title) {
+      return jsonResponse({ success: false, error: "Missing required fields" });
     }
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName("Notes") || ss.getActiveSheet();
 
-    // Core Requirement: New submissions are ALWAYS set to 'Pending' status
-    const status = "Pending";
-    const timestamp = new Date();
-
+    // নতুন সাবমিশন সবসময় 'Pending' হিসেবে জমা হবে
     sheet.appendRow([
-      department,
-      section,
-      date,
-      course,
-      topic,
-      title,
-      link,
-      status,
-      timestamp
+      String(payload.department).trim(),
+      String(payload.section).trim(),
+      String(payload.date).trim(),
+      String(payload.course).trim(),
+      String(payload.topic).trim(),
+      String(payload.title).trim(),
+      String(payload.link || "").trim(),
+      "Pending",
+      new Date()
     ]);
 
-    return jsonResponse({
-      success: true,
-      message: "Note submitted successfully. Status is Pending approval."
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.toString() });
+    return jsonResponse({ success: true, message: "Note submitted successfully with Pending status." });
+  } catch (err) {
+    return jsonResponse({ success: false, error: err.toString() });
   }
 }
 
-function jsonResponse(data) {
-  return ContentService.createTextOutput(JSON.stringify(data))
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
