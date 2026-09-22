@@ -26,7 +26,7 @@
   <!-- Main Container -->
   <main class="main-container">
     
-    <!-- Filter Bar -->
+    <!-- Filter Bar (Department, Section, Course) -->
     <section class="filters-bar">
       <div class="filter-group">
         <label for="dept-select">Department:</label>
@@ -36,33 +36,54 @@
         <label for="section-select">Section:</label>
         <select id="section-select"></select>
       </div>
+      <div class="filter-group">
+        <label for="course-select">Course:</label>
+        <select id="course-select"></select>
+      </div>
       <span id="current-class-badge" class="class-badge"></span>
     </section>
 
-    <!-- Content Grid (Calendar & Notes) -->
+    <!-- Content Grid -->
     <div class="content-grid">
       
-      <!-- Calendar Card -->
+      <!-- Left Card: Dual View (Full Calendar OR Specific Course Dates) -->
       <section class="card calendar-card">
-        <div class="calendar-header">
-          <h2 id="calendar-month-year" class="month-year-title"></h2>
-          <div class="calendar-nav">
-            <button id="cal-prev" class="btn-icon" aria-label="Previous Month">&lt;</button>
-            <button id="cal-today" class="btn-subtle-sm">Today</button>
-            <button id="cal-next" class="btn-icon" aria-label="Next Month">&gt;</button>
+        
+        <!-- 1. Full Monthly Calendar View (When 'All Courses' is selected) -->
+        <div id="full-calendar-view">
+          <div class="calendar-header">
+            <h2 id="calendar-month-year" class="month-year-title"></h2>
+            <div class="calendar-nav">
+              <button id="cal-prev" class="btn-icon" aria-label="Previous Month">&lt;</button>
+              <button id="cal-today" class="btn-subtle-sm">Today</button>
+              <button id="cal-next" class="btn-icon" aria-label="Next Month">&gt;</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div id="calendar-grid" class="calendar-grid"></div>
+          <div class="calendar-footer">
+            <span class="cal-dot-legend"></span>
+            <span>Dates with notes</span>
           </div>
         </div>
-        <div class="calendar-weekdays">
-          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+
+        <!-- 2. Specific Course Dates View (When a specific Course is selected) -->
+        <div id="course-dates-view" style="display: none;">
+          <div class="course-dates-header">
+            <div>
+              <small class="notes-label">CLASS DATES</small>
+              <h3 id="course-dates-title" class="month-year-title">Course Classes</h3>
+            </div>
+            <span id="course-dates-count" class="notes-count-badge">0 dates</span>
+          </div>
+          <div id="course-dates-list" class="course-dates-list"></div>
         </div>
-        <div id="calendar-grid" class="calendar-grid"></div>
-        <div class="calendar-footer">
-          <span class="cal-dot-legend"></span>
-          <span>Dates with notes</span>
-        </div>
+
       </section>
 
-      <!-- Notes Display Card -->
+      <!-- Right Card: Notes Display -->
       <section class="card notes-card">
         <div class="notes-header">
           <div>

@@ -1,5 +1,5 @@
 /**
- * ClassNotes — Clean Application Logic with Smart Auto-increment Title
+ * ClassNotes — Clean Application Logic (No Confusing Lecture Numbers)
  */
 (function () {
   "use strict";
@@ -14,6 +14,7 @@
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const SHORT_MONTHS = {
     jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
     jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12"
@@ -24,17 +25,15 @@
   const state = {
     dept: cfg.departments[0]?.code || "CSE",
     sec: cfg.departments[0]?.sections[0] || "73_L",
+    course: "ALL", // "ALL" = All Courses, or specific course name
     viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
     selectedDate: toDateKey(now),
     notes: []
   };
 
-  // ব্যবহারকারী নিজে টাইটেল এডিট করেছে কিনা ট্র্যাক করার ফ্ল্যাগ
   let isTitleManuallyEdited = false;
-
   const $ = id => document.getElementById(id);
 
-  // Helper: Format date as YYYY-MM-DD
   function toDateKey(dateObj) {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -42,7 +41,6 @@
     return `${y}-${m}-${d}`;
   }
 
-  // Helper: Normalize sheet date string to YYYY-MM-DD
   function cleanDate(val) {
     if (!val) return "";
     const str = String(val).trim();
@@ -77,8 +75,13 @@
     return dateKey;
   }
 
-  function populateSelect(selectEl, items) {
-    selectEl.innerHTML = items.map(item => `<option value="${item}">${item}</option>`).join("");
+  function populateSelect(selectEl, items, includeAll = false, allLabel = "All Courses") {
+    let options = "";
+    if (includeAll) {
+      options += `<option value="ALL">${allLabel}</option>`;
+    }
+    options += items.map(item => `<option value="${item}">${item}</option>`).join("");
+    selectEl.innerHTML = options;
   }
 
   function updateDropdowns() {
@@ -86,10 +89,13 @@
     if (!activeDept) return;
 
     populateSelect($("section-select"), activeDept.sections);
+    populateSelect($("course-select"), activeDept.courses, true, "All Courses");
+
     populateSelect($("form-section"), activeDept.sections);
     populateSelect($("form-course"), activeDept.courses);
 
     $("dept-select").value = state.dept;
+
     if (activeDept.sections.includes(state.sec)) {
       $("section-select").value = state.sec;
     } else {
@@ -97,7 +103,14 @@
       $("section-select").value = state.sec;
     }
 
-    $("current-class-badge").textContent = `${state.dept} • Section ${state.sec}`;
+    if (state.course === "ALL" || activeDept.courses.includes(state.course)) {
+      $("course-select").value = state.course;
+    } else {
+      state.course = "ALL";
+      $("course-select").value = "ALL";
+    }
+
+    updateClassBadge();
   }
 
   function updateFormCourses() {
@@ -109,11 +122,15 @@
     }
   }
 
-  // -------------------------------------------------------------
-  // অটো-ইনক্রিমেন্ট টাইটেল লজিক (Note 1, Note 2, etc.)
-  // -------------------------------------------------------------
+  function updateClassBadge() {
+    if (state.course === "ALL") {
+      $("current-class-badge").textContent = `${state.dept} • Section ${state.sec}`;
+    } else {
+      $("current-class-badge").textContent = `${state.dept} • Sec ${state.sec} • ${state.course}`;
+    }
+  }
+
   function updateDefaultTitle() {
-    // যদি ব্যবহারকারী নিজে টাইটেল লিখে থাকে, তাহলে পরিবর্তন করবে না
     if (isTitleManuallyEdited) return;
 
     const dept = $("form-dept").value || state.dept;
@@ -121,7 +138,6 @@
     const date = $("form-date").value || state.selectedDate;
     const course = $("form-course").value;
 
-    // নির্বাচিত তারিখ, ডিপার্টমেন্ট, সেকশন এবং কোর্সের বিদ্যমান নোট সংখ্যা গণনা
     const count = state.notes.filter(n =>
       n.department.toLowerCase() === dept.toLowerCase() &&
       n.section.toLowerCase() === sec.toLowerCase() &&
@@ -129,11 +145,10 @@
       (!course || n.course.toLowerCase() === course.toLowerCase())
     ).length;
 
-    // পরবর্তী ক্রমিক সংখ্যা বসিয়ে দেওয়া (Note 1, Note 2, Note 3...)
     $("form-title").value = `Note ${count + 1}`;
   }
 
-  function getFilteredNotes() {
+  function getSectionApprovedNotes() {
     return state.notes.filter(n =>
       n.department.toLowerCase() === state.dept.toLowerCase() &&
       n.section.toLowerCase() === state.sec.toLowerCase() &&
@@ -141,15 +156,17 @@
     );
   }
 
-  // Render Calendar
-  function renderCalendar() {
+  // -------------------------------------------------------------
+  // BEHAVIOR 1: Render Full Monthly Calendar
+  // -------------------------------------------------------------
+  function renderFullCalendar() {
     const year = state.viewDate.getFullYear();
     const month = state.viewDate.getMonth();
     $("calendar-month-year").textContent = `${MONTH_NAMES[month]} ${year}`;
 
     const firstDayIndex = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const noteDates = new Set(getFilteredNotes().map(n => n.date));
+    const noteDates = new Set(getSectionApprovedNotes().map(n => n.date));
 
     let html = "";
     for (let i = 0; i < firstDayIndex; i++) {
@@ -172,13 +189,73 @@
     $("calendar-grid").innerHTML = html;
   }
 
-  // Render Notes
+  // -------------------------------------------------------------
+  // BEHAVIOR 2: Render Specific Course Dates (No Lecture Numbers)
+  // -------------------------------------------------------------
+  function renderCourseDatesView() {
+    const courseNotes = getSectionApprovedNotes().filter(n =>
+      n.course.toLowerCase() === state.course.toLowerCase()
+    );
+
+    // Extract unique dates sorted chronologically
+    const uniqueDates = [...new Set(courseNotes.map(n => n.date))].sort();
+
+    $("course-dates-title").textContent = state.course;
+    $("course-dates-count").textContent = `${uniqueDates.length} ${uniqueDates.length === 1 ? 'date' : 'dates'}`;
+
+    const container = $("course-dates-list");
+
+    if (uniqueDates.length === 0) {
+      container.innerHTML = `
+        <div class="notes-empty-state">
+          <p>No notes found for <strong>${state.course}</strong> yet.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Auto-select latest date if currently selected date is not in this course's dates
+    if (!uniqueDates.includes(state.selectedDate)) {
+      state.selectedDate = uniqueDates[uniqueDates.length - 1];
+    }
+
+    let html = "";
+    uniqueDates.forEach((dateStr) => {
+      const d = new Date(dateStr + "T00:00:00");
+      const weekday = !isNaN(d.getTime()) ? WEEKDAYS[d.getDay()] : "";
+      const isSelected = dateStr === state.selectedDate;
+      const noteCount = courseNotes.filter(n => n.date === dateStr).length;
+
+      // শুধুমাত্র তারিখ, বার এবং নোটের সংখ্যা দেখানো হচ্ছে
+      html += `
+        <button class="course-date-card ${isSelected ? 'is-selected' : ''}" data-date="${dateStr}">
+          <div class="course-date-info">
+            <span class="date-main">${formatDisplayDate(dateStr)}</span>
+            <span class="date-sub">${weekday}</span>
+          </div>
+          <span class="date-badge">${noteCount} ${noteCount === 1 ? 'note' : 'notes'}</span>
+        </button>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  // -------------------------------------------------------------
+  // Render Notes (Right Side)
+  // -------------------------------------------------------------
   function renderNotes() {
     $("selected-date-display").textContent = formatDisplayDate(state.selectedDate);
-    const dayNotes = getFilteredNotes().filter(n => n.date === state.selectedDate);
-    $("notes-count").textContent = `${dayNotes.length} notes`;
 
+    let dayNotes = getSectionApprovedNotes().filter(n => n.date === state.selectedDate);
+
+    if (state.course !== "ALL") {
+      dayNotes = dayNotes.filter(n => n.course.toLowerCase() === state.course.toLowerCase());
+    }
+
+    $("notes-count").textContent = `${dayNotes.length} notes`;
     const container = $("notes-list");
+
     if (!dayNotes.length) {
       container.innerHTML = `<div class="notes-empty-state"><p>No notes for this date.</p></div>`;
       return;
@@ -219,9 +296,20 @@
     container.innerHTML = html;
   }
 
+  // Master Render Function
   function render() {
-    $("current-class-badge").textContent = `${state.dept} • Section ${state.sec}`;
-    renderCalendar();
+    updateClassBadge();
+
+    if (state.course === "ALL") {
+      $("full-calendar-view").style.display = "block";
+      $("course-dates-view").style.display = "none";
+      renderFullCalendar();
+    } else {
+      $("full-calendar-view").style.display = "none";
+      $("course-dates-view").style.display = "block";
+      renderCourseDatesView();
+    }
+
     renderNotes();
   }
 
@@ -243,7 +331,7 @@
           status: String(n.status || "Approved").trim()
         }));
 
-        const matches = getFilteredNotes();
+        const matches = getSectionApprovedNotes();
         if (matches.length > 0 && !matches.some(n => n.date === state.selectedDate)) {
           const parts = matches[0].date.split("-");
           if (parts.length === 3) {
@@ -261,11 +349,11 @@
 
   // Event Listeners
   function bindEvents() {
-    // Dept & Section Change
     $("dept-select").onchange = e => {
       state.dept = e.target.value;
       updateDropdowns();
       state.sec = $("section-select").value;
+      state.course = $("course-select").value;
       render();
     };
 
@@ -274,15 +362,19 @@
       render();
     };
 
-    // Calendar Navigation
+    $("course-select").onchange = e => {
+      state.course = e.target.value;
+      render();
+    };
+
     $("cal-prev").onclick = () => {
       state.viewDate.setMonth(state.viewDate.getMonth() - 1);
-      renderCalendar();
+      render();
     };
 
     $("cal-next").onclick = () => {
       state.viewDate.setMonth(state.viewDate.getMonth() + 1);
-      renderCalendar();
+      render();
     };
 
     $("cal-today").onclick = () => {
@@ -292,9 +384,16 @@
       render();
     };
 
-    // Calendar Grid Click
     $("calendar-grid").onclick = e => {
       const btn = e.target.closest(".cal-day[data-date]");
+      if (btn) {
+        state.selectedDate = btn.dataset.date;
+        render();
+      }
+    };
+
+    $("course-dates-list").onclick = e => {
+      const btn = e.target.closest(".course-date-card[data-date]");
       if (btn) {
         state.selectedDate = btn.dataset.date;
         render();
@@ -307,7 +406,6 @@
     const submitBtn = $("submit-btn");
 
     $("open-add-modal-btn").onclick = () => {
-      // মোডাল খোলার সময় এডিট ফ্ল্যাগ রিসেট
       isTitleManuallyEdited = false;
 
       $("form-dept").value = state.dept;
@@ -315,7 +413,10 @@
       $("form-section").value = state.sec;
       $("form-date").value = state.selectedDate;
 
-      // ডিফল্ট টাইটেল তৈরি (Note 1 / Note 2...)
+      if (state.course !== "ALL") {
+        $("form-course").value = state.course;
+      }
+
       updateDefaultTitle();
 
       statusMsg.className = "form-status";
@@ -327,7 +428,6 @@
     $("close-modal").onclick = closeModal;
     $("cancel-modal").onclick = closeModal;
 
-    // ফর্মের ফিল্ড পরিবর্তনের সাথে সাথে টাইটেল সংখ্যা রি-ক্যালকুলেট
     $("form-dept").onchange = () => {
       updateFormCourses();
       updateDefaultTitle();
@@ -336,9 +436,7 @@
     $("form-date").onchange = updateDefaultTitle;
     $("form-course").onchange = updateDefaultTitle;
 
-    // ব্যবহারকারী নিজে টাইটেল বক্সে লিখলে তা চিহ্নিত রাখা
     $("form-title").oninput = () => {
-      // বক্স খালি না থাকলে ইউজার-এডিটেড হিসেবে গণ্য হবে
       isTitleManuallyEdited = $("form-title").value.trim().length > 0;
     };
 
@@ -389,7 +487,6 @@
     };
   }
 
-  // Initialization
   function init() {
     const deptCodes = cfg.departments.map(d => d.code);
     populateSelect($("dept-select"), deptCodes);
