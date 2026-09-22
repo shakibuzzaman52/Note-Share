@@ -61,18 +61,21 @@
       <div id="course-dates-list"></div>
     </section>
 
-    <hr>
-
-    <!-- notes display -->
-    <section>
-      <div>
-        <h3 id="selected-date-display"></h3>
-        <span id="notes-count"></span>
-      </div>
-      <div id="notes-list"></div>
-    </section>
-
   </main>
+
+  <!-- view notes modal (তারিখে ক্লিক করলে এটি পপআপ আকারে খুলবে) -->
+  <dialog id="notes-modal">
+    <div>
+      <h3 id="selected-date-display"></h3>
+      <span id="notes-count"></span>
+    </div>
+    
+    <div id="notes-list"></div>
+
+    <div style="margin-top: 15px;">
+      <button type="button" id="close-notes-modal">Close</button>
+    </div>
+  </dialog>
 
   <!-- add note modal -->
   <dialog id="add-modal">

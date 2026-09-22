@@ -191,7 +191,7 @@
     }).join("");
   }
 
-  // render notes list
+  // render notes list inside modal
   function renderNotes() {
     $("selected-date-display").textContent = `Date: ${formatDisplayDate(state.selectedDate)}`;
 
@@ -280,6 +280,13 @@
 
   // bind user actions
   function bindEvents() {
+    const notesModal = $("notes-modal");
+
+    // Close notes modal button
+    $("close-notes-modal").onclick = () => {
+      notesModal.close();
+    };
+
     $("dept-select").onchange = e => {
       state.dept = e.target.value;
       updateDropdowns();
@@ -315,19 +322,27 @@
       render();
     };
 
+    // ক্যালেন্ডারের ডেট বাটনে ক্লিক করলে পপআপ মোডালটি ওপেন হবে
     $("calendar-grid").onclick = e => {
       const btn = e.target.closest(".cal-day[data-date]:not(:disabled)");
       if (btn) {
         state.selectedDate = btn.dataset.date;
         render();
+        if (!notesModal.open) {
+          notesModal.showModal();
+        }
       }
     };
 
+    // কোর্স ডেটস লিস্টে ক্লিক করলে পপআপ মোডালটি ওপেন হবে
     $("course-dates-list").onclick = e => {
       const btn = e.target.closest(".course-date-btn[data-date]");
       if (btn) {
         state.selectedDate = btn.dataset.date;
         render();
+        if (!notesModal.open) {
+          notesModal.showModal();
+        }
       }
     };
 
