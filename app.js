@@ -1,15 +1,14 @@
-/**
- * ClassNotes — Ultra Simple Client Logic (No useless dropdowns)
- */
 (function () {
   "use strict";
 
+  // load config
   const cfg = window.APP_CONFIG || { googleAppsScriptUrl: "", departments: [] };
   const API_URL = cfg.googleAppsScriptUrl;
 
   const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+  // state
   const now = new Date();
   const state = {
     dept: cfg.departments[0]?.code || "CSE",
@@ -24,8 +23,10 @@
   let isNoteSubmitting = false;
   let isReportSubmitting = false;
 
+  // dom helper
   const $ = id => document.getElementById(id);
 
+  // date helpers
   function toDateKey(d) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
@@ -36,6 +37,7 @@
     return `${parseInt(d, 10)} ${MONTHS[parseInt(m, 10) - 1]} ${y}`;
   }
 
+  // send data to google sheet
   async function sendData(payload) {
     return fetch(API_URL, {
       method: "POST",
@@ -45,6 +47,7 @@
     });
   }
 
+  // select helpers
   function populateSelect(selectEl, items, addAll = false) {
     selectEl.innerHTML = (addAll ? `<option value="ALL">All Courses</option>` : "") +
       items.map(item => `<option value="${item}">${item}</option>`).join("");
@@ -79,10 +82,11 @@
 
   function updateClassBadge() {
     $("current-class-badge").textContent = state.course === "ALL" 
-      ? `${state.dept} • Section ${state.sec}` 
-      : `${state.dept} • Sec ${state.sec} • ${state.course}`;
+      ? `[ ${state.dept} | Section: ${state.sec} ]` 
+      : `[ ${state.dept} | Sec: ${state.sec} | Course: ${state.course} ]`;
   }
 
+  // auto fill note title
   function updateDefaultTitle() {
     if (isTitleManuallyEdited) return;
     const course = $("form-course").value;
@@ -96,14 +100,16 @@
     $("form-title").value = `Note ${count + 1}`;
   }
 
+  // get filtered notes
   function getSectionApprovedNotes() {
     return state.notes.filter(n =>
       n.department === state.dept &&
       n.section === state.sec &&
-      n.status.toLowerCase() === "approved"
+      (n.status || "").toLowerCase() === "approved"
     );
   }
 
+  // render monthly calendar
   function renderFullCalendar() {
     const year = state.viewDate.getFullYear();
     const month = state.viewDate.getMonth();
@@ -114,35 +120,55 @@
     const noteDates = new Set(getSectionApprovedNotes().map(n => n.date));
     const todayKey = toDateKey(new Date());
 
-    let html = "";
-    for (let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
+    let html = "<tr>";
+    let dayCol = 0;
+
+    for (let i = 0; i < firstDay; i++) {
+      html += "<td></td>";
+      dayCol++;
+    }
 
     for (let d = 1; d <= totalDays; d++) {
+      if (dayCol === 7) {
+        html += "</tr><tr>";
+        dayCol = 0;
+      }
+
       const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
       const isFuture = dateKey > todayKey;
       const isSelected = dateKey === state.selectedDate;
+      const hasNotes = noteDates.has(dateKey);
 
       html += `
-        <button class="cal-day ${isSelected ? 'is-selected' : ''} ${isFuture ? 'is-future' : ''}" 
-                data-date="${dateKey}" ${isFuture ? 'disabled' : ''}>
-          <span>${d}</span>
-          ${noteDates.has(dateKey) ? '<span class="cal-dot"></span>' : ''}
-        </button>
+        <td>
+          <button type="button" class="cal-day" data-date="${dateKey}" ${isFuture ? "disabled" : ""}>
+            ${isSelected ? `[${d}]` : d} ${hasNotes ? "•" : ""}
+          </button>
+        </td>
       `;
+      dayCol++;
     }
+
+    while (dayCol < 7 && dayCol > 0) {
+      html += "<td></td>";
+      dayCol++;
+    }
+    html += "</tr>";
+
     $("calendar-grid").innerHTML = html;
   }
 
+  // render dates for specific course
   function renderCourseDatesView() {
     const courseNotes = getSectionApprovedNotes().filter(n => n.course === state.course);
     const uniqueDates = [...new Set(courseNotes.map(n => n.date))].sort();
 
-    $("course-dates-title").textContent = state.course;
-    $("course-dates-count").textContent = `${uniqueDates.length} dates`;
+    $("course-dates-title").textContent = `Classes: ${state.course}`;
+    $("course-dates-count").textContent = `(${uniqueDates.length} dates found)`;
 
     const container = $("course-dates-list");
     if (!uniqueDates.length) {
-      container.innerHTML = `<div class="notes-empty-state"><p>No notes for <strong>${state.course}</strong> yet.</p></div>`;
+      container.innerHTML = `<p>No notes for ${state.course} yet.</p>`;
       return;
     }
 
@@ -152,39 +178,40 @@
 
     container.innerHTML = uniqueDates.map(dateStr => {
       const d = new Date(dateStr + "T00:00:00");
-      const noteCount = courseNotes.filter(n => n.date === dateStr).length;
+      const count = courseNotes.filter(n => n.date === dateStr).length;
+      const isSelected = dateStr === state.selectedDate;
+
       return `
-        <button class="course-date-card ${dateStr === state.selectedDate ? 'is-selected' : ''}" data-date="${dateStr}">
-          <div class="course-date-info">
-            <span class="date-main">${formatDisplayDate(dateStr)}</span>
-            <span class="date-sub">${DAYS[d.getDay()] || ""}</span>
-          </div>
-          <span class="date-badge">${noteCount} ${noteCount === 1 ? 'note' : 'notes'}</span>
-        </button>
+        <div>
+          <button type="button" class="course-date-btn" data-date="${dateStr}">
+            ${isSelected ? ">> " : ""}${formatDisplayDate(dateStr)} (${DAYS[d.getDay()] || ""}) - ${count} note(s)
+          </button>
+        </div>
       `;
     }).join("");
   }
 
+  // render notes list
   function renderNotes() {
-    $("selected-date-display").textContent = formatDisplayDate(state.selectedDate);
+    $("selected-date-display").textContent = `Date: ${formatDisplayDate(state.selectedDate)}`;
 
     let dayNotes = getSectionApprovedNotes().filter(n => n.date === state.selectedDate);
     if (state.course !== "ALL") {
       dayNotes = dayNotes.filter(n => n.course === state.course);
     }
 
-    $("notes-count").textContent = `${dayNotes.length} notes`;
+    $("notes-count").textContent = `Total: ${dayNotes.length} notes`;
     const container = $("notes-list");
 
     if (!dayNotes.length) {
-      container.innerHTML = `<div class="notes-empty-state"><p>No notes for this date.</p></div>`;
+      container.innerHTML = "<p>No notes for this date.</p>";
       return;
     }
 
     const grouped = {};
     dayNotes.forEach(n => {
-      const c = n.course || "Course Notes";
-      const t = n.topic || "Class Topic";
+      const c = n.course || "General";
+      const t = n.topic || "Class Notes";
       if (!grouped[c]) grouped[c] = {};
       if (!grouped[c][t]) grouped[c][t] = [];
       grouped[c][t].push(n);
@@ -192,52 +219,36 @@
 
     let html = "";
     for (const course in grouped) {
-      html += `
-        <div class="course-group">
-          <h4 class="course-title">${course}</h4>
-          <div class="topics-container">
-            ${Object.entries(grouped[course]).map(([topic, items]) => `
-              <div>
-                <div class="topic-title">&rarr; ${topic}</div>
-                <div>
-                  ${items.map(item => {
-                    const isReported = Number(item.reportCount || 0) >= 3;
-                    const itemTitle = item.title || "View Note";
-                    const itemLink = item.link || "";
+      html += `<fieldset><legend><strong>${course}</strong></legend>`;
+      for (const topic in grouped[course]) {
+        html += `<h4>Topic: ${topic}</h4><ul>`;
+        grouped[course][topic].forEach(item => {
+          const isReported = Number(item.reportCount || 0) >= 3;
+          const title = item.title || "View Note";
+          const link = item.link || "";
 
-                    return `
-                      <div class="note-item-row ${isReported ? 'has-issue' : ''}">
-                        <a href="${itemLink || 'javascript:void(0)'}" 
-                           ${itemLink ? 'target="_blank" rel="noopener noreferrer"' : ''} 
-                           class="note-link-item">
-                          ${itemTitle} ↗
-                        </a>
-                        ${isReported ? `<span class="badge-reported">⚠️ Permission Issue</span>` : ''}
-                        ${itemLink ? `
-                          <button type="button" class="btn-report" title="Report Issue" 
-                                  data-row="${item.row}"
-                                  data-title="${itemTitle}" 
-                                  data-course="${course}">
-                            ⚑
-                          </button>` : ''}
-                      </div>
-                    `;
-                  }).join("")}
-                </div>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      `;
+          html += `
+            <li>
+              ${link ? `<a href="${link}" target="_blank" rel="noopener">${title}</a>` : title}
+              ${isReported ? "<strong>[Issue Reported]</strong>" : ""}
+              ${link ? `<button type="button" class="btn-report" data-row="${item.row}" data-title="${title}" data-course="${course}">Report</button>` : ""}
+            </li>
+          `;
+        });
+        html += "</ul>";
+      }
+      html += "</fieldset>";
     }
     container.innerHTML = html;
   }
 
+  // main render
   function render() {
     updateClassBadge();
     const isAll = state.course === "ALL";
-    $("full-calendar-view").style.display = isAll ? "block" : "none";
-    $("course-dates-view").style.display = isAll ? "none" : "block";
+
+    $("full-calendar-view").hidden = !isAll;
+    $("course-dates-view").hidden = isAll;
 
     if (isAll) renderFullCalendar();
     else renderCourseDatesView();
@@ -245,6 +256,7 @@
     renderNotes();
   }
 
+  // fetch notes from sheet
   async function fetchNotes() {
     if (!API_URL) return;
     try {
@@ -262,10 +274,11 @@
         render();
       }
     } catch (e) {
-      console.warn("Fetch error:", e);
+      console.warn("fetch error:", e);
     }
   }
 
+  // bind user actions
   function bindEvents() {
     $("dept-select").onchange = e => {
       state.dept = e.target.value;
@@ -285,8 +298,16 @@
       render();
     };
 
-    $("cal-prev").onclick = () => { state.viewDate.setMonth(state.viewDate.getMonth() - 1); render(); };
-    $("cal-next").onclick = () => { state.viewDate.setMonth(state.viewDate.getMonth() + 1); render(); };
+    $("cal-prev").onclick = () => {
+      state.viewDate.setMonth(state.viewDate.getMonth() - 1);
+      render();
+    };
+
+    $("cal-next").onclick = () => {
+      state.viewDate.setMonth(state.viewDate.getMonth() + 1);
+      render();
+    };
+
     $("cal-today").onclick = () => {
       const d = new Date();
       state.viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
@@ -296,16 +317,23 @@
 
     $("calendar-grid").onclick = e => {
       const btn = e.target.closest(".cal-day[data-date]:not(:disabled)");
-      if (btn) { state.selectedDate = btn.dataset.date; render(); }
+      if (btn) {
+        state.selectedDate = btn.dataset.date;
+        render();
+      }
     };
 
     $("course-dates-list").onclick = e => {
-      const btn = e.target.closest(".course-date-card[data-date]");
-      if (btn) { state.selectedDate = btn.dataset.date; render(); }
+      const btn = e.target.closest(".course-date-btn[data-date]");
+      if (btn) {
+        state.selectedDate = btn.dataset.date;
+        render();
+      }
     };
 
-    // Add Note Modal
+    // add note dialog
     const addModal = $("add-modal");
+
     $("open-add-modal-btn").onclick = () => {
       isTitleManuallyEdited = false;
       const todayKey = toDateKey(new Date());
@@ -316,16 +344,16 @@
       $("form-date").value = state.selectedDate > todayKey ? todayKey : state.selectedDate;
       if (state.course !== "ALL") $("form-course").value = state.course;
       updateDefaultTitle();
-      $("form-status").style.display = "none";
-      addModal.classList.add("is-active");
+      $("form-status").hidden = true;
+      addModal.showModal();
     };
 
-    $("close-modal").onclick = $("cancel-modal").onclick = () => addModal.classList.remove("is-active");
+    $("cancel-modal").onclick = () => addModal.close();
     $("form-dept").onchange = () => { updateFormCourses(); updateDefaultTitle(); };
     $("form-section").onchange = $("form-date").onchange = $("form-course").onchange = updateDefaultTitle;
     $("form-title").oninput = () => { isTitleManuallyEdited = $("form-title").value.trim().length > 0; };
 
-    // Note Submit
+    // submit new note
     $("note-form").onsubmit = async e => {
       e.preventDefault();
       if (isNoteSubmitting) return;
@@ -334,12 +362,11 @@
       const submitBtn = $("submit-btn");
       const originalText = submitBtn.textContent;
       submitBtn.disabled = true;
-      submitBtn.textContent = "Submitting... ⏳";
+      submitBtn.textContent = "Submitting...";
 
       const status = $("form-status");
-      status.style.display = "block";
-      status.className = "form-status info";
-      status.textContent = "Submitting note to Google Sheets...";
+      status.hidden = false;
+      status.textContent = "Submitting note...";
 
       try {
         await sendData({
@@ -353,41 +380,32 @@
           status: "Pending"
         });
 
-        submitBtn.textContent = "✓ Submitted!";
-        status.className = "form-status success";
-        status.textContent = "✓ Note submitted with Pending status!";
-
+        status.textContent = "Submitted successfully!";
         setTimeout(() => {
-          addModal.classList.remove("is-active");
+          addModal.close();
           $("note-form").reset();
           submitBtn.disabled = false;
           submitBtn.textContent = originalText;
-          status.style.display = "none";
+          status.hidden = true;
           isNoteSubmitting = false;
           isTitleManuallyEdited = false;
-        }, 1500);
+        }, 1200);
 
       } catch (err) {
-        submitBtn.textContent = "✓ Submitted!";
-        status.className = "form-status success";
-        status.textContent = "✓ Submitted to Sheet!";
-        setTimeout(() => {
-          addModal.classList.remove("is-active");
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
-          isNoteSubmitting = false;
-        }, 1500);
+        status.textContent = "Submission failed.";
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        isNoteSubmitting = false;
       }
     };
 
-    // Report Modal
+    // report note dialog
     const reportModal = $("report-modal");
     const reportStatus = $("report-status");
     const submitReportBtn = $("submit-report-btn");
 
-    $("close-report-modal").onclick = $("cancel-report-modal").onclick = () => reportModal.classList.remove("is-active");
+    $("cancel-report-modal").onclick = () => reportModal.close();
 
-    // ⚑ ক্লিক: মোডাল ওপেন
     $("notes-list").onclick = e => {
       const btn = e.target.closest(".btn-report");
       if (!btn) return;
@@ -395,16 +413,16 @@
       isReportSubmitting = false;
       submitReportBtn.disabled = false;
       submitReportBtn.textContent = "Report Link";
-      reportStatus.style.display = "none";
+      reportStatus.hidden = true;
 
       $("report-target-title").textContent = btn.dataset.title;
       $("report-target-meta").textContent = `${btn.dataset.course} • ${formatDisplayDate(state.selectedDate)}`;
       $("report-form").dataset.targetRow = btn.dataset.row;
 
-      reportModal.classList.add("is-active");
+      reportModal.showModal();
     };
 
-    // Report Submit (সরাসরি ১ ক্লিকে জমা)
+    // submit report
     $("report-form").onsubmit = async e => {
       e.preventDefault();
       if (isReportSubmitting) return;
@@ -414,19 +432,17 @@
       const originalText = submitReportBtn.textContent;
 
       if (localStorage.getItem(key)) {
-        reportStatus.style.display = "block";
-        reportStatus.className = "form-status info";
+        reportStatus.hidden = false;
         reportStatus.textContent = "You have already reported this note.";
-        setTimeout(() => reportModal.classList.remove("is-active"), 1500);
+        setTimeout(() => reportModal.close(), 1200);
         return;
       }
 
       isReportSubmitting = true;
       submitReportBtn.disabled = true;
-      submitReportBtn.textContent = "Reporting... ⏳";
-      reportStatus.style.display = "block";
-      reportStatus.className = "form-status info";
-      reportStatus.textContent = "Logging report...";
+      submitReportBtn.textContent = "Reporting...";
+      reportStatus.hidden = false;
+      reportStatus.textContent = "Sending report...";
 
       try {
         await sendData({
@@ -435,33 +451,26 @@
         });
 
         localStorage.setItem(key, "true");
-
-        submitReportBtn.textContent = "✓ Reported!";
-        reportStatus.className = "form-status success";
-        reportStatus.textContent = "✓ Report recorded! (Shows warning if 3 people report)";
+        reportStatus.textContent = "Report recorded!";
 
         setTimeout(() => {
-          reportModal.classList.remove("is-active");
+          reportModal.close();
           submitReportBtn.disabled = false;
           submitReportBtn.textContent = originalText;
-          reportStatus.style.display = "none";
+          reportStatus.hidden = true;
           isReportSubmitting = false;
-        }, 1500);
+        }, 1200);
 
       } catch (err) {
-        submitReportBtn.textContent = "✓ Reported!";
-        reportStatus.className = "form-status success";
-        reportStatus.textContent = "✓ Report recorded!";
-        setTimeout(() => {
-          reportModal.classList.remove("is-active");
-          submitReportBtn.disabled = false;
-          submitReportBtn.textContent = originalText;
-          isReportSubmitting = false;
-        }, 1500);
+        reportStatus.textContent = "Report failed.";
+        submitReportBtn.disabled = false;
+        submitReportBtn.textContent = originalText;
+        isReportSubmitting = false;
       }
     };
   }
 
+  // init
   function init() {
     populateSelect($("dept-select"), cfg.departments.map(d => d.code));
     populateSelect($("form-dept"), cfg.departments.map(d => d.code));

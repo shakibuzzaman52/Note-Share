@@ -1,12 +1,7 @@
-/**
- * ClassNotes - Academic Configuration
- */
+// app configuration
 window.APP_CONFIG = {
   siteTitle: "ClassNotes",
-
-  // Google Apps Script Web App Endpoint
-  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbz_6sLJw3MVzJ5qf37lIF9exuI2tzjInvfc1WO0E-T0FUrS_D9pifIyn3oUgNnMBuiK/exec",
-
+  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbw3GwQwAXsHmIzFD-mFXUOLGo868NDqFosp8MMEgcb9Q8Ea3sh-ssn95dq0Vb7z2xnn/exec",
   departments: [
     {
       code: "CSE",

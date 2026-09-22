@@ -1,15 +1,26 @@
-/**
- * ClassNotes — Ultra Simple Row-Based Backend (Code.gs)
- */
+// helper: get notes sheet
+function getSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  return ss.getSheetByName("Notes") || ss.getActiveSheet();
+}
 
+// helper: send json output
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// handle get requests
 function doGet(e) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName("Notes") || ss.getActiveSheet();
+    const sheet = getSheet();
     const data = sheet.getDataRange().getValues();
 
-    if (data.length <= 1) return jsonResponse({ success: true, count: 0, notes: [] });
+    if (data.length <= 1) {
+      return jsonResponse({ success: true, count: 0, notes: [] });
+    }
 
+    // find column indexes
     const headers = data[0].map(h => String(h).trim().toLowerCase());
     const findCol = names => headers.findIndex(h => names.some(n => h.includes(n)));
 
@@ -23,24 +34,26 @@ function doGet(e) {
     const statusIdx = findCol(["status"]);
     const reportIdx = findCol(["report"]);
 
-    const tz = ss.getSpreadsheetTimeZone() || "GMT+6";
+    const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone() || "GMT+6";
     const notes = [];
 
+    // loop rows
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       const status = String(row[statusIdx] || "").trim().toLowerCase();
 
       if (status === "approved") {
-        let rawDate = row[dateIdx];
+        const rawDate = row[dateIdx];
         let dateStr = "";
 
-        if (rawDate) {
-          const d = new Date(rawDate);
-          dateStr = !isNaN(d.getTime()) ? Utilities.formatDate(d, tz, "yyyy-MM-dd") : String(rawDate).trim();
+        if (rawDate instanceof Date) {
+          dateStr = Utilities.formatDate(rawDate, tz, "yyyy-MM-dd");
+        } else if (rawDate) {
+          dateStr = String(rawDate).trim().split("T")[0];
         }
 
         notes.push({
-          row:         i + 1, // শিটের হুবহু লাইন নম্বর (Row ID)
+          row: i + 1,
           department:  deptIdx !== -1 ? String(row[deptIdx] || "").trim() : "",
           section:     secIdx !== -1 ? String(row[secIdx] || "").trim() : "",
           date:        dateStr,
@@ -60,28 +73,36 @@ function doGet(e) {
   }
 }
 
+// handle post requests
 function doPost(e) {
+  // lock to prevent race condition
+  const lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
   try {
     let payload = null;
     try {
       payload = e.postData && e.postData.contents ? JSON.parse(e.postData.contents) : e.parameter;
-    } catch(p) {
+    } catch (p) {
       payload = e.parameter;
     }
 
-    if (!payload) return jsonResponse({ success: false, error: "Empty payload" });
+    if (!payload) {
+      return jsonResponse({ success: false, error: "Empty payload" });
+    }
 
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName("Notes") || ss.getActiveSheet();
-    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(h => String(h).trim().toLowerCase());
-    
+    const sheet = getSheet();
+    const lastCol = Math.max(sheet.getLastColumn(), 1);
+    const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(h => String(h).trim().toLowerCase());
+
+    // ensure report column exists
     let reportIdx = headers.findIndex(h => h.includes("report"));
     if (reportIdx === -1) {
       sheet.getRange(1, headers.length + 1).setValue("ReportCount");
       reportIdx = headers.length;
     }
 
-    // ১. অতি সহজ রিপোর্ট: সরাসরি লাইন নম্বরে গিয়ে ১ বাড়িয়ে দেওয়া
+    // action: report broken link
     if (payload.type === "report") {
       const rowNum = Number(payload.row);
       if (rowNum >= 2 && rowNum <= sheet.getLastRow()) {
@@ -93,9 +114,9 @@ function doPost(e) {
       return jsonResponse({ success: false, error: "Invalid row" });
     }
 
-    // ২. নতুন নোট সাবমিশন
+    // action: submit new note
     if (!payload.department || !payload.section || !payload.date || !payload.course || !payload.title) {
-      return jsonResponse({ success: false, error: "Missing fields" });
+      return jsonResponse({ success: false, error: "Missing required fields" });
     }
 
     sheet.appendRow([
@@ -107,17 +128,15 @@ function doPost(e) {
       String(payload.title).trim(),
       String(payload.link || "").trim(),
       "Pending",
-      0, // শুরুতে ReportCount = 0
+      0,
       new Date()
     ]);
 
     return jsonResponse({ success: true, message: "Note submitted with Pending status." });
+
   } catch (err) {
     return jsonResponse({ success: false, error: err.toString() });
+  } finally {
+    lock.releaseLock();
   }
-}
-
-function jsonResponse(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
 }

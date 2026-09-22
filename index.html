@@ -3,176 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClassNotes — Simple Academic Note Sharing</title>
-  <link rel="stylesheet" href="style.css">
+  <title>ClassNotes</title>
 </head>
 <body>
 
-  <!-- Site Header -->
-  <header class="site-header">
-    <div class="header-container">
-      <a href="./" class="brand-link">
-        <span class="brand-icon">📚</span> ClassNotes
-      </a>
-      <div class="header-actions">
-        <span class="sheet-status">
-          <span class="sheet-dot"></span> Google Sheet Synced
-        </span>
-        <button id="open-add-modal-btn" class="btn btn-primary">+ Add Note</button>
-      </div>
-    </div>
+  <!-- header -->
+  <header>
+    <h1>ClassNotes</h1>
+    <span>Google Sheet Synced</span>
+    <button id="open-add-modal-btn" type="button">+ Add Note</button>
   </header>
 
-  <!-- Main Container -->
-  <main class="main-container">
+  <hr>
+
+  <!-- filters -->
+  <section>
+    <label for="dept-select">Department:</label>
+    <select id="dept-select"></select>
+
+    <label for="section-select">Section:</label>
+    <select id="section-select"></select>
+
+    <label for="course-select">Course:</label>
+    <select id="course-select"></select>
+
+    <strong id="current-class-badge"></strong>
+  </section>
+
+  <hr>
+
+  <!-- main functional areas -->
+  <main>
     
-    <!-- Filter Bar -->
-    <section class="filters-bar">
-      <div class="filter-group">
-        <label for="dept-select">Department:</label>
-        <select id="dept-select"></select>
+    <!-- calendar view (for ALL courses) -->
+    <section id="full-calendar-view">
+      <div>
+        <h2 id="calendar-month-year"></h2>
+        <button id="cal-prev" type="button">&lt; Prev</button>
+        <button id="cal-today" type="button">Today</button>
+        <button id="cal-next" type="button">Next &gt;</button>
       </div>
-      <div class="filter-group">
-        <label for="section-select">Section:</label>
-        <select id="section-select"></select>
-      </div>
-      <div class="filter-group">
-        <label for="course-select">Course:</label>
-        <select id="course-select"></select>
-      </div>
-      <span id="current-class-badge" class="class-badge"></span>
+
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+          </tr>
+        </thead>
+        <tbody id="calendar-grid"></tbody>
+      </table>
+      <p><small>* Days with notes show a bullet (•)</small></p>
     </section>
 
-    <!-- Content Grid -->
-    <div class="content-grid">
-      
-      <!-- Left Card: Dual View -->
-      <section class="card calendar-card">
-        
-        <!-- 1. Full Monthly Calendar View -->
-        <div id="full-calendar-view">
-          <div class="calendar-header">
-            <h2 id="calendar-month-year" class="month-year-title"></h2>
-            <div class="calendar-nav">
-              <button id="cal-prev" class="btn-icon" aria-label="Previous Month">&lt;</button>
-              <button id="cal-today" class="btn-subtle-sm">Today</button>
-              <button id="cal-next" class="btn-icon" aria-label="Next Month">&gt;</button>
-            </div>
-          </div>
-          <div class="calendar-weekdays">
-            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-          </div>
-          <div id="calendar-grid" class="calendar-grid"></div>
-          <div class="calendar-footer">
-            <span class="cal-dot-legend"></span>
-            <span>Dates with notes</span>
-          </div>
-        </div>
+    <!-- dates list (for a specific course) -->
+    <section id="course-dates-view" hidden>
+      <h3 id="course-dates-title"></h3>
+      <span id="course-dates-count"></span>
+      <div id="course-dates-list"></div>
+    </section>
 
-        <!-- 2. Specific Course Dates View -->
-        <div id="course-dates-view" style="display: none;">
-          <div class="course-dates-header">
-            <div>
-              <small class="notes-label">CLASS DATES</small>
-              <h3 id="course-dates-title" class="month-year-title">Course Classes</h3>
-            </div>
-            <span id="course-dates-count" class="notes-count-badge">0 dates</span>
-          </div>
-          <div id="course-dates-list" class="course-dates-list"></div>
-        </div>
+    <hr>
 
-      </section>
+    <!-- notes display -->
+    <section>
+      <div>
+        <h3 id="selected-date-display"></h3>
+        <span id="notes-count"></span>
+      </div>
+      <div id="notes-list"></div>
+    </section>
 
-      <!-- Right Card: Notes Display -->
-      <section class="card notes-card">
-        <div class="notes-header">
-          <div>
-            <small class="notes-label">SELECTED DATE</small>
-            <h3 id="selected-date-display" class="selected-date-title"></h3>
-          </div>
-          <span id="notes-count" class="notes-count-badge">0 notes</span>
-        </div>
-        <div id="notes-list" class="notes-list-container"></div>
-      </section>
-
-    </div>
   </main>
 
-  <!-- Add Note Modal -->
-  <div id="add-modal" class="modal-backdrop" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Add New Note</h3>
-        <button id="close-modal" class="btn-close" aria-label="Close modal">&times;</button>
+  <!-- add note modal -->
+  <dialog id="add-modal">
+    <form id="note-form" method="dialog">
+      <h3>Add New Note</h3>
+
+      <p>
+        <label for="form-dept">Department:</label><br>
+        <select id="form-dept" required></select>
+      </p>
+      <p>
+        <label for="form-section">Section:</label><br>
+        <select id="form-section" required></select>
+      </p>
+      <p>
+        <label for="form-date">Date:</label><br>
+        <input type="date" id="form-date" required>
+      </p>
+      <p>
+        <label for="form-course">Course:</label><br>
+        <select id="form-course" required></select>
+      </p>
+      <p>
+        <label for="form-topic">Topic:</label><br>
+        <input type="text" id="form-topic" placeholder="e.g. Binary Search Trees" required>
+      </p>
+      <p>
+        <label for="form-title">Title:</label><br>
+        <input type="text" id="form-title" placeholder="e.g. Note 1" required>
+      </p>
+      <p>
+        <label for="form-link">Resource Link:</label><br>
+        <input type="url" id="form-link" placeholder="https://drive.google.com/...">
+      </p>
+
+      <p id="form-status" hidden></p>
+
+      <div>
+        <button type="button" id="cancel-modal">Cancel</button>
+        <button type="submit" id="submit-btn">Submit Note</button>
       </div>
-      <form id="note-form" class="modal-form">
-        <label class="form-group">
-          <span>Department</span>
-          <select id="form-dept" required></select>
-        </label>
-        <label class="form-group">
-          <span>Section</span>
-          <select id="form-section" required></select>
-        </label>
-        <label class="form-group">
-          <span>Date</span>
-          <input type="date" id="form-date" required>
-        </label>
-        <label class="form-group">
-          <span>Course</span>
-          <select id="form-course" required></select>
-        </label>
-        <label class="form-group">
-          <span>Topic</span>
-          <input type="text" id="form-topic" placeholder="e.g. Binary Search Trees" required>
-        </label>
-        <label class="form-group">
-          <span>Title</span>
-          <input type="text" id="form-title" placeholder="e.g. Note 1 or Lecture Slides" required>
-        </label>
-        <label class="form-group">
-          <span>Resource Link</span>
-          <input type="url" id="form-link" placeholder="https://drive.google.com/...">
-        </label>
-        
-        <div id="form-status" class="form-status"></div>
+    </form>
+  </dialog>
 
-        <div class="modal-actions">
-          <button type="button" id="cancel-modal" class="btn btn-secondary">Cancel</button>
-          <button type="submit" id="submit-btn" class="btn btn-primary">Submit Note</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <!-- report modal -->
+  <dialog id="report-modal">
+    <form id="report-form" method="dialog">
+      <h3>Report Note Link</h3>
+      <p>
+        <strong>Note:</strong> <span id="report-target-title"></span><br>
+        <span id="report-target-meta"></span>
+      </p>
+      <p>Having trouble opening this link? Report it to alert the class.</p>
 
-  <!-- Report Issue Modal (ড্রপডাউন ছাড়া একদম সহজ) -->
-  <div id="report-modal" class="modal-backdrop" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Report Note Link</h3>
-        <button id="close-report-modal" class="btn-close" aria-label="Close modal">&times;</button>
+      <p id="report-status" hidden></p>
+
+      <div>
+        <button type="button" id="cancel-report-modal">Cancel</button>
+        <button type="submit" id="submit-report-btn">Report Link</button>
       </div>
-      <form id="report-form" class="modal-form">
-        <div class="report-meta-box">
-          <div><strong>Note:</strong> <span id="report-target-title"></span></div>
-          <div class="report-meta-sub"><span id="report-target-meta"></span></div>
-        </div>
+    </form>
+  </dialog>
 
-        <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0;">
-          Are you having trouble opening this link (Access Denied or Broken)? Report it to alert the class.
-        </p>
-
-        <div id="report-status" class="form-status"></div>
-
-        <div class="modal-actions">
-          <button type="button" id="cancel-report-modal" class="btn btn-secondary">Cancel</button>
-          <button type="submit" id="submit-report-btn" class="btn btn-primary">Report Link</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Scripts -->
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
