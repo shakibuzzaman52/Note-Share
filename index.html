@@ -4,251 +4,318 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ClassNotes — Organized Lecture Notes</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link href="https://fonts.cdnfonts.com/css/google-sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    @font-face {
-      font-family: 'Google Sans 18pt';
-      src: local('Google Sans 18pt'), local('Google Sans'),
-           url('https://fonts.cdnfonts.com/s/14884/GoogleSans-Regular.woff') format('woff');
-      font-weight: 400;
-    }
-    @font-face {
-      font-family: 'Google Sans 18pt';
-      src: local('Google Sans 18pt Medium'), local('Google Sans Medium'),
-           url('https://fonts.cdnfonts.com/s/14884/GoogleSans-Medium.woff') format('woff');
-      font-weight: 500;
-    }
-    @font-face {
-      font-family: 'Google Sans 18pt';
-      src: local('Google Sans 18pt Bold'), local('Google Sans Bold'),
-           url('https://fonts.cdnfonts.com/s/14884/GoogleSans-Bold.woff') format('woff');
-      font-weight: 600 700;
-    }
-
     :root {
-      --bg-cream: #F4EFE6;
+      --bg-canvas: #F4EFE6;
       --bg-surface: #FFFFFF;
-      --bg-surface-subtle: #EAE4D9;
-      --bg-surface-hover: #E2DBD0;
+      --bg-subtle: #EAE4D9;
+      --bg-hover: #E2DBD0;
       --bg-pill: #ECE6DB;
-      --bg-pink-pill: #F8C6EC;
-      
+      --bg-accent-soft: #F8C6EC;
+      --bg-accent-soft-hover: #F5B5E7;
+      --bg-muted: #FAF8F5;
+
       --border-subtle: #E5DFD3;
-      --border-grid: #ECE6DC;
-      
+      --border-table: #ECE6DC;
+
       --text-main: #181716;
       --text-muted: #3C3833;
       --text-subtle: #8A847A;
-      
-      --accent-blue: #0A37F5;
-      --accent-blue-hover: #072CC4;
-      --accent-dark: #181716;
-      --accent-dark-hover: #2B2A28;
-      
+      --text-disabled: #B8B0A5;
+
+      --brand-primary: #0A37F5;
+      --brand-primary-hover: #072CC4;
+      --brand-dark: #181716;
+      --brand-dark-hover: #2B2A28;
+      --brand-danger: #DC2626;
+      --brand-danger-hover: #B91C1C;
+      --brand-success: #16A34A;
+
       --radius-full: 9999px;
-      --radius-2xl: 20px;
-      --radius-xl: 14px;
-      --radius-lg: 10px;
-      
-      --font-serif: 'Instrument Serif', serif;
-      --font-sans: 'Google Sans 18pt', 'Google Sans', sans-serif;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+
+      --font-display: 'Instrument Serif', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      border: none;
-      outline: none;
+      border: 0;
+      outline: 0;
     }
 
     body {
-      background-color: var(--bg-cream);
+      background-color: var(--bg-canvas);
       color: var(--text-main);
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.5;
       min-height: 100vh;
-      padding-bottom: 5rem;
+      padding-bottom: 4rem;
     }
 
-    header {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.5rem clamp(1.5rem, 5vw, 4.5rem);
-      background: var(--bg-cream);
-    }
-
-    header h1 {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-weight: 400;
-      font-size: 1.95rem;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    header h1::after {
-      content: '®';
-      font-size: 0.8rem;
-      vertical-align: super;
-      font-style: normal;
-      font-family: var(--font-sans);
-      color: var(--text-subtle);
-      margin-left: 2px;
-      font-weight: 600;
-    }
-
-    #open-add-modal-btn {
-      background: var(--accent-blue);
-      color: #FFFFFF;
-      font-family: var(--font-sans);
-      font-size: 0.92rem;
-      font-weight: 600;
-      padding: 0.75rem 1.65rem;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-      white-space: nowrap;
-    }
-
-    #open-add-modal-btn:hover {
-      background: var(--accent-blue-hover);
-    }
-
-    .app-container {
+    .shell {
       max-width: 1240px;
       width: 100%;
       margin: 0 auto;
-      padding: 0 clamp(1.25rem, 3.5vw, 3rem);
+      padding: 0 clamp(1rem, 4vw, 3rem);
     }
 
-    .hero-editorial {
-      padding: 4.25rem 1.25rem 2.5rem;
-      text-align: center;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .hero-editorial h2 {
-      font-family: var(--font-serif);
-      font-size: clamp(2.6rem, 4.4vw, 4.1rem);
-      font-weight: 400;
-      font-style: normal;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      margin-bottom: 1.25rem;
-    }
-
-    .hero-editorial .pink-badge {
-      display: inline-block;
-      background: var(--bg-pink-pill);
-      color: var(--text-main);
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-weight: 400;
-      padding: 0.03em 0.48em 0.08em;
-      border-radius: var(--radius-full);
-      margin: 0 0.06em;
-      vertical-align: baseline;
-      white-space: nowrap;
-    }
-
-    .hero-editorial p {
-      font-family: var(--font-sans);
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      line-height: 1.55;
-      font-weight: 400;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    section:has(#dept-select) {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-2xl);
-      padding: 1.15rem 1.6rem;
-      display: flex;
-      flex-wrap: wrap;
+    /* Core button primitives */
+    .btn {
+      display: inline-flex;
       align-items: center;
-      gap: 1.15rem;
-      margin-top: 1.25rem;
-    }
-
-    section:has(#dept-select) label {
-      font-family: var(--font-sans);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
+      justify-content: center;
+      position: relative;
+      font-family: inherit;
+      font-size: 0.875rem;
       font-weight: 600;
-      color: var(--text-subtle);
-    }
-
-    section:has(#dept-select) select {
-      background-color: var(--bg-surface-subtle);
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      font-size: 0.88rem;
-      font-weight: 600;
+      padding: 0.625rem 1.25rem;
       border-radius: var(--radius-full);
-      padding: 0.55rem 2.1rem 0.55rem 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .btn.is-loading {
+      pointer-events: none;
+      color: transparent !important;
+    }
+
+    .btn.is-loading::after {
+      content: '';
+      position: absolute;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    .btn--primary {
+      background-color: var(--brand-primary);
+      color: #FFFFFF;
+    }
+    .btn--primary:hover:not(:disabled) {
+      background-color: var(--brand-primary-hover);
+    }
+    .btn--primary.is-loading::after {
+      border-color: #FFFFFF;
+      border-top-color: transparent;
+    }
+
+    .btn--dark {
+      background-color: var(--brand-dark);
+      color: #FFFFFF;
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+    }
+    .btn--dark:hover:not(:disabled) {
+      background-color: var(--brand-dark-hover);
+    }
+
+    .btn--ghost {
+      background-color: var(--bg-subtle);
+      color: var(--text-main);
+    }
+    .btn--ghost:hover:not(:disabled) {
+      background-color: var(--bg-hover);
+    }
+
+    .btn--subtle {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      border: 1px solid #DFD8CC;
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+    }
+    .btn--subtle:hover:not(:disabled) {
+      background-color: #EAE3D5;
+    }
+
+    .btn--danger {
+      background-color: var(--brand-danger);
+      color: #FFFFFF;
+    }
+    .btn--danger:hover:not(:disabled) {
+      background-color: var(--brand-danger-hover);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-accent-soft);
+      color: var(--text-main);
+      font-family: var(--font-display);
+      font-style: italic;
+      border-radius: var(--radius-full);
+      padding: 0.2rem 0.8rem;
+    }
+
+    /* Form controls */
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-subtle);
+      margin-bottom: 0.35rem;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--text-main);
+      transition: background-color 0.15s ease;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      background: var(--bg-hover);
+    }
+
+    .field select {
       cursor: pointer;
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%236E6961' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 0.9rem center;
-      transition: background-color 0.15s ease;
-      min-width: 145px;
+      background-position: right 1rem center;
     }
 
-    section:has(#dept-select) select:hover,
-    section:has(#dept-select) select:focus {
-      background-color: var(--bg-surface-hover);
-    }
-
-    #current-class-badge {
-      margin-left: auto;
-      background: var(--bg-pink-pill);
-      color: var(--text-main);
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: 1.15rem;
-      font-weight: 400;
-      padding: 0.3rem 1.1rem;
-      border-radius: var(--radius-full);
-      display: inline-flex;
+    /* Header */
+    .site-header {
+      width: 100%;
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem clamp(1rem, 4vw, 3.5rem);
+      background: var(--bg-canvas);
     }
 
-    #current-class-badge:empty {
-      display: none;
+    .brand-mark {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.875rem;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      line-height: 1;
     }
 
-    main {
+    .brand-mark sup {
+      font-size: 0.75rem;
+      font-family: var(--font-body);
+      font-style: normal;
+      color: var(--text-subtle);
+      font-weight: 600;
+      margin-left: 2px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 3.5rem 1rem 2rem;
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(2.25rem, 4vw, 3.75rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+    }
+
+    .hero__desc {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Filter panel */
+    .filter-bar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .filter-bar__label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      color: var(--text-subtle);
+    }
+
+    .filter-bar__select {
+      background-color: var(--bg-subtle);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      padding: 0.5rem 2rem 0.5rem 1rem;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%236E6961' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.85rem center;
+      min-width: 140px;
+    }
+
+    .filter-bar__badge {
+      margin-left: auto;
+      font-size: 1.05rem;
+    }
+
+    /* Content cards */
+    .content-area {
       margin-top: 1.5rem;
     }
 
-    /* Handcrafted Editorial Calendar */
-    #full-calendar-view, #course-dates-view {
+    .panel-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-2xl);
-      padding: 2rem 2.25rem;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
     }
 
-    #full-calendar-view > div:first-child {
+    .calendar-nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -259,46 +326,21 @@
       gap: 1rem;
     }
 
-    #calendar-month-year {
-      font-family: var(--font-serif);
-      font-size: 2.15rem;
+    .calendar-nav__title {
+      font-family: var(--font-display);
+      font-size: 2rem;
       font-weight: 400;
       letter-spacing: -0.02em;
-      color: var(--text-main);
-      line-height: 1;
     }
 
-    #cal-prev, #cal-today, #cal-next {
-      background: var(--bg-cream);
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 0.5rem 1.15rem;
-      border-radius: var(--radius-full);
-      border: 1px solid #DFD8CC;
-      cursor: pointer;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      margin-left: 0.25rem;
+    .calendar-nav__actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
-    #cal-prev:hover, #cal-next:hover {
-      background: #EAE3D5;
-      border-color: #D3CAB9;
-    }
-
-    #cal-today {
-      background: var(--accent-dark);
-      color: #FFFFFF;
-      border-color: var(--accent-dark);
-    }
-
-    #cal-today:hover {
-      background: var(--accent-dark-hover);
-    }
-
-    /* Architectural Hairline Grid */
-    #full-calendar-view table {
+    /* Table grid */
+    .calendar-grid {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
@@ -307,282 +349,253 @@
       overflow: hidden;
     }
 
-    #full-calendar-view thead th {
-      font-family: var(--font-sans);
-      font-size: 0.74rem;
+    .calendar-grid th {
+      font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       color: var(--text-subtle);
-      padding: 0.9rem 0.25rem;
+      padding: 0.85rem 0.25rem;
       text-align: center;
       background: #FAF7F2;
-      border-bottom: 1px solid var(--border-grid);
-      border-right: 1px solid var(--border-grid);
+      border-bottom: 1px solid var(--border-table);
+      border-right: 1px solid var(--border-table);
     }
 
-    #full-calendar-view thead th:last-child {
-      border-right: none;
+    .calendar-grid th:last-child {
+      border-right: 0;
     }
 
-    #calendar-grid td {
-      font-family: var(--font-sans);
-      height: 72px;
+    .calendar-cell {
+      height: 70px;
       text-align: center;
       vertical-align: middle;
-      cursor: pointer;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9375rem;
       color: var(--text-main);
       background: #FFFFFF;
-      border-right: 1px solid var(--border-grid);
-      border-bottom: 1px solid var(--border-grid);
-      transition: background-color 0.15s ease, color 0.15s ease;
-      padding: 0;
+      border-right: 1px solid var(--border-table);
+      border-bottom: 1px solid var(--border-table);
       position: relative;
     }
 
-    #calendar-grid td:last-child {
-      border-right: none;
+    .calendar-cell:last-child {
+      border-right: 0;
     }
 
-    #calendar-grid tr:last-child td {
-      border-bottom: none;
+    .calendar-grid tr:last-child .calendar-cell {
+      border-bottom: 0;
     }
 
-    #calendar-grid td:hover:not(:empty):not(.selected):not(.future) {
-      background: #F4EFE6;
-      color: var(--accent-blue);
+    /* Cell states */
+    .calendar-cell--empty,
+    .calendar-cell--disabled {
+      pointer-events: none;
+      background: var(--bg-muted);
     }
 
-    #calendar-grid td:empty,
-    #calendar-grid td.empty {
-      background: #FAF8F5;
-      cursor: default;
+    .calendar-cell--disabled {
+      color: var(--text-disabled);
     }
 
-    /* ক্যালেন্ডারের সম্পূর্ণ সেলকে ক্লিকেবল বাটন করা */
-    .cal-day {
+    .calendar-cell__btn {
       width: 100%;
       height: 100%;
-      min-height: 72px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.35rem;
+      position: relative;
       background: transparent;
-      border: none;
-      outline: none;
       font: inherit;
       color: inherit;
       cursor: pointer;
-      padding: 0;
-      margin: 0;
-      transition: inherit;
+      transition: background-color 0.15s ease, color 0.15s ease;
     }
 
-    .cal-day:disabled {
-      cursor: not-allowed;
+    .calendar-cell:hover .calendar-cell__btn {
+      background: #F4EFE6;
+      color: var(--brand-primary);
     }
 
-    /* নির্বাচিত ডেটের সম্পূর্ণ সেলে ফুল কালার */
-    #calendar-grid td.selected {
-      background-color: var(--accent-blue) !important;
+    .calendar-cell--today .calendar-cell__btn {
+      background-color: var(--bg-accent-soft);
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .calendar-cell--today:hover .calendar-cell__btn {
+      background-color: var(--bg-accent-soft-hover);
+    }
+
+    .calendar-cell--selected .calendar-cell__btn {
+      background-color: var(--brand-primary) !important;
       color: #FFFFFF !important;
       font-weight: 700;
     }
 
-    #calendar-grid td.selected:hover {
-      background-color: var(--accent-blue-hover) !important;
-      color: #FFFFFF !important;
-    }
-
-    #calendar-grid td.selected .cal-day,
-    #calendar-grid td.selected .note-bullet {
-      color: #FFFFFF !important;
-    }
-
-    /* আজকের দিন হাইলাইট (আজকের তারিখ ছাড়া অন্য ডেট সিলেক্ট করা থাকলে এটি গোলাপি হবে) */
-    #calendar-grid td.today:not(.selected) {
-      background-color: var(--bg-pink-pill) !important;
-      color: var(--text-main) !important;
-      font-weight: 700;
-    }
-
-    #calendar-grid td.today:not(.selected):hover {
-      background-color: #f5b5e7 !important;
-      color: var(--text-main) !important;
-    }
-
-    #calendar-grid td.today:not(.selected) .note-bullet {
-      color: var(--text-main) !important;
-    }
-
-    /* ভবিষ্যতের দিন ডিজেবল্ড স্টাইল */
-    #calendar-grid td.future {
-      background-color: #FAF8F5;
-      color: #B8B0A5;
-      cursor: not-allowed;
-    }
-
-    #calendar-grid td.future:hover {
-      background-color: #FAF8F5;
-      color: #B8B0A5;
-    }
-
-    .note-bullet {
+    /* Note indicator via pseudo-element */
+    .calendar-cell.has-notes .calendar-cell__btn::after {
+      content: '•';
+      position: absolute;
+      bottom: 0.4rem;
       font-size: 1.15rem;
       line-height: 1;
-      color: var(--accent-blue);
+      color: var(--brand-primary);
     }
 
-    #full-calendar-view p small {
+    .calendar-cell--selected.has-notes .calendar-cell__btn::after {
+      color: #FFFFFF;
+    }
+
+    .calendar-cell--today.has-notes:not(.calendar-cell--selected) .calendar-cell__btn::after {
+      color: var(--text-main);
+    }
+
+    .calendar-legend {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      margin-top: 1.15rem;
+      margin-top: 1rem;
       color: var(--text-subtle);
-      font-family: var(--font-sans);
-      font-size: 0.82rem;
-      font-weight: 500;
+      font-size: 0.8125rem;
     }
 
-    #course-dates-view {
+    /* Course specific view */
+    .course-dates-view {
       margin-top: 1.5rem;
     }
 
-    #course-dates-title {
-      font-family: var(--font-serif);
-      font-size: 1.75rem;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      margin-bottom: 0.2rem;
-    }
-
-    #course-dates-count {
-      display: inline-block;
-      font-family: var(--font-sans);
-      font-size: 0.82rem;
-      color: var(--text-subtle);
-      font-weight: 600;
+    .course-dates__header {
       margin-bottom: 1.25rem;
     }
 
-    #course-dates-list {
+    .course-dates__title {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 400;
+      color: var(--text-main);
+    }
+
+    .course-dates__count {
+      font-size: 0.8125rem;
+      color: var(--text-subtle);
+      font-weight: 600;
+    }
+
+    .course-dates__grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 0.9rem;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.85rem;
     }
 
-    #course-dates-list > div {
-      background: #FAF7F2;
+    /* Modern Course Date Card */
+    .course-card {
+      background: #FFFFFF;
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-xl);
-      padding: 1.15rem;
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.15rem;
       cursor: pointer;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-    }
-
-    #course-dates-list > div:hover {
-      background: #F2ECE0;
-      border-color: #DDD4C3;
-    }
-
-    /* কোর্স ডেটস বাটন ও নির্বাচিত কার্ড */
-    .course-date-btn {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      font: inherit;
-      color: inherit;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
       text-align: left;
     }
 
-    #course-dates-list > div.selected {
-      background-color: var(--accent-blue);
-      border-color: var(--accent-blue);
-      color: #FFFFFF;
+    .course-card:hover:not(.course-card--selected) {
+      background: #FAF7F2;
+      border-color: #DDD4C3;
     }
 
-    #course-dates-list > div.selected .course-date-btn {
-      color: #FFFFFF;
+    .course-card__info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
     }
 
-    dialog {
+    .course-card__date {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--text-main);
+    }
+
+    .course-card__day {
+      font-size: 0.8125rem;
+      color: var(--text-subtle);
+      font-weight: 500;
+    }
+
+    .course-card__badge {
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      padding: 0.25rem 0.7rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Selected Card & Solved Hover Bug */
+    .course-card--selected {
+      background-color: var(--brand-primary) !important;
+      border-color: var(--brand-primary) !important;
+      color: #FFFFFF !important;
+    }
+
+    .course-card--selected:hover {
+      background-color: var(--brand-primary-hover) !important;
+      border-color: var(--brand-primary-hover) !important;
+    }
+
+    .course-card--selected .course-card__date {
+      color: #FFFFFF !important;
+    }
+
+    .course-card--selected .course-card__day {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .course-card--selected .course-card__badge {
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Modals */
+    .dialog-modal {
       position: fixed;
       inset: 0;
       margin: auto;
       max-width: 500px;
-      width: calc(100% - 2.5rem);
+      width: calc(100% - 2rem);
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      border-radius: 24px;
+      border-radius: var(--radius-lg);
       padding: 2rem;
       color: var(--text-main);
     }
 
-    dialog::backdrop {
+    .dialog-modal::backdrop {
       background: rgba(24, 23, 22, 0.45);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(6px);
+      cursor: pointer;
     }
 
-    dialog h3 {
-      font-family: var(--font-serif);
-      font-size: 1.8rem;
+    .dialog-modal__title {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
       font-weight: 400;
       letter-spacing: -0.02em;
-      color: var(--text-main);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.2rem;
     }
 
-    #note-form p, #report-form p {
-      margin-bottom: 1.1rem;
-    }
-
-    #note-form label, #report-form label {
-      font-family: var(--font-sans);
-      font-size: 0.76rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+    .dialog-modal__desc {
+      font-size: 0.8125rem;
       color: var(--text-subtle);
-      display: block;
-      margin-bottom: 0.3rem;
+      font-weight: 600;
     }
 
-    #note-form input,
-    #note-form select,
-    #report-form input,
-    #report-form select {
-      width: 100%;
-      background: var(--bg-surface-subtle);
-      border-radius: var(--radius-lg);
-      padding: 0.8rem 1rem;
-      font-family: var(--font-sans);
-      font-size: 0.92rem;
-      color: var(--text-main);
-      transition: background-color 0.15s ease;
-    }
-
-    #note-form input:focus,
-    #note-form select:focus,
-    #report-form input:focus,
-    #report-form select:focus {
-      background: var(--bg-surface-hover);
-    }
-
-    #note-form select {
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%236E6961' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-    }
-
-    dialog div:has(button) {
+    .dialog-modal__actions {
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -590,255 +603,929 @@
       margin-top: 1.5rem;
     }
 
-    #cancel-modal, #cancel-report-modal, #close-notes-modal {
-      background: var(--bg-surface-subtle);
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      font-size: 0.88rem;
-      font-weight: 600;
-      padding: 0.65rem 1.35rem;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-    }
-
-    #cancel-modal:hover, #cancel-report-modal:hover, #close-notes-modal:hover {
-      background: var(--bg-surface-hover);
-    }
-
-    #submit-btn {
-      background: var(--accent-blue);
-      color: #FFFFFF;
-      font-family: var(--font-sans);
-      font-size: 0.88rem;
-      font-weight: 600;
-      padding: 0.65rem 1.5rem;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-    }
-
-    #submit-btn:hover {
-      background: var(--accent-blue-hover);
-    }
-
-    #submit-report-btn {
-      background: #DC2626;
-      color: #FFFFFF;
-      font-family: var(--font-sans);
-      font-size: 0.88rem;
-      font-weight: 600;
-      padding: 0.65rem 1.5rem;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-    }
-
-    #submit-report-btn:hover {
-      background: #B91C1C;
-    }
-
-    #form-status, #report-status {
-      font-family: var(--font-sans);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 0.7rem 1rem;
-      border-radius: var(--radius-lg);
-      margin-top: 0.75rem;
-      background: var(--bg-surface-subtle);
-    }
-
-    #notes-list {
+    .notes-stack {
       max-height: 52vh;
       overflow-y: auto;
-      margin-top: 1.2rem;
+      margin-top: 1.25rem;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 1.25rem;
     }
 
-    #notes-list > div {
-      background: var(--bg-surface-subtle);
-      border-radius: var(--radius-xl);
-      padding: 1.1rem;
-      transition: background-color 0.15s ease;
+    /* Clean Minimalist Notes Layout (No Clutter, No Heavy Nested Boxes) */
+    .note-cluster {
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
-    #notes-list > div:hover {
-      background: var(--bg-surface-hover);
+    .note-cluster:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
     }
 
-    #selected-date-display {
-      font-family: var(--font-serif);
-      font-size: 1.8rem;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-    }
-
-    #notes-count {
-      display: inline-block;
-      font-family: var(--font-sans);
-      font-size: 0.82rem;
-      color: var(--text-subtle);
-      font-weight: 600;
-      margin-top: 0.25rem;
-    }
-
-    #report-target-title {
-      font-weight: 600;
+    .note-cluster__course {
+      font-size: 1rem;
+      font-weight: 700;
       color: var(--text-main);
+      margin-bottom: 0.5rem;
     }
 
-    #report-target-meta {
-      font-size: 0.82rem;
+    .note-cluster__topic-group {
+      margin-left: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .note-cluster__topic-header {
+      font-size: 0.8125rem;
+      font-weight: 600;
       color: var(--text-subtle);
+      margin-bottom: 0.35rem;
+    }
+
+    .note-cluster__list {
+      list-style: none;
+      margin-left: 0.25rem;
+    }
+
+    .note-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed #EDE7DC;
+    }
+
+    .note-row:last-child {
+      border-bottom: 0;
+    }
+
+    .note-row__left {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.9rem;
+    }
+
+    .note-row__bullet {
+      color: var(--text-subtle);
+      font-size: 0.8rem;
+    }
+
+    .note-row__link {
+      color: var(--brand-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .note-row__link:hover {
+      text-decoration: underline;
+    }
+
+    .note-row__plain {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .note-row__flag {
+      color: var(--brand-danger);
+      font-weight: 600;
+      font-size: 0.72rem;
+      margin-left: 0.25rem;
+    }
+
+    .btn-report {
+      background: transparent;
+      color: var(--text-subtle);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0.15rem 0.3rem;
+      transition: color 0.15s ease;
+    }
+
+    .btn-report:hover {
+      color: var(--brand-danger);
+    }
+
+    /* Toast notification */
+    .toast-tray {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: var(--brand-dark);
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: toastIn 0.2s ease;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .toast--success {
+      border-left: 4px solid var(--brand-success);
+    }
+
+    .toast--error {
+      border-left: 4px solid var(--brand-danger);
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     @media (max-width: 640px) {
-      header { padding: 1.15rem 1rem; }
-      .hero-editorial { padding: 3rem 1rem 2rem; }
-      .hero-editorial h2 { font-size: 2.35rem; }
-      section:has(#dept-select) { padding: 1rem; gap: 0.85rem; }
-      section:has(#dept-select) select { width: 100%; min-width: 0; }
-      #current-class-badge { margin-left: 0; width: 100%; justify-content: center; }
-      #full-calendar-view, #course-dates-view { padding: 1.25rem 1rem; }
-      #calendar-grid td { height: 50px; font-size: 0.85rem; }
-      .cal-day { min-height: 50px; }
-      dialog { padding: 1.5rem 1.25rem; }
+      .site-header { padding: 1.25rem 1rem; }
+      .hero { padding: 2.5rem 1rem 1.5rem; }
+      .filter-bar { padding: 1rem; }
+      .filter-bar__select { width: 100%; min-width: 0; }
+      .filter-bar__badge { margin-left: 0; width: 100%; justify-content: center; }
+      .panel-card { padding: 1.25rem 1rem; }
+      .calendar-cell { height: 50px; font-size: 0.8125rem; }
+      .dialog-modal { padding: 1.5rem 1.25rem; }
+      .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>ClassNotes</h1>
-    <button id="open-add-modal-btn" type="button">+ Add Note</button>
+  <header class="site-header">
+    <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
+    <button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button>
   </header>
 
-  <div class="app-container">
-    <section class="hero-editorial">
-      <h2>No more chasing <br> unpaid <span class="pink-badge">class notes</span></h2>
-      <p>Automated reminders, follow-ups, and final notices. You only step in when it matters.</p>
+  <div class="shell">
+    <section class="hero">
+      <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
+      <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <section>
-      <label for="dept-select">Department:</label>
-      <select id="dept-select"></select>
+    <section class="filter-bar">
+      <label class="filter-bar__label" for="dept-select">Department:</label>
+      <select class="filter-bar__select" id="dept-select"></select>
 
-      <label for="section-select">Section:</label>
-      <select id="section-select"></select>
+      <label class="filter-bar__label" for="section-select">Section:</label>
+      <select class="filter-bar__select" id="section-select"></select>
 
-      <label for="course-select">Course:</label>
-      <select id="course-select"></select>
+      <label class="filter-bar__label" for="course-select">Course:</label>
+      <select class="filter-bar__select" id="course-select"></select>
 
-      <strong id="current-class-badge"></strong>
+      <strong class="badge filter-bar__badge" id="class-badge"></strong>
     </section>
 
-    <main>
-      <section id="full-calendar-view">
-        <div>
-          <h2 id="calendar-month-year"></h2>
-          <div>
-            <button id="cal-prev" type="button">&lt; Prev</button>
-            <button id="cal-today" type="button">Today</button>
-            <button id="cal-next" type="button">Next &gt;</button>
+    <main class="content-area">
+      <!-- Full calendar -->
+      <section class="panel-card" id="calendar-view">
+        <div class="calendar-nav">
+          <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
+          <div class="calendar-nav__actions">
+            <button type="button" class="btn btn--subtle" id="cal-prev">&lt; Prev</button>
+            <button type="button" class="btn btn--dark" id="cal-today">Today</button>
+            <button type="button" class="btn btn--subtle" id="cal-next">Next &gt;</button>
           </div>
         </div>
 
-        <table>
+        <table class="calendar-grid">
           <thead>
             <tr>
               <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
             </tr>
           </thead>
-          <tbody id="calendar-grid"></tbody>
+          <tbody id="calendar-cells"></tbody>
         </table>
-        <p><small>* Days with notes show a bullet (•)</small></p>
+        <p class="calendar-legend"><small>* Days with notes show a bullet (•)</small></p>
       </section>
 
-      <section id="course-dates-view" hidden>
-        <h3 id="course-dates-title"></h3>
-        <span id="course-dates-count"></span>
-        <div id="course-dates-list"></div>
+      <!-- Course specific view -->
+      <section class="panel-card course-dates-view" id="course-view" hidden>
+        <div class="course-dates__header">
+          <h3 class="course-dates__title" id="course-view-title"></h3>
+          <span class="course-dates__count" id="course-view-count"></span>
+        </div>
+        <div class="course-dates__grid" id="course-dates-list"></div>
       </section>
     </main>
 
-    <dialog id="notes-modal">
-      <div>
-        <h3 id="selected-date-display"></h3>
-        <span id="notes-count"></span>
-      </div>
-      
-      <div id="notes-list"></div>
+    <!-- Modal: View notes -->
+    <dialog class="dialog-modal" id="notes-modal">
+      <h3 class="dialog-modal__title" id="modal-date-label"></h3>
+      <span class="dialog-modal__desc" id="modal-notes-total"></span>
 
-      <div style="margin-top: 15px;">
-        <button type="button" id="close-notes-modal">Close</button>
-      </div>
+      <div class="notes-stack" id="modal-notes-stack"></div>
+
+      <form method="dialog" class="dialog-modal__actions">
+        <button type="submit" class="btn btn--ghost">Close</button>
+      </form>
     </dialog>
 
-    <dialog id="add-modal">
-      <form id="note-form" method="dialog">
-        <h3>Add New Note</h3>
+    <!-- Modal: Add note -->
+    <dialog class="dialog-modal" id="add-modal">
+      <form id="add-note-form">
+        <h3 class="dialog-modal__title">Add Class Note</h3>
 
-        <p>
-          <label for="form-dept">Department:</label><br>
-          <select id="form-dept" required></select>
-        </p>
-        <p>
-          <label for="form-section">Section:</label><br>
-          <select id="form-section" required></select>
-        </p>
-        <p>
-          <label for="form-date">Date:</label><br>
-          <input type="date" id="form-date" required>
-        </p>
-        <p>
-          <label for="form-course">Course:</label><br>
-          <select id="form-course" required></select>
-        </p>
-        <p>
-          <label for="form-topic">Topic:</label><br>
-          <input type="text" id="form-topic" placeholder="e.g. Binary Search Trees" required>
-        </p>
-        <p>
-          <label for="form-title">Title:</label><br>
-          <input type="text" id="form-title" placeholder="e.g. Note 1" required>
-        </p>
-        <p>
-          <label for="form-link">Resource Link:</label><br>
-          <input type="url" id="form-link" placeholder="https://drive.google.com/...">
-        </p>
+        <div class="field">
+          <label for="input-dept">Department:</label>
+          <select id="input-dept" required></select>
+        </div>
 
-        <p id="form-status" hidden></p>
+        <div class="field">
+          <label for="input-section">Section:</label>
+          <select id="input-section" required></select>
+        </div>
 
-        <div>
-          <button type="button" id="cancel-modal">Cancel</button>
-          <button type="submit" id="submit-btn">Submit Note</button>
+        <div class="field">
+          <label for="input-date">Date:</label>
+          <input type="date" id="input-date" required>
+        </div>
+
+        <div class="field">
+          <label for="input-course">Course:</label>
+          <select id="input-course" required></select>
+        </div>
+
+        <div class="field">
+          <label for="input-topic">Topic:</label>
+          <input type="text" id="input-topic" placeholder="e.g. Graph Traversal Algorithms" required>
+        </div>
+
+        <div class="field">
+          <label for="input-title">Title:</label>
+          <input type="text" id="input-title" placeholder="e.g. Lecture Slide 12" required>
+        </div>
+
+        <div class="field">
+          <label for="input-link">Resource URL:</label>
+          <input type="text" id="input-link" inputmode="url" placeholder="https://... (Drive, Notion, OneDrive, Dropbox, etc.)">
+        </div>
+
+        <div class="dialog-modal__actions">
+          <button type="button" class="btn btn--ghost" onclick="document.getElementById('add-modal').close()">Cancel</button>
+          <button type="submit" class="btn btn--primary" id="btn-submit-note">Submit Note</button>
         </div>
       </form>
     </dialog>
 
-    <dialog id="report-modal">
-      <form id="report-form" method="dialog">
-        <h3>Report Note Link</h3>
-        <p>
-          <strong>Note:</strong> <span id="report-target-title"></span><br>
-          <span id="report-target-meta"></span>
+    <!-- Modal: Report link -->
+    <dialog class="dialog-modal" id="report-modal">
+      <form id="report-link-form">
+        <h3 class="dialog-modal__title">Report Broken Link</h3>
+        <p class="field">
+          <strong>Resource:</strong> <span id="report-note-title"></span><br>
+          <small id="report-note-context" class="dialog-modal__desc"></small>
         </p>
-        <p>Having trouble opening this link? Report it to alert the class.</p>
+        <p class="field" style="font-size: 0.875rem; color: var(--text-muted);">
+          Flagging this note notifies section classmates that the link is expired or inaccessible.
+        </p>
 
-        <p id="report-status" hidden></p>
-
-        <div>
-          <button type="button" id="cancel-report-modal">Cancel</button>
-          <button type="submit" id="submit-report-btn">Report Link</button>
+        <div class="dialog-modal__actions">
+          <button type="button" class="btn btn--ghost" onclick="document.getElementById('report-modal').close()">Cancel</button>
+          <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
         </div>
       </form>
     </dialog>
   </div>
 
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+  <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
 
+  <script src="config.js"></script>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const config = window.APP_CONFIG || {
+        googleAppsScriptUrl: "",
+        departments: [
+          {
+            code: "CSE",
+            sections: ["73_A", "73_B", "73_L"],
+            courses: ["CSE101", "CSE102", "CSE103"]
+          }
+        ]
+      };
+
+      const MONTH_NAMES = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+      const now = new Date();
+      const state = {
+        dept: config.departments[0]?.code || "CSE",
+        sec: config.departments[0]?.sections[0] || "",
+        course: "ALL",
+        viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
+        selectedDate: formatDateKey(now),
+        notes: [],
+        manualTitleEdited: false
+      };
+
+      const ui = {
+        dept: document.getElementById("dept-select"),
+        sec: document.getElementById("section-select"),
+        course: document.getElementById("course-select"),
+        badge: document.getElementById("class-badge"),
+
+        calendarView: document.getElementById("calendar-view"),
+        calendarTitle: document.getElementById("calendar-header-title"),
+        calendarCells: document.getElementById("calendar-cells"),
+        prevMonthBtn: document.getElementById("cal-prev"),
+        todayBtn: document.getElementById("cal-today"),
+        nextMonthBtn: document.getElementById("cal-next"),
+
+        courseView: document.getElementById("course-view"),
+        courseTitle: document.getElementById("course-view-title"),
+        courseCount: document.getElementById("course-view-count"),
+        courseDatesList: document.getElementById("course-dates-list"),
+
+        notesModal: document.getElementById("notes-modal"),
+        modalDateLabel: document.getElementById("modal-date-label"),
+        modalNotesTotal: document.getElementById("modal-notes-total"),
+        modalNotesStack: document.getElementById("modal-notes-stack"),
+
+        addModal: document.getElementById("add-modal"),
+        addNoteBtn: document.getElementById("trigger-add-note"),
+        addForm: document.getElementById("add-note-form"),
+        formDept: document.getElementById("input-dept"),
+        formSec: document.getElementById("input-section"),
+        formDate: document.getElementById("input-date"),
+        formCourse: document.getElementById("input-course"),
+        formTopic: document.getElementById("input-topic"),
+        formTitle: document.getElementById("input-title"),
+        formLink: document.getElementById("input-link"),
+        btnSubmitNote: document.getElementById("btn-submit-note"),
+
+        reportModal: document.getElementById("report-modal"),
+        reportForm: document.getElementById("report-link-form"),
+        reportTitle: document.getElementById("report-note-title"),
+        reportContext: document.getElementById("report-note-context"),
+        btnSubmitReport: document.getElementById("btn-submit-report"),
+
+        toastTray: document.getElementById("toast-tray")
+      };
+
+      /* Safe Storage Wrapper */
+      const safeStorage = {
+        get(key) {
+          try {
+            return localStorage.getItem(key);
+          } catch {
+            return null;
+          }
+        },
+        set(key, val) {
+          try {
+            localStorage.setItem(key, val);
+          } catch {
+            // Silently ignore quota in private browsing
+          }
+        }
+      };
+
+      function formatDateKey(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      }
+
+      function parseLocalDate(dateKey) {
+        if (!dateKey) return new Date();
+        const parts = dateKey.split("-").map(Number);
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      }
+
+      function formatReadableDate(dateKey) {
+        if (!dateKey) return "";
+        const [year, month, day] = dateKey.split("-");
+        return `${parseInt(day, 10)} ${MONTH_NAMES[parseInt(month, 10) - 1]} ${year}`;
+      }
+
+      /* Clean Pluralization without bracketed (s) */
+      function pluralize(count, singular, plural) {
+        return `${count} ${count === 1 ? singular : plural}`;
+      }
+
+      function escapeHtml(text) {
+        if (!text) return "";
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function normalizeUrl(input) {
+        if (!input) return "";
+        let trimmed = String(input).trim();
+        if (!trimmed) return "";
+        if (!/^[a-zA-Z][a-zA-Z\d+\-.]*?:/i.test(trimmed)) {
+          trimmed = "https://" + trimmed;
+        }
+        return trimmed;
+      }
+
+      function sanitizeUrl(rawUrl) {
+        if (!rawUrl) return "";
+        const clean = String(rawUrl).trim();
+        return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
+      }
+
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `toast toast--${type}`;
+        toast.textContent = message;
+
+        ui.toastTray.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(8px)";
+          setTimeout(() => toast.remove(), 250);
+        }, 3200);
+      }
+
+      async function syncData(payload) {
+        if (!config.googleAppsScriptUrl) return;
+        return fetch(config.googleAppsScriptUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      async function loadNotes() {
+        if (!config.googleAppsScriptUrl) return;
+        try {
+          const res = await fetch(config.googleAppsScriptUrl);
+          const data = await res.json();
+          if (data?.success && Array.isArray(data.notes)) {
+            state.notes = data.notes;
+            render();
+          }
+        } catch (err) {
+          console.warn("Unable to sync lecture notes:", err);
+        }
+      }
+
+      function getDeptMeta(code) {
+        return config.departments.find(d => d.code === code) || config.departments[0];
+      }
+
+      function renderSelectOptions(selectEl, list, includeAll = false) {
+        const items = list.map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+        selectEl.innerHTML = (includeAll ? '<option value="ALL">All Courses</option>' : "") + items;
+      }
+
+      function syncDropdownStates() {
+        const activeDept = getDeptMeta(state.dept);
+        if (!activeDept) return;
+
+        renderSelectOptions(ui.sec, activeDept.sections);
+        renderSelectOptions(ui.course, activeDept.courses, true);
+        renderSelectOptions(ui.formSec, activeDept.sections);
+        renderSelectOptions(ui.formCourse, activeDept.courses);
+
+        ui.dept.value = state.dept;
+        state.sec = activeDept.sections.includes(state.sec) ? state.sec : activeDept.sections[0];
+        ui.sec.value = state.sec;
+
+        state.course = activeDept.courses.includes(state.course) || state.course === "ALL" ? state.course : "ALL";
+        ui.course.value = state.course;
+
+        syncBadgeText();
+      }
+
+      function syncFormDropdowns() {
+        const currentDept = getDeptMeta(ui.formDept.value);
+        if (currentDept) {
+          renderSelectOptions(ui.formSec, currentDept.sections);
+          renderSelectOptions(ui.formCourse, currentDept.courses);
+        }
+      }
+
+      function syncBadgeText() {
+        ui.badge.textContent = state.course === "ALL"
+          ? `[ ${state.dept} | Section ${state.sec} ]`
+          : `[ ${state.dept} | Sec ${state.sec} | ${state.course} ]`;
+      }
+
+      function calculateDefaultTitle() {
+        if (state.manualTitleEdited) return;
+        const activeCourse = ui.formCourse.value;
+        const existingCount = state.notes.filter(note =>
+          note.department === ui.formDept.value &&
+          note.section === ui.formSec.value &&
+          note.date === (ui.formDate.value || state.selectedDate) &&
+          (!activeCourse || note.course === activeCourse)
+        ).length;
+
+        ui.formTitle.value = `Note ${existingCount + 1}`;
+      }
+
+      function filterActiveNotes() {
+        return state.notes.filter(note =>
+          note.department === state.dept &&
+          note.section === state.sec &&
+          String(note.status || "").toLowerCase() === "approved"
+        );
+      }
+
+      function openDateDetails(dateKey) {
+        state.selectedDate = dateKey;
+        render();
+        if (!ui.notesModal.open) {
+          ui.notesModal.showModal();
+        }
+      }
+
+      function renderCalendarGrid() {
+        const year = state.viewDate.getFullYear();
+        const month = state.viewDate.getMonth();
+        ui.calendarTitle.textContent = `${MONTH_NAMES[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const notes = filterActiveNotes();
+        const datesWithNotes = new Set(notes.map(n => n.date));
+        const todayKey = formatDateKey(new Date());
+
+        let markup = "<tr>";
+        let col = 0;
+
+        for (let i = 0; i < firstDay; i++) {
+          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
+          col++;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          if (col === 7) {
+            markup += "</tr><tr>";
+            col = 0;
+          }
+
+          const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const isFuture = dateKey > todayKey;
+          const isToday = dateKey === todayKey;
+          const isSelected = dateKey === state.selectedDate;
+          const hasNotes = datesWithNotes.has(dateKey);
+
+          const classes = [
+            "calendar-cell",
+            isSelected ? "calendar-cell--selected" : "",
+            isToday ? "calendar-cell--today" : "",
+            isFuture ? "calendar-cell--disabled" : "",
+            hasNotes ? "has-notes" : ""
+          ].filter(Boolean).join(" ");
+
+          markup += `
+            <td class="${classes}" data-date="${dateKey}">
+              <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""}>
+                <span>${d}</span>
+              </button>
+            </td>
+          `;
+          col++;
+        }
+
+        while (col < 7 && col > 0) {
+          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
+          col++;
+        }
+        markup += "</tr>";
+
+        ui.calendarCells.innerHTML = markup;
+      }
+
+      /* Cleaned Course Dates Agenda Cards with Solved Hover State */
+      function renderCourseDates() {
+        const courseNotes = filterActiveNotes().filter(n => n.course === state.course);
+        const uniqueDates = [...new Set(courseNotes.map(n => n.date))].sort();
+
+        ui.courseTitle.textContent = `Classes: ${state.course}`;
+        ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
+
+        if (!uniqueDates.length) {
+          ui.courseDatesList.innerHTML = `<p class="dialog-modal__desc">No notes recorded for ${escapeHtml(state.course)} yet.</p>`;
+          return;
+        }
+
+        ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
+          const dateObj = parseLocalDate(dateStr);
+          const noteCount = courseNotes.filter(n => n.date === dateStr).length;
+          const isSelected = dateStr === state.selectedDate;
+          const day = DAY_NAMES[dateObj.getDay()] || "";
+
+          return `
+            <div class="course-card ${isSelected ? 'course-card--selected' : ''}" data-date="${escapeHtml(dateStr)}">
+              <div class="course-card__info">
+                <span class="course-card__date">${formatReadableDate(dateStr)}</span>
+                <span class="course-card__day">${day}</span>
+              </div>
+              <span class="course-card__badge">${pluralize(noteCount, 'note', 'notes')}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      /* Simple, Minimalist, Elegant Notes Modal Layout (No Clutter) */
+      function renderModalNotes() {
+        ui.modalDateLabel.textContent = `Date: ${formatReadableDate(state.selectedDate)}`;
+
+        let notes = filterActiveNotes().filter(n => n.date === state.selectedDate);
+        if (state.course !== "ALL") {
+          notes = notes.filter(n => n.course === state.course);
+        }
+
+        ui.modalNotesTotal.textContent = `Total: ${pluralize(notes.length, 'note', 'notes')}`;
+
+        if (!notes.length) {
+          ui.modalNotesStack.innerHTML = '<p class="dialog-modal__desc">No lecture material attached to this date.</p>';
+          return;
+        }
+
+        const groups = {};
+        notes.forEach(note => {
+          const course = note.course || "General";
+          const topic = note.topic || "Class Notes";
+          if (!groups[course]) groups[course] = {};
+          if (!groups[course][topic]) groups[course][topic] = [];
+          groups[course][topic].push(note);
+        });
+
+        let output = "";
+        for (const course in groups) {
+          output += `
+            <div class="note-cluster">
+              <h4 class="note-cluster__course">${escapeHtml(course)}</h4>
+          `;
+
+          for (const topic in groups[course]) {
+            output += `
+              <div class="note-cluster__topic-group">
+                <div class="note-cluster__topic-header">Topic: ${escapeHtml(topic)}</div>
+                <ul class="note-cluster__list">
+            `;
+
+            groups[course][topic].forEach(item => {
+              const isReported = Number(item.reportCount || 0) >= 3;
+              const title = escapeHtml(item.title || "View Note");
+              const link = sanitizeUrl(item.link);
+
+              output += `
+                <li class="note-row">
+                  <div class="note-row__left">
+                    <span class="note-row__bullet">•</span>
+                    ${link !== "#" ? `
+                      <a href="${link}" target="_blank" rel="noopener noreferrer" class="note-row__link">
+                        ${title}
+                      </a>
+                    ` : `
+                      <span class="note-row__plain">${title}</span>
+                    `}
+                    ${isReported ? '<span class="note-row__flag">[Issue Reported]</span>' : ""}
+                  </div>
+                  ${link !== "#" ? `
+                    <button type="button" class="btn-report" data-row="${escapeHtml(item.row)}" data-title="${title}" data-course="${escapeHtml(course)}">
+                      Report
+                    </button>
+                  ` : ""}
+                </li>
+              `;
+            });
+
+            output += `
+                </ul>
+              </div>
+            `;
+          }
+          output += "</div>";
+        }
+
+        ui.modalNotesStack.innerHTML = output;
+      }
+
+      function render() {
+        syncBadgeText();
+        const isAll = state.course === "ALL";
+
+        ui.calendarView.hidden = !isAll;
+        ui.courseView.hidden = isAll;
+
+        if (isAll) {
+          renderCalendarGrid();
+        } else {
+          renderCourseDates();
+        }
+
+        renderModalNotes();
+      }
+
+      function bindEvents() {
+        /* Backdrop Click to Dismiss */
+        document.querySelectorAll(".dialog-modal").forEach(modal => {
+          modal.addEventListener("click", (e) => {
+            const rect = modal.getBoundingClientRect();
+            const isClickInside = (
+              e.clientX >= rect.left &&
+              e.clientX <= rect.right &&
+              e.clientY >= rect.top &&
+              e.clientY <= rect.bottom
+            );
+            if (!isClickInside) {
+              modal.close();
+            }
+          });
+        });
+
+        ui.dept.addEventListener("change", (e) => {
+          state.dept = e.target.value;
+          syncDropdownStates();
+          state.sec = ui.sec.value;
+          state.course = ui.course.value;
+          render();
+        });
+
+        ui.sec.addEventListener("change", (e) => {
+          state.sec = e.target.value;
+          render();
+        });
+
+        ui.course.addEventListener("change", (e) => {
+          state.course = e.target.value;
+          render();
+        });
+
+        ui.prevMonthBtn.addEventListener("click", () => {
+          state.viewDate.setMonth(state.viewDate.getMonth() - 1);
+          render();
+        });
+
+        ui.nextMonthBtn.addEventListener("click", () => {
+          state.viewDate.setMonth(state.viewDate.getMonth() + 1);
+          render();
+        });
+
+        ui.todayBtn.addEventListener("click", () => {
+          const current = new Date();
+          state.viewDate = new Date(current.getFullYear(), current.getMonth(), 1);
+          state.selectedDate = formatDateKey(current);
+          render();
+        });
+
+        ui.calendarCells.addEventListener("click", (e) => {
+          const cell = e.target.closest("td[data-date]");
+          if (cell) {
+            openDateDetails(cell.dataset.date);
+          }
+        });
+
+        ui.courseDatesList.addEventListener("click", (e) => {
+          const card = e.target.closest("[data-date]");
+          if (card && card.dataset.date) {
+            openDateDetails(card.dataset.date);
+          }
+        });
+
+        ui.addNoteBtn.addEventListener("click", () => {
+          state.manualTitleEdited = false;
+          const today = formatDateKey(new Date());
+
+          ui.formDate.max = today;
+          ui.formDept.value = state.dept;
+          syncFormDropdowns();
+          ui.formSec.value = state.sec;
+          ui.formDate.value = state.selectedDate > today ? today : state.selectedDate;
+
+          if (state.course !== "ALL") {
+            ui.formCourse.value = state.course;
+          }
+
+          calculateDefaultTitle();
+          ui.addModal.showModal();
+        });
+
+        ui.formDept.addEventListener("change", () => {
+          syncFormDropdowns();
+          calculateDefaultTitle();
+        });
+
+        [ui.formSec, ui.formDate, ui.formCourse].forEach(el => {
+          el.addEventListener("change", calculateDefaultTitle);
+        });
+
+        ui.formTitle.addEventListener("input", () => {
+          state.manualTitleEdited = ui.formTitle.value.trim().length > 0;
+        });
+
+        ui.addForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          ui.btnSubmitNote.disabled = true;
+          ui.btnSubmitNote.classList.add("is-loading");
+
+          const formattedUrl = normalizeUrl(ui.formLink.value);
+
+          const payload = {
+            department: ui.formDept.value,
+            section: ui.formSec.value,
+            date: ui.formDate.value,
+            course: ui.formCourse.value,
+            topic: ui.formTopic.value,
+            title: ui.formTitle.value,
+            link: formattedUrl,
+            status: "Pending"
+          };
+
+          try {
+            await syncData(payload);
+            ui.addModal.close();
+            ui.addForm.reset();
+            state.manualTitleEdited = false;
+            showToast("Note submitted successfully for section review!");
+          } catch (err) {
+            showToast("Failed to submit note. Please retry.", "error");
+          } finally {
+            ui.btnSubmitNote.disabled = false;
+            ui.btnSubmitNote.classList.remove("is-loading");
+          }
+        });
+
+        ui.modalNotesStack.addEventListener("click", (e) => {
+          const btn = e.target.closest(".btn-report");
+          if (!btn) return;
+
+          ui.btnSubmitReport.disabled = false;
+          ui.btnSubmitReport.classList.remove("is-loading");
+
+          ui.reportTitle.textContent = btn.dataset.title;
+          ui.reportContext.textContent = `${btn.dataset.course} • ${formatReadableDate(state.selectedDate)}`;
+          ui.reportForm.dataset.targetRow = btn.dataset.row;
+
+          ui.reportModal.showModal();
+        });
+
+        ui.reportForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const row = ui.reportForm.dataset.targetRow;
+          const key = `reported_row_${row}`;
+
+          if (safeStorage.get(key)) {
+            ui.reportModal.close();
+            showToast("You have already reported this link.", "error");
+            return;
+          }
+
+          ui.btnSubmitReport.disabled = true;
+          ui.btnSubmitReport.classList.add("is-loading");
+
+          try {
+            await syncData({ type: "report", row });
+            safeStorage.set(key, "true");
+            ui.reportModal.close();
+            showToast("Thank you. Link report has been recorded.");
+          } catch (err) {
+            showToast("Could not submit report. Check internet.", "error");
+          } finally {
+            ui.btnSubmitReport.disabled = false;
+            ui.btnSubmitReport.classList.remove("is-loading");
+          }
+        });
+      }
+
+      function init() {
+        const codes = config.departments.map(d => d.code);
+        renderSelectOptions(ui.dept, codes);
+        renderSelectOptions(ui.formDept, codes);
+
+        ui.formDate.max = formatDateKey(new Date());
+
+        syncDropdownStates();
+        bindEvents();
+        render();
+        loadNotes();
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    })();
+  </script>
 </body>
 </html>
