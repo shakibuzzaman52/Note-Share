@@ -180,10 +180,6 @@
       return;
     }
 
-    if (!uniqueDates.includes(state.selectedDate)) {
-      state.selectedDate = uniqueDates[uniqueDates.length - 1];
-    }
-
     container.innerHTML = uniqueDates.map(dateStr => {
       const d = new Date(dateStr + "T00:00:00");
       const count = courseNotes.filter(n => n.date === dateStr).length;
@@ -264,7 +260,7 @@
     renderNotes();
   }
 
-  // fetch notes from sheet
+  // fetch notes from sheet (এখন সাধারণ এবং ফিক্সড, তারিখ পরিবর্তন করবে না)
   async function fetchNotes() {
     if (!API_URL) return;
     try {
@@ -272,14 +268,7 @@
       const data = await res.json();
       if (data?.success && Array.isArray(data.notes)) {
         state.notes = data.notes;
-
-        const matches = getSectionApprovedNotes();
-        if (matches.length > 0 && !matches.some(n => n.date === state.selectedDate)) {
-          state.selectedDate = matches[0].date;
-          const [y, m] = matches[0].date.split("-");
-          state.viewDate = new Date(y, m - 1, 1);
-        }
-        render();
+        render(); // শুধু নোটস আপডেট করে রেন্ডার করবে
       }
     } catch (e) {
       console.warn("fetch error:", e);

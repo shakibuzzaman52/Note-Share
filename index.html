@@ -436,12 +436,20 @@
       color: #FFFFFF !important;
     }
 
-    /* আজকের দিন হাইলাইট (যদি সিলেক্টেড না থাকে) */
+    /* আজকের দিন হাইলাইট (আজকের তারিখ ছাড়া অন্য ডেট সিলেক্ট করা থাকলে এটি গোলাপি হবে) */
     #calendar-grid td.today:not(.selected) {
-      background-color: #F4EFE6;
-      color: var(--accent-blue);
+      background-color: var(--bg-pink-pill) !important;
+      color: var(--text-main) !important;
       font-weight: 700;
-      box-shadow: inset 0 0 0 2px var(--accent-blue);
+    }
+
+    #calendar-grid td.today:not(.selected):hover {
+      background-color: #f5b5e7 !important;
+      color: var(--text-main) !important;
+    }
+
+    #calendar-grid td.today:not(.selected) .note-bullet {
+      color: var(--text-main) !important;
     }
 
     /* ভবিষ্যতের দিন ডিজেবল্ড স্টাইল */
