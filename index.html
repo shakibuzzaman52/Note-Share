@@ -63,10 +63,10 @@
     }
 
     .shell {
-      max-width: 1240px;
+      max-width: 1200px;
       width: 100%;
       margin: 0 auto;
-      padding: 0 clamp(1rem, 4vw, 3rem);
+      padding: 0 clamp(1rem, 4vw, 2.5rem);
     }
 
     /* Core button primitives */
@@ -122,7 +122,7 @@
     .btn--dark {
       background-color: var(--brand-dark);
       color: #FFFFFF;
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 1.15rem;
       font-size: 0.8125rem;
     }
     .btn--dark:hover:not(:disabled) {
@@ -137,15 +137,23 @@
       background-color: var(--bg-hover);
     }
 
+    /* Subtle Navigation Button with SVG Arrow */
     .btn--subtle {
       background-color: var(--bg-canvas);
       color: var(--text-main);
       border: 1px solid #DFD8CC;
       padding: 0.5rem 1rem;
       font-size: 0.8125rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
     }
     .btn--subtle:hover:not(:disabled) {
       background-color: #EAE3D5;
+    }
+    .btn--subtle svg {
+      display: inline-block;
+      flex-shrink: 0;
     }
 
     .btn--danger {
@@ -238,7 +246,7 @@
 
     /* Hero */
     .hero {
-      padding: 3.5rem 1rem 2rem;
+      padding: 3rem 1rem 1.75rem;
       text-align: center;
       max-width: 760px;
       margin: 0 auto;
@@ -251,7 +259,7 @@
       line-height: 1.15;
       letter-spacing: -0.02em;
       color: var(--text-main);
-      margin-bottom: 1rem;
+      margin-bottom: 0.85rem;
     }
 
     .hero__desc {
@@ -266,7 +274,7 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: 1rem 1.5rem;
+      padding: 0.85rem 1.5rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -315,12 +323,22 @@
       padding: 2rem;
     }
 
+    /* ========================================================
+       CALENDAR VIEW: COMPACT GAP & BEAUTIFUL CHEVRONS
+       ======================================================== */
+    #calendar-view {
+      background: transparent;
+      border: none;
+      padding: 1rem 0;
+    }
+
+    /* Tightened Nav Divider to remove excessive gap */
     .calendar-nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.25rem;
+      margin-bottom: 0.85rem; /* Gap significantly reduced */
+      padding-bottom: 0.85rem; /* Compact padding */
       border-bottom: 1px solid var(--border-subtle);
       flex-wrap: wrap;
       gap: 1rem;
@@ -328,134 +346,173 @@
 
     .calendar-nav__title {
       font-family: var(--font-display);
-      font-size: 2rem;
+      font-size: 2.75rem;
       font-weight: 400;
       letter-spacing: -0.02em;
+      color: var(--text-main);
+      line-height: 1;
     }
 
     .calendar-nav__actions {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.45rem;
     }
 
-    /* Table grid */
     .calendar-grid {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0 0.85rem;
+      border: none;
       table-layout: fixed;
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      overflow: hidden;
+      overflow: visible;
     }
 
+    /* Clean compact Day Header Row */
     .calendar-grid th {
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.14em;
       color: var(--text-subtle);
-      padding: 0.85rem 0.25rem;
+      padding: 0.25rem 0.25rem 0.75rem; /* Reduced top padding */
       text-align: center;
-      background: #FAF7F2;
-      border-bottom: 1px solid var(--border-table);
-      border-right: 1px solid var(--border-table);
-    }
-
-    .calendar-grid th:last-child {
-      border-right: 0;
+      background: transparent;
+      border: none;
     }
 
     .calendar-cell {
-      height: 70px;
+      height: 56px;
       text-align: center;
       vertical-align: middle;
-      font-weight: 600;
-      font-size: 0.9375rem;
-      color: var(--text-main);
-      background: #FFFFFF;
-      border-right: 1px solid var(--border-table);
-      border-bottom: 1px solid var(--border-table);
+      background: transparent;
+      border: none;
+      padding: 0;
       position: relative;
+      overflow: visible;
     }
 
-    .calendar-cell:last-child {
-      border-right: 0;
-    }
-
-    .calendar-grid tr:last-child .calendar-cell {
-      border-bottom: 0;
-    }
-
-    /* Cell states */
-    .calendar-cell--empty,
-    .calendar-cell--disabled {
+    .calendar-cell--empty {
       pointer-events: none;
-      background: var(--bg-muted);
     }
 
-    .calendar-cell--disabled {
-      color: var(--text-disabled);
+    /* Container for Circle + Ribbon */
+    .calendar-day-box {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      cursor: pointer;
     }
 
+    /* 1. Date Circle (Foreground: z-index 2) */
     .calendar-cell__btn {
-      width: 100%;
-      height: 100%;
+      width: 48px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      background: transparent;
+      z-index: 2;
+      background-color: var(--bg-pill); /* #ECE6DB */
+      border: 1px solid #DFD7CA;
       font: inherit;
-      color: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      border-radius: 50%;
       cursor: pointer;
-      transition: background-color 0.15s ease, color 0.15s ease;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
-    .calendar-cell:hover .calendar-cell__btn {
-      background: #F4EFE6;
+    /* 2. Ribbon: EXACT SAME COLOR, BORDER & FONT AS CIRCLE */
+    .calendar-cell__ribbon {
+      position: absolute;
+      top: 0;
+      left: 24px;
+      height: 22px;
+      background-color: var(--bg-pill);
+      border: 1px solid #DFD7CA;
+      color: var(--text-main);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      line-height: 20px;
+      padding-left: 28px;
+      padding-right: 9px;
+      white-space: nowrap;
+      border-radius: 0;
+      z-index: 1;
+      pointer-events: none;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .calendar-cell__ribbon .ribbon-text {
+      display: inline;
+    }
+
+    /* Unified Hover State */
+    .calendar-day-box:hover .calendar-cell__btn:not(:disabled) {
+      background-color: var(--bg-hover);
+      border-color: #D2C8B8;
       color: var(--brand-primary);
     }
 
+    .calendar-day-box:hover .calendar-cell__ribbon {
+      background-color: var(--bg-hover);
+      border-color: #D2C8B8;
+    }
+
+    /* Today state */
     .calendar-cell--today .calendar-cell__btn {
       background-color: var(--bg-accent-soft);
+      border-color: #F0BCE7;
       color: var(--text-main);
       font-weight: 700;
     }
 
-    .calendar-cell--today:hover .calendar-cell__btn {
-      background-color: var(--bg-accent-soft-hover);
+    .calendar-cell--today .calendar-cell__ribbon {
+      background-color: var(--bg-accent-soft);
+      border-color: #F0BCE7;
+      color: var(--text-main);
+      font-weight: 600;
     }
 
+    /* Selected state */
     .calendar-cell--selected .calendar-cell__btn {
       background-color: var(--brand-primary) !important;
+      border-color: var(--brand-primary) !important;
       color: #FFFFFF !important;
       font-weight: 700;
     }
 
-    /* Note indicator via pseudo-element */
-    .calendar-cell.has-notes .calendar-cell__btn::after {
-      content: '•';
-      position: absolute;
-      bottom: 0.4rem;
-      font-size: 1.15rem;
-      line-height: 1;
-      color: var(--brand-primary);
+    .calendar-cell--selected .calendar-cell__ribbon {
+      background-color: var(--brand-primary) !important;
+      border-color: var(--brand-primary) !important;
+      color: #FFFFFF !important;
     }
 
-    .calendar-cell--selected.has-notes .calendar-cell__btn::after {
-      color: #FFFFFF;
+    /* Disabled/Future Dates */
+    .calendar-cell--disabled {
+      pointer-events: none;
     }
 
-    .calendar-cell--today.has-notes:not(.calendar-cell--selected) .calendar-cell__btn::after {
-      color: var(--text-main);
+    .calendar-cell--disabled .calendar-cell__btn {
+      background-color: transparent !important;
+      border: none !important;
+      color: var(--text-disabled) !important;
+      opacity: 0.4;
+      cursor: default;
     }
 
     .calendar-legend {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       color: var(--text-subtle);
       font-size: 0.8125rem;
     }
@@ -488,7 +545,7 @@
       gap: 0.85rem;
     }
 
-    /* Modern Course Date Card */
+    /* Course Date Card */
     .course-card {
       background: #FFFFFF;
       border: 1px solid var(--border-subtle);
@@ -499,7 +556,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
       text-align: left;
     }
 
@@ -536,7 +593,6 @@
       white-space: nowrap;
     }
 
-    /* Selected Card & Solved Hover Bug */
     .course-card--selected {
       background-color: var(--brand-primary) !important;
       border-color: var(--brand-primary) !important;
@@ -612,7 +668,6 @@
       gap: 1.25rem;
     }
 
-    /* Clean Minimalist Notes Layout (No Clutter, No Heavy Nested Boxes) */
     .note-cluster {
       padding-bottom: 0.75rem;
       border-bottom: 1px solid var(--border-subtle);
@@ -729,9 +784,7 @@
       border-radius: var(--radius-md);
       font-size: 0.875rem;
       font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      animation: toastIn 0.2s ease;
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      transition: opacity 0.25s ease;
     }
 
     .toast--success {
@@ -742,23 +795,37 @@
       border-left: 4px solid var(--brand-danger);
     }
 
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
+    /* Responsive (Mobile View) */
     @media (max-width: 640px) {
       .site-header { padding: 1.25rem 1rem; }
-      .hero { padding: 2.5rem 1rem 1.5rem; }
+      .hero { padding: 2rem 1rem 1.25rem; }
       .filter-bar { padding: 1rem; }
       .filter-bar__select { width: 100%; min-width: 0; }
       .filter-bar__badge { margin-left: 0; width: 100%; justify-content: center; }
       .panel-card { padding: 1.25rem 1rem; }
-      .calendar-cell { height: 50px; font-size: 0.8125rem; }
+      .calendar-nav__title { font-size: 2.15rem; }
+      .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
+      .calendar-grid { border-spacing: 0 0.4rem; }
+      .calendar-cell { height: 46px; }
+      .calendar-day-box { width: 38px; height: 38px; }
+      .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
+      
+      .calendar-cell__ribbon {
+        top: 0;
+        left: 19px;
+        height: 18px;
+        line-height: 16px;
+        font-size: 0.65rem;
+        padding-left: 22px;
+        padding-right: 6px;
+      }
+      .calendar-cell__ribbon .ribbon-text {
+        display: none !important;
+      }
       .dialog-modal { padding: 1.5rem 1.25rem; }
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
@@ -792,13 +859,25 @@
 
     <main class="content-area">
       <!-- Full calendar -->
-      <section class="panel-card" id="calendar-view">
+      <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
           <div class="calendar-nav__actions">
-            <button type="button" class="btn btn--subtle" id="cal-prev">&lt; Prev</button>
+            <!-- Refined Prev Button with Vector Chevron -->
+            <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13L5 8L10 3"/>
+              </svg>
+              <span>Prev</span>
+            </button>
             <button type="button" class="btn btn--dark" id="cal-today">Today</button>
-            <button type="button" class="btn btn--subtle" id="cal-next">Next &gt;</button>
+            <!-- Refined Next Button with Vector Chevron -->
+            <button type="button" class="btn btn--subtle" id="cal-next" aria-label="Next Month">
+              <span>Next</span>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 3L11 8L6 13"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -810,7 +889,7 @@
           </thead>
           <tbody id="calendar-cells"></tbody>
         </table>
-        <p class="calendar-legend"><small>* Days with notes show a bullet (•)</small></p>
+        <p class="calendar-legend"><small>* Days with notes show a tab with note count</small></p>
       </section>
 
       <!-- Course specific view -->
@@ -1016,7 +1095,6 @@
         return `${parseInt(day, 10)} ${MONTH_NAMES[parseInt(month, 10) - 1]} ${year}`;
       }
 
-      /* Clean Pluralization without bracketed (s) */
       function pluralize(count, singular, plural) {
         return `${count} ${count === 1 ? singular : plural}`;
       }
@@ -1056,7 +1134,6 @@
 
         setTimeout(() => {
           toast.style.opacity = "0";
-          toast.style.transform = "translateY(8px)";
           setTimeout(() => toast.remove(), 250);
         }, 3200);
       }
@@ -1164,7 +1241,15 @@
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const notes = filterActiveNotes();
-        const datesWithNotes = new Set(notes.map(n => n.date));
+
+        // Count notes per date
+        const notesCountMap = {};
+        notes.forEach(n => {
+          if (n.date) {
+            notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1;
+          }
+        });
+
         const todayKey = formatDateKey(new Date());
 
         let markup = "<tr>";
@@ -1185,7 +1270,11 @@
           const isFuture = dateKey > todayKey;
           const isToday = dateKey === todayKey;
           const isSelected = dateKey === state.selectedDate;
-          const hasNotes = datesWithNotes.has(dateKey);
+          const noteCount = notesCountMap[dateKey] || 0;
+          const hasNotes = noteCount > 0;
+          
+          /* Full text on desktop, only number on mobile */
+          const badgeMarkup = `<span class="ribbon-count">${noteCount}</span><span class="ribbon-text"> ${noteCount === 1 ? 'note' : 'notes'}</span>`;
 
           const classes = [
             "calendar-cell",
@@ -1197,9 +1286,12 @@
 
           markup += `
             <td class="${classes}" data-date="${dateKey}">
-              <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""}>
-                <span>${d}</span>
-              </button>
+              <div class="calendar-day-box">
+                <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""}>
+                  <span>${d}</span>
+                </button>
+                ${hasNotes ? `<span class="calendar-cell__ribbon" title="${noteCount} ${noteCount === 1 ? 'note' : 'notes'}">${badgeMarkup}</span>` : ""}
+              </div>
             </td>
           `;
           col++;
@@ -1214,7 +1306,6 @@
         ui.calendarCells.innerHTML = markup;
       }
 
-      /* Cleaned Course Dates Agenda Cards with Solved Hover State */
       function renderCourseDates() {
         const courseNotes = filterActiveNotes().filter(n => n.course === state.course);
         const uniqueDates = [...new Set(courseNotes.map(n => n.date))].sort();
@@ -1245,7 +1336,6 @@
         }).join("");
       }
 
-      /* Simple, Minimalist, Elegant Notes Modal Layout (No Clutter) */
       function renderModalNotes() {
         ui.modalDateLabel.textContent = `Date: ${formatReadableDate(state.selectedDate)}`;
 
@@ -1339,7 +1429,6 @@
       }
 
       function bindEvents() {
-        /* Backdrop Click to Dismiss */
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
             const rect = modal.getBoundingClientRect();
