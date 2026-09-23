@@ -16,12 +16,14 @@
       --bg-subtle: #EAE4D9;
       --bg-hover: #E2DBD0;
       --bg-pill: #ECE6DB;
-      --bg-accent-soft: #F8C6EC;
-      --bg-accent-soft-hover: #F5B5E7;
-      --bg-muted: #FAF8F5;
+
+      /* Highlights only for dates containing notes */
+      --bg-has-notes: #FDE68A;
+      --bg-has-notes-hover: #FCD34D;
+      --border-has-notes: #F59E0B;
+      --text-has-notes: #78350F;
 
       --border-subtle: #E5DFD3;
-      --border-table: #ECE6DC;
 
       --text-main: #181716;
       --text-muted: #3C3833;
@@ -137,7 +139,6 @@
       background-color: var(--bg-hover);
     }
 
-    /* Subtle Navigation Button with SVG Arrow */
     .btn--subtle {
       background-color: var(--bg-canvas);
       color: var(--text-main);
@@ -168,12 +169,18 @@
     .badge {
       display: inline-flex;
       align-items: center;
-      background: var(--bg-accent-soft);
+      background: var(--bg-subtle);
       color: var(--text-main);
       font-family: var(--font-display);
       font-style: italic;
       border-radius: var(--radius-full);
       padding: 0.2rem 0.8rem;
+    }
+
+    /* Hero "class notes" badge */
+    .hero__title .badge {
+      background-color: var(--bg-has-notes);
+      color: var(--text-main);
     }
 
     /* Form controls */
@@ -324,7 +331,7 @@
     }
 
     /* ========================================================
-       CALENDAR VIEW: COMPACT GAP & BEAUTIFUL CHEVRONS
+       CALENDAR VIEW
        ======================================================== */
     #calendar-view {
       background: transparent;
@@ -332,13 +339,12 @@
       padding: 1rem 0;
     }
 
-    /* Tightened Nav Divider to remove excessive gap */
     .calendar-nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.85rem; /* Gap significantly reduced */
-      padding-bottom: 0.85rem; /* Compact padding */
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
       flex-wrap: wrap;
       gap: 1rem;
@@ -365,17 +371,16 @@
       border-spacing: 0 0.85rem;
       border: none;
       table-layout: fixed;
-      overflow: visible;
     }
 
-    /* Clean compact Day Header Row */
+    /* Calendar Day Names: Darker and bolder for clear visibility */
     .calendar-grid th {
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.78rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-subtle);
-      padding: 0.25rem 0.25rem 0.75rem; /* Reduced top padding */
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      padding: 0.25rem 0.25rem 0.75rem;
       text-align: center;
       background: transparent;
       border: none;
@@ -388,37 +393,21 @@
       background: transparent;
       border: none;
       padding: 0;
-      position: relative;
-      overflow: visible;
     }
 
     .calendar-cell--empty {
       pointer-events: none;
     }
 
-    /* Container for Circle + Ribbon */
-    .calendar-day-box {
-      position: relative;
+    /* Date Button */
+    .calendar-cell__btn {
       width: 48px;
       height: 48px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: visible;
-      cursor: pointer;
-    }
-
-    /* 1. Date Circle (Foreground: z-index 2) */
-    .calendar-cell__btn {
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 2;
-      background-color: var(--bg-pill); /* #ECE6DB */
+      background-color: var(--bg-pill);
       border: 1px solid #DFD7CA;
       font: inherit;
       font-weight: 600;
@@ -429,70 +418,49 @@
       transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
-    /* 2. Ribbon: EXACT SAME COLOR, BORDER & FONT AS CIRCLE */
-    .calendar-cell__ribbon {
-      position: absolute;
-      top: 0;
-      left: 24px;
-      height: 22px;
-      background-color: var(--bg-pill);
-      border: 1px solid #DFD7CA;
+    /* Default Day Hover */
+    .calendar-cell__btn:hover:not(:disabled) {
+      background-color: var(--bg-hover);
+      border-color: #D2C8B8;
       color: var(--text-main);
-      font-size: 0.6875rem;
-      font-weight: 600;
-      line-height: 20px;
-      padding-left: 28px;
-      padding-right: 9px;
-      white-space: nowrap;
-      border-radius: 0;
-      z-index: 1;
-      pointer-events: none;
-      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
-    .calendar-cell__ribbon .ribbon-text {
-      display: inline;
+    /* Days With Notes (Other days with notes) */
+    .calendar-cell.has-notes .calendar-cell__btn {
+      background-color: var(--bg-has-notes);
+      border-color: var(--border-has-notes);
+      color: var(--text-has-notes);
+      font-weight: 700;
     }
 
-    /* Unified Hover State */
-    .calendar-day-box:hover .calendar-cell__btn:not(:disabled) {
-      background-color: var(--bg-hover);
-      border-color: #D2C8B8;
-      color: var(--brand-primary);
+    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
+      background-color: var(--bg-has-notes-hover);
+      border-color: var(--border-has-notes);
+      color: var(--text-has-notes);
     }
 
-    .calendar-day-box:hover .calendar-cell__ribbon {
-      background-color: var(--bg-hover);
-      border-color: #D2C8B8;
-    }
-
-    /* Today state */
+    /* Today (No notes): Subtle Black outline */
     .calendar-cell--today .calendar-cell__btn {
-      background-color: var(--bg-accent-soft);
-      border-color: #F0BCE7;
-      color: var(--text-main);
+      border: 2px solid var(--text-main);
       font-weight: 700;
     }
 
-    .calendar-cell--today .calendar-cell__ribbon {
-      background-color: var(--bg-accent-soft);
-      border-color: #F0BCE7;
-      color: var(--text-main);
-      font-weight: 600;
+    .calendar-cell--today .calendar-cell__btn:hover:not(:disabled) {
+      border: 2px solid var(--text-main);
     }
 
-    /* Selected state */
-    .calendar-cell--selected .calendar-cell__btn {
-      background-color: var(--brand-primary) !important;
-      border-color: var(--brand-primary) !important;
-      color: #FFFFFF !important;
+    /* Today WITH Notes: Note Background + Solid Black Outline */
+    .calendar-cell--today.has-notes .calendar-cell__btn {
+      background-color: var(--bg-has-notes);
+      border: 2px solid var(--text-main);
+      color: var(--text-has-notes);
       font-weight: 700;
     }
 
-    .calendar-cell--selected .calendar-cell__ribbon {
-      background-color: var(--brand-primary) !important;
-      border-color: var(--brand-primary) !important;
-      color: #FFFFFF !important;
+    .calendar-cell--today.has-notes .calendar-cell__btn:hover:not(:disabled) {
+      background-color: var(--bg-has-notes-hover);
+      border: 2px solid var(--text-main);
+      color: var(--text-has-notes);
     }
 
     /* Disabled/Future Dates */
@@ -506,15 +474,6 @@
       color: var(--text-disabled) !important;
       opacity: 0.4;
       cursor: default;
-    }
-
-    .calendar-legend {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      margin-top: 1.5rem;
-      color: var(--text-subtle);
-      font-size: 0.8125rem;
     }
 
     /* Course specific view */
@@ -560,7 +519,7 @@
       text-align: left;
     }
 
-    .course-card:hover:not(.course-card--selected) {
+    .course-card:hover {
       background: #FAF7F2;
       border-color: #DDD4C3;
     }
@@ -591,30 +550,6 @@
       font-size: 0.75rem;
       font-weight: 600;
       white-space: nowrap;
-    }
-
-    .course-card--selected {
-      background-color: var(--brand-primary) !important;
-      border-color: var(--brand-primary) !important;
-      color: #FFFFFF !important;
-    }
-
-    .course-card--selected:hover {
-      background-color: var(--brand-primary-hover) !important;
-      border-color: var(--brand-primary-hover) !important;
-    }
-
-    .course-card--selected .course-card__date {
-      color: #FFFFFF !important;
-    }
-
-    .course-card--selected .course-card__day {
-      color: rgba(255, 255, 255, 0.8) !important;
-    }
-
-    .course-card--selected .course-card__badge {
-      background: rgba(255, 255, 255, 0.2) !important;
-      color: #FFFFFF !important;
     }
 
     /* Modals */
@@ -799,7 +734,7 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Responsive (Mobile View) */
+    /* Responsive */
     @media (max-width: 640px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding: 2rem 1rem 1.25rem; }
@@ -811,21 +746,7 @@
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
-      .calendar-day-box { width: 38px; height: 38px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
-      
-      .calendar-cell__ribbon {
-        top: 0;
-        left: 19px;
-        height: 18px;
-        line-height: 16px;
-        font-size: 0.65rem;
-        padding-left: 22px;
-        padding-right: 6px;
-      }
-      .calendar-cell__ribbon .ribbon-text {
-        display: none !important;
-      }
       .dialog-modal { padding: 1.5rem 1.25rem; }
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
@@ -858,12 +779,10 @@
     </section>
 
     <main class="content-area">
-      <!-- Full calendar -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
           <div class="calendar-nav__actions">
-            <!-- Refined Prev Button with Vector Chevron -->
             <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 13L5 8L10 3"/>
@@ -871,7 +790,6 @@
               <span>Prev</span>
             </button>
             <button type="button" class="btn btn--dark" id="cal-today">Today</button>
-            <!-- Refined Next Button with Vector Chevron -->
             <button type="button" class="btn btn--subtle" id="cal-next" aria-label="Next Month">
               <span>Next</span>
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -889,10 +807,8 @@
           </thead>
           <tbody id="calendar-cells"></tbody>
         </table>
-        <p class="calendar-legend"><small>* Days with notes show a tab with note count</small></p>
       </section>
 
-      <!-- Course specific view -->
       <section class="panel-card course-dates-view" id="course-view" hidden>
         <div class="course-dates__header">
           <h3 class="course-dates__title" id="course-view-title"></h3>
@@ -1012,7 +928,7 @@
         sec: config.departments[0]?.sections[0] || "",
         course: "ALL",
         viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
-        selectedDate: formatDateKey(now),
+        activeDate: null,
         notes: [],
         manualTitleEdited: false
       };
@@ -1207,10 +1123,11 @@
       function calculateDefaultTitle() {
         if (state.manualTitleEdited) return;
         const activeCourse = ui.formCourse.value;
+        const targetDate = ui.formDate.value || state.activeDate || formatDateKey(new Date());
         const existingCount = state.notes.filter(note =>
           note.department === ui.formDept.value &&
           note.section === ui.formSec.value &&
-          note.date === (ui.formDate.value || state.selectedDate) &&
+          note.date === targetDate &&
           (!activeCourse || note.course === activeCourse)
         ).length;
 
@@ -1226,8 +1143,8 @@
       }
 
       function openDateDetails(dateKey) {
-        state.selectedDate = dateKey;
-        render();
+        state.activeDate = dateKey;
+        renderModalNotes();
         if (!ui.notesModal.open) {
           ui.notesModal.showModal();
         }
@@ -1242,7 +1159,6 @@
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const notes = filterActiveNotes();
 
-        // Count notes per date
         const notesCountMap = {};
         notes.forEach(n => {
           if (n.date) {
@@ -1269,29 +1185,23 @@
           const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
           const isFuture = dateKey > todayKey;
           const isToday = dateKey === todayKey;
-          const isSelected = dateKey === state.selectedDate;
           const noteCount = notesCountMap[dateKey] || 0;
           const hasNotes = noteCount > 0;
-          
-          /* Full text on desktop, only number on mobile */
-          const badgeMarkup = `<span class="ribbon-count">${noteCount}</span><span class="ribbon-text"> ${noteCount === 1 ? 'note' : 'notes'}</span>`;
 
           const classes = [
             "calendar-cell",
-            isSelected ? "calendar-cell--selected" : "",
             isToday ? "calendar-cell--today" : "",
             isFuture ? "calendar-cell--disabled" : "",
             hasNotes ? "has-notes" : ""
           ].filter(Boolean).join(" ");
 
+          const noteTooltip = hasNotes ? `title="${noteCount} ${noteCount === 1 ? 'note' : 'notes'}"` : "";
+
           markup += `
             <td class="${classes}" data-date="${dateKey}">
-              <div class="calendar-day-box">
-                <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""}>
-                  <span>${d}</span>
-                </button>
-                ${hasNotes ? `<span class="calendar-cell__ribbon" title="${noteCount} ${noteCount === 1 ? 'note' : 'notes'}">${badgeMarkup}</span>` : ""}
-              </div>
+              <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${noteTooltip}>
+                ${d}
+              </button>
             </td>
           `;
           col++;
@@ -1321,11 +1231,10 @@
         ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
           const dateObj = parseLocalDate(dateStr);
           const noteCount = courseNotes.filter(n => n.date === dateStr).length;
-          const isSelected = dateStr === state.selectedDate;
           const day = DAY_NAMES[dateObj.getDay()] || "";
 
           return `
-            <div class="course-card ${isSelected ? 'course-card--selected' : ''}" data-date="${escapeHtml(dateStr)}">
+            <div class="course-card" data-date="${escapeHtml(dateStr)}">
               <div class="course-card__info">
                 <span class="course-card__date">${formatReadableDate(dateStr)}</span>
                 <span class="course-card__day">${day}</span>
@@ -1337,9 +1246,10 @@
       }
 
       function renderModalNotes() {
-        ui.modalDateLabel.textContent = `Date: ${formatReadableDate(state.selectedDate)}`;
+        if (!state.activeDate) return;
+        ui.modalDateLabel.textContent = `Date: ${formatReadableDate(state.activeDate)}`;
 
-        let notes = filterActiveNotes().filter(n => n.date === state.selectedDate);
+        let notes = filterActiveNotes().filter(n => n.date === state.activeDate);
         if (state.course !== "ALL") {
           notes = notes.filter(n => n.course === state.course);
         }
@@ -1424,8 +1334,6 @@
         } else {
           renderCourseDates();
         }
-
-        renderModalNotes();
       }
 
       function bindEvents() {
@@ -1442,6 +1350,10 @@
               modal.close();
             }
           });
+        });
+
+        ui.notesModal.addEventListener("close", () => {
+          state.activeDate = null;
         });
 
         ui.dept.addEventListener("change", (e) => {
@@ -1475,7 +1387,6 @@
         ui.todayBtn.addEventListener("click", () => {
           const current = new Date();
           state.viewDate = new Date(current.getFullYear(), current.getMonth(), 1);
-          state.selectedDate = formatDateKey(current);
           render();
         });
 
@@ -1501,7 +1412,7 @@
           ui.formDept.value = state.dept;
           syncFormDropdowns();
           ui.formSec.value = state.sec;
-          ui.formDate.value = state.selectedDate > today ? today : state.selectedDate;
+          ui.formDate.value = (state.activeDate && state.activeDate <= today) ? state.activeDate : today;
 
           if (state.course !== "ALL") {
             ui.formCourse.value = state.course;
@@ -1565,7 +1476,7 @@
           ui.btnSubmitReport.classList.remove("is-loading");
 
           ui.reportTitle.textContent = btn.dataset.title;
-          ui.reportContext.textContent = `${btn.dataset.course} • ${formatReadableDate(state.selectedDate)}`;
+          ui.reportContext.textContent = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
           ui.reportForm.dataset.targetRow = btn.dataset.row;
 
           ui.reportModal.showModal();
