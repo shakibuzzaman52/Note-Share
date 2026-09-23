@@ -124,7 +124,7 @@
     let dayCol = 0;
 
     for (let i = 0; i < firstDay; i++) {
-      html += "<td></td>";
+      html += "<td class=\"empty\"></td>";
       dayCol++;
     }
 
@@ -136,13 +136,21 @@
 
       const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
       const isFuture = dateKey > todayKey;
+      const isToday = dateKey === todayKey;
       const isSelected = dateKey === state.selectedDate;
       const hasNotes = noteDates.has(dateKey);
 
+      const cellClasses = [
+        "cal-cell",
+        isSelected ? "selected" : "",
+        isToday ? "today" : "",
+        isFuture ? "future" : ""
+      ].filter(Boolean).join(" ");
+
       html += `
-        <td>
-          <button type="button" class="cal-day" data-date="${dateKey}" ${isFuture ? "disabled" : ""}>
-            ${isSelected ? `[${d}]` : d} ${hasNotes ? "•" : ""}
+        <td class="${cellClasses}" data-date="${dateKey}">
+          <button type="button" class="cal-day" data-date="${dateKey}" ${isFuture ? "disabled" : ""} aria-label="${d} ${MONTHS[month]} ${year}">
+            <span>${d}</span>${hasNotes ? '<span class="note-bullet">•</span>' : ""}
           </button>
         </td>
       `;
@@ -150,7 +158,7 @@
     }
 
     while (dayCol < 7 && dayCol > 0) {
-      html += "<td></td>";
+      html += "<td class=\"empty\"></td>";
       dayCol++;
     }
     html += "</tr>";
@@ -182,9 +190,9 @@
       const isSelected = dateStr === state.selectedDate;
 
       return `
-        <div>
+        <div class="course-date-card ${isSelected ? 'selected' : ''}" data-date="${dateStr}">
           <button type="button" class="course-date-btn" data-date="${dateStr}">
-            ${isSelected ? ">> " : ""}${formatDisplayDate(dateStr)} (${DAYS[d.getDay()] || ""}) - ${count} note(s)
+            ${formatDisplayDate(dateStr)} (${DAYS[d.getDay()] || ""}) - ${count} note(s)
           </button>
         </div>
       `;
@@ -322,23 +330,23 @@
       render();
     };
 
-    // ক্যালেন্ডারের ডেট বাটনে ক্লিক করলে পপআপ মোডালটি ওপেন হবে
+    // ক্যালেন্ডারের পুরো সেলে ক্লিক কার্যকর করা
     $("calendar-grid").onclick = e => {
-      const btn = e.target.closest(".cal-day[data-date]:not(:disabled)");
-      if (btn) {
-        state.selectedDate = btn.dataset.date;
-        render();
-        if (!notesModal.open) {
-          notesModal.showModal();
-        }
+      const cell = e.target.closest("td[data-date]");
+      if (!cell || cell.classList.contains("future") || cell.classList.contains("empty")) return;
+
+      state.selectedDate = cell.dataset.date;
+      render();
+      if (!notesModal.open) {
+        notesModal.showModal();
       }
     };
 
-    // কোর্স ডেটস লিস্টে ক্লিক করলে পপআপ মোডালটি ওপেন হবে
+    // কোর্স ডেটস লিস্টে ক্লিক কার্যকর করা
     $("course-dates-list").onclick = e => {
-      const btn = e.target.closest(".course-date-btn[data-date]");
-      if (btn) {
-        state.selectedDate = btn.dataset.date;
+      const card = e.target.closest("[data-date]");
+      if (card) {
+        state.selectedDate = card.dataset.date;
         render();
         if (!notesModal.open) {
           notesModal.showModal();
