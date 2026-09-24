@@ -276,7 +276,6 @@
 
     /* ========================================================
        FULL PAGE SCALE 4-COLUMN INLINE FILTERS
-       (NO SHADOW, NO TRANSFORM, EXPANDED ROOMY DROPDOWN)
     ======================================================== */
     .nav-filters {
       display: grid;
@@ -349,7 +348,7 @@
       top: calc(100% + 5px);
       left: 0;
       width: max-content;
-      min-width: min(240px, 100%);
+      min-width: min(280px, calc(100vw - 2rem));
       max-width: min(420px, calc(100vw - 2rem));
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
@@ -565,7 +564,7 @@
       font-size: 2.25rem;
       font-weight: 400;
       color: var(--text-main);
-      line-height: 1.1;
+      line-1.1;
     }
 
     .course-dates__count {
@@ -1253,7 +1252,6 @@
         }).join("");
       }
 
-      /* চওড়া ও পূর্ণাঙ্গ টেক্সট সম্বলিত ড্রপডাউন অপশন */
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         let html = "";
         if (includeAll) {
