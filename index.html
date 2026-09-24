@@ -276,7 +276,7 @@
 
     /* ========================================================
        FULL PAGE SCALE 4-COLUMN INLINE FILTERS
-       (NO SHADOW, NO TRANSFORM, 100% SIMPLE & FLAT)
+       (NO SHADOW, NO TRANSFORM, EXPANDED ROOMY DROPDOWN)
     ======================================================== */
     .nav-filters {
       display: grid;
@@ -343,19 +343,20 @@
       color: var(--text-muted);
     }
 
-    /* ফ্ল্যাট সিম্পল ড্রপডাউন মেনু (NO SHADOW, NO TRANSFORM) */
+    /* পর্যাপ্ত চওড়া ও স্বাভাবিক ফ্ল্যাট মেনু (NO SHADOW, NO TRANSFORM, NO '...' CUTOFF) */
     .nav-filter__menu {
       position: absolute;
       top: calc(100% + 5px);
       left: 0;
-      min-width: 130px;
-      width: 100%;
+      width: max-content;
+      min-width: min(240px, 100%);
+      max-width: min(420px, calc(100vw - 2rem));
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 0.3rem 0;
+      padding: 0.35rem 0;
       z-index: 150;
-      max-height: 220px;
+      max-height: 260px;
       overflow-y: auto;
       box-shadow: none !important;
       transform: none !important;
@@ -365,7 +366,7 @@
       display: none !important;
     }
 
-    /* ডানপাশের ফিল্টারগুলো যাতে স্ক্রিনের বাইরে কেটে না যায় */
+    /* ডানপাশের কোর্স ও টপিক যাতে ডান প্রান্ত ঘেঁষে সুন্দরভাবে থাকে */
     .nav-filter__item:nth-child(3) .nav-filter__menu,
     .nav-filter__item:nth-child(4) .nav-filter__menu {
       left: auto;
@@ -373,9 +374,10 @@
     }
 
     .nav-filter__option {
-      display: block;
+      display: flex;
+      align-items: center;
       width: 100%;
-      padding: 0.5rem 0.8rem;
+      padding: 0.55rem 0.95rem;
       background: transparent;
       border: none !important;
       outline: none !important;
@@ -387,9 +389,9 @@
       color: var(--text-main);
       text-align: left;
       cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.4;
       transition: background-color 0.12s ease;
     }
 
@@ -875,7 +877,7 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Custom Clean Flat Filter Bar (No Shadow, No Transform) -->
+    <!-- Full-page scaled 4-column filter bar -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
       <!-- 1. Department -->
       <div class="nav-filter__item" data-filter="dept">
@@ -1244,7 +1246,6 @@
         return config.departments.find(d => d.code === code) || config.departments[0];
       }
 
-      /* Modal form-এর সাধারণ <select> রেন্ডার */
       function renderFormOptions(selectEl, list, prefix = "") {
         selectEl.innerHTML = list.map(item => {
           const display = prefix ? `${prefix} ${item}` : item;
@@ -1252,7 +1253,7 @@
         }).join("");
       }
 
-      /* ফ্ল্যাট কাস্টম মেনু আইটেম তৈরি (সিম্পল নো-শ্যাডো ডিজাইন) */
+      /* চওড়া ও পূর্ণাঙ্গ টেক্সট সম্বলিত ড্রপডাউন অপশন */
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         let html = "";
         if (includeAll) {
@@ -1268,7 +1269,6 @@
         container.innerHTML = html;
       }
 
-      /* ড্রপডাউন খোলা ও বন্ধ করার ফাংশন */
       function closeAllMenus() {
         [ui.deptMenu, ui.secMenu, ui.courseMenu, ui.topicMenu].forEach(menu => {
           if (menu) menu.hidden = true;
@@ -1332,7 +1332,7 @@
         state.course = activeDept.courses.includes(state.course) || state.course === "ALL" ? state.course : "ALL";
         renderMenuOptions(ui.courseMenu, activeDept.courses, state.course, true, "All Courses");
 
-        // Form modals
+        // Modal Form options
         renderFormOptions(ui.formSec, activeDept.sections, "Sec");
         renderFormOptions(ui.formCourse, activeDept.courses);
 
@@ -1631,14 +1631,14 @@
       }
 
       function bindEvents() {
-        // বাইরে ক্লিক করলে ওপেন থাকা মেনু বন্ধ হবে
+        // বাইরে ক্লিক করলে ওপেন মেনু বন্ধ হওয়া
         document.addEventListener("click", (e) => {
           if (!e.target.closest(".nav-filter__item")) {
             closeAllMenus();
           }
         });
 
-        // ট্রিগার বাটনে ক্লিক
+        // ট্রিগার ক্লিক
         ui.deptTrigger.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleMenu(ui.deptMenu, ui.deptTrigger);
@@ -1659,7 +1659,7 @@
           toggleMenu(ui.topicMenu, ui.topicTrigger);
         });
 
-        // ডিপার্টমেন্ট মেনুর অপশন সিলেক্ট
+        // ডিপার্টমেন্ট সিলেক্ট
         ui.deptMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1670,7 +1670,7 @@
           render();
         });
 
-        // সেকশন মেনুর অপশন সিলেক্ট
+        // সেকশন সিলেক্ট
         ui.secMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1681,7 +1681,7 @@
           render();
         });
 
-        // কোর্স মেনুর অপশন সিলেক্ট
+        // কোর্স সিলেক্ট
         ui.courseMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1691,7 +1691,7 @@
           render();
         });
 
-        // টপিক মেনুর অপশন সিলেক্ট
+        // টপিক সিলেক্ট
         ui.topicMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1701,7 +1701,7 @@
           render();
         });
 
-        // মডাল ক্লোজ
+        // মডাল ব্যাকড্রপ ক্লোজ
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
             const rect = modal.getBoundingClientRect();
