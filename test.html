@@ -455,7 +455,7 @@
       display: flex;
       align-items: center;
       gap: 0.45rem;
-      flex-shrink: 0; /* বাটনগুলো চাপ খাবে না */
+      flex-shrink: 0;
     }
 
     .calendar-grid {
@@ -856,7 +856,7 @@
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
 
-      /* মোবাইল ডিভাইসে এক লাইনে সুন্দরভাবে প্রদর্শন */
+      /* হেডার এক লাইনে থাকবে */
       .calendar-nav {
         flex-wrap: nowrap;
         gap: 0.5rem;
@@ -864,28 +864,29 @@
         padding-bottom: 0.65rem;
       }
 
-      /* হেডিং সাইজ স্কেলেবল ও দৃশ্যমান থাকবে */
+      /* অরিজিনাল ফন্ট সাইজ সম্পূর্ণ বহাল রাখা হয়েছে */
       .calendar-nav__title {
-        font-size: clamp(1.5rem, 5.3vw, 2.15rem);
+        font-size: 2.15rem;
         white-space: nowrap;
+        line-height: 1;
       }
 
       .calendar-nav__actions {
-        gap: 0.35rem;
+        gap: 0.4rem;
         flex-shrink: 0;
       }
 
-      /* Prev এবং Next বাটনে মোবাইলে টেক্সট লুকানো থাকবে */
+      /* মোবাইলে Prev ও Next-এর শুধু আইকন থাকবে */
       #cal-prev .cal-nav-btn__text,
       #cal-next .cal-nav-btn__text {
         display: none;
       }
 
-      /* বাটনের সাইজ ছোট না করে আরামদায়ক টাচ সাইজ রাখা হয়েছে */
+      /* বাটনের সাইজ ছোট করা হয়নি (আগের মতোই স্বাভাবিক সাইজ) */
       #cal-prev,
       #cal-next {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         padding: 0;
         display: inline-flex;
         align-items: center;
@@ -893,14 +894,8 @@
         border-radius: var(--radius-full);
       }
 
-      #cal-prev svg,
-      #cal-next svg {
-        width: 14px;
-        height: 14px;
-      }
-
       #cal-today {
-        padding: 0.45rem 0.85rem;
+        padding: 0.5rem 1rem;
         font-size: 0.8125rem;
       }
 
