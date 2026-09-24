@@ -249,7 +249,7 @@
       margin-left: 2px;
     }
 
-    /* Hero Section */
+    /* Hero Section: প্রশস্ত ও আকর্ষণীয় স্পেসিং বজায় রাখা হয়েছে */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       padding-bottom: 0;
@@ -276,10 +276,10 @@
       color: var(--text-muted);
       max-width: 500px;
       line-height: 1.6;
-      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
+      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem); /* ডেসক্রিপশন ও ব্যানারের মাঝে প্রশস্ত ফাঁকা জায়গা */
     }
 
-    /* SELECTION BANNER */
+    /* SELECTION BANNER: ফিল্টারের কাছাকাছি কানেক্টেড */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -314,7 +314,7 @@
       border: none;
     }
 
-    /* FILTERS BAR */
+    /* FILTERS BAR: রেজাল্ট ও ব্যানারের সাথে সংযুক্ত */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -436,8 +436,8 @@
       margin-bottom: 0.85rem;
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
-      flex-wrap: nowrap; /* সর্বদা একই লাইনে থাকবে */
-      gap: 0.75rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .calendar-nav__title {
@@ -447,15 +447,12 @@
       letter-spacing: -0.02em;
       color: var(--text-main);
       line-height: 1;
-      white-space: nowrap;
-      margin: 0;
     }
 
     .calendar-nav__actions {
       display: flex;
       align-items: center;
       gap: 0.45rem;
-      flex-shrink: 0;
     }
 
     .calendar-grid {
@@ -816,6 +813,7 @@
       color: var(--brand-danger);
     }
 
+    /* TOAST: বর্ডার-রেডিয়াস আগের মতো (radius-md) এবং কোনো লাল দাগ নেই */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
@@ -832,73 +830,30 @@
       background: var(--brand-dark);
       color: #FFFFFF;
       padding: 0.75rem 1.25rem;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-md); /* আগের মতো radius-md */
       font-size: 0.875rem;
       font-weight: 500;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
       transition: opacity 0.25s ease;
-      border: none;
+      border: none; /* নো বর্ডার বা লাল দাগ */
     }
 
     .toast--success,
     .toast--error {
-      border-left: none;
+      border-left: none; /* সম্পূর্ণ লাল দাগ মুক্ত */
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    /* Responsive adjustments */
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding-top: 2rem; }
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
-
-      /* হেডার এক লাইনে থাকবে */
-      .calendar-nav {
-        flex-wrap: nowrap;
-        gap: 0.5rem;
-        margin-bottom: 0.65rem;
-        padding-bottom: 0.65rem;
-      }
-
-      /* অরিজিনাল ফন্ট সাইজ সম্পূর্ণ বহাল রাখা হয়েছে */
-      .calendar-nav__title {
-        font-size: 2.15rem;
-        white-space: nowrap;
-        line-height: 1;
-      }
-
-      .calendar-nav__actions {
-        gap: 0.4rem;
-        flex-shrink: 0;
-      }
-
-      /* মোবাইলে Prev ও Next-এর শুধু আইকন থাকবে */
-      #cal-prev .cal-nav-btn__text,
-      #cal-next .cal-nav-btn__text {
-        display: none;
-      }
-
-      /* বাটনের সাইজ ছোট করা হয়নি (আগের মতোই স্বাভাবিক সাইজ) */
-      #cal-prev,
-      #cal-next {
-        width: 38px;
-        height: 38px;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: var(--radius-full);
-      }
-
-      #cal-today {
-        padding: 0.5rem 1rem;
-        font-size: 0.8125rem;
-      }
-
+      .calendar-nav__title { font-size: 2.15rem; }
+      .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
@@ -987,11 +942,11 @@
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 13L5 8L10 3"/>
               </svg>
-              <span class="cal-nav-btn__text">Prev</span>
+              <span>Prev</span>
             </button>
             <button type="button" class="btn btn--dark" id="cal-today">Today</button>
             <button type="button" class="btn btn--subtle" id="cal-next" aria-label="Next Month">
-              <span class="cal-nav-btn__text">Next</span>
+              <span>Next</span>
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 3L11 8L6 13"/>
               </svg>
@@ -1258,6 +1213,7 @@
         return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
       }
 
+      // টোস্ট নোটিফিকেশন: ডুপ্লিকেট ছাড়া ক্লিন সিঙ্গেল মেসেজ
       function showToast(message) {
         ui.toastTray.innerHTML = "";
 
@@ -1361,6 +1317,7 @@
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
+        // ১. শুরুতে ডিপার্টমেন্ট সিলেক্ট না থাকলে
         if (!hasSelectedDept) {
           ui.selectionBanner.innerHTML = `
             Please select your <span class="badge">department</span> to get started
@@ -1368,6 +1325,7 @@
           return;
         }
 
+        // ২. ডিপার্টমেন্ট হয়েছে কিন্তু সেকশন বাকি থাকলে
         if (!hasSelectedSec) {
           ui.selectionBanner.innerHTML = `
             <span class="badge">${escapeHtml(state.dept)}</span> &mdash; select <span class="badge">section</span>
@@ -1375,6 +1333,7 @@
           return;
         }
 
+        // ৩. ডিপার্টমেন্ট এবং সেকশন উভয়ই সিলেক্ট থাকলে
         ui.selectionBanner.innerHTML = `
           Viewing notes for <span class="badge">${escapeHtml(state.dept)} &mdash; Sec ${escapeHtml(state.sec)}</span>
         `;
@@ -1463,6 +1422,7 @@
 
       function openDateDetails(dateKey) {
         if (!hasSelectedDept || !hasSelectedSec) {
+          // সংক্ষিপ্ত মেসেজ
           showToast("Select Department & Section first");
           return;
         }
