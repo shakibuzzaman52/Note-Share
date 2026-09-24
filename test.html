@@ -249,7 +249,7 @@
       margin-left: 2px;
     }
 
-    /* Hero Section: প্রশস্ত ও আকর্ষণীয় স্পেসিং বজায় রাখা হয়েছে */
+    /* Hero Section */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       padding-bottom: 0;
@@ -276,10 +276,10 @@
       color: var(--text-muted);
       max-width: 500px;
       line-height: 1.6;
-      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem); /* ডেসক্রিপশন ও ব্যানারের মাঝে প্রশস্ত ফাঁকা জায়গা */
+      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
-    /* SELECTION BANNER: ফিল্টারের কাছাকাছি কানেক্টেড */
+    /* Selection Banner */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -314,7 +314,7 @@
       border: none;
     }
 
-    /* FILTERS BAR: রেজাল্ট ও ব্যানারের সাথে সংযুক্ত */
+    /* Filters Bar */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -436,8 +436,8 @@
       margin-bottom: 0.85rem;
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
-      flex-wrap: wrap;
-      gap: 1rem;
+      flex-wrap: nowrap; /* কোনো লাইনে ভাঙবে না */
+      gap: 0.75rem;
     }
 
     .calendar-nav__title {
@@ -447,12 +447,14 @@
       letter-spacing: -0.02em;
       color: var(--text-main);
       line-height: 1;
+      white-space: nowrap;
     }
 
     .calendar-nav__actions {
       display: flex;
       align-items: center;
       gap: 0.45rem;
+      flex-shrink: 0;
     }
 
     .calendar-grid {
@@ -813,7 +815,7 @@
       color: var(--brand-danger);
     }
 
-    /* TOAST: বর্ডার-রেডিয়াস আগের মতো (radius-md) এবং কোনো লাল দাগ নেই */
+    /* TOAST: বর্ডার রেডিয়াস আগের মতো এবং কোনো লাল দাগ নেই */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
@@ -835,25 +837,58 @@
       font-weight: 500;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
       transition: opacity 0.25s ease;
-      border: none; /* নো বর্ডার বা লাল দাগ */
+      border: none;
     }
 
     .toast--success,
     .toast--error {
-      border-left: none; /* সম্পূর্ণ লাল দাগ মুক্ত */
+      border-left: none;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
+    /* MOBILE RESPONSIVE TWEAKS */
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
-      .hero { padding-top: 2rem; }
+      .hero { padding-top: 2.25rem; }
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
-      .calendar-nav__title { font-size: 2.15rem; }
-      .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
+
+      /* মোবাইলে সেপ্টেম্বর ২০২৬ এবং বাটনগুলো একই লাইনে থাকবে */
+      .calendar-nav {
+        flex-wrap: nowrap;
+        gap: 0.35rem;
+        margin-bottom: 0.65rem;
+        padding-bottom: 0.65rem;
+      }
+      .calendar-nav__title {
+        font-size: clamp(1.35rem, 5vw, 1.8rem);
+        white-space: nowrap;
+      }
+      .calendar-nav__actions {
+        gap: 0.3rem;
+        flex-shrink: 0;
+      }
+
+      /* মোবাইলে Prev ও Next বাটনের টেক্সট হাইড হয়ে শুধু আইকন থাকবে */
+      #cal-prev span,
+      #cal-next span {
+        display: none;
+      }
+      #cal-prev,
+      #cal-next {
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        justify-content: center;
+      }
+      #cal-today {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+      }
+
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
@@ -1213,7 +1248,7 @@
         return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
       }
 
-      // টোস্ট নোটিফিকেশন: ডুপ্লিকেট ছাড়া ক্লিন সিঙ্গেল মেসেজ
+      // টোস্ট নোটিফিকেশন: ডুপ্লিকেট ছাড়া সিঙ্গেল মেসেজ
       function showToast(message) {
         ui.toastTray.innerHTML = "";
 
@@ -1422,7 +1457,6 @@
 
       function openDateDetails(dateKey) {
         if (!hasSelectedDept || !hasSelectedSec) {
-          // সংক্ষিপ্ত মেসেজ
           showToast("Select Department & Section first");
           return;
         }
