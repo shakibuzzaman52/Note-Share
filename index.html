@@ -276,7 +276,7 @@
 
     /* ========================================================
        FULL PAGE SCALE 4-COLUMN INLINE FILTERS
-       (NO SHADOW, NO TRANSFORM, EXPANDED ROOMY DROPDOWN)
+       (NO SHADOW, NO TRANSFORM, EXPANDED 300px+ ROOMY DROPDOWN)
     ======================================================== */
     .nav-filters {
       display: grid;
@@ -343,20 +343,20 @@
       color: var(--text-muted);
     }
 
-    /* পর্যাপ্ত চওড়া ও স্বাভাবিক ফ্ল্যাট মেনু (NO SHADOW, NO TRANSFORM, NO '...' CUTOFF) */
+    /* কমপক্ষে ৩০০px এবং আরও প্রশস্ত ফ্ল্যাট মেনু */
     .nav-filter__menu {
       position: absolute;
       top: calc(100% + 5px);
       left: 0;
       width: max-content;
-      min-width: min(240px, 100%);
-      max-width: min(420px, calc(100vw - 2rem));
+      min-width: min(300px, calc(100vw - 2rem));
+      max-width: min(460px, calc(100vw - 2rem));
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.35rem 0;
       z-index: 150;
-      max-height: 260px;
+      max-height: 270px;
       overflow-y: auto;
       box-shadow: none !important;
       transform: none !important;
@@ -377,7 +377,7 @@
       display: flex;
       align-items: center;
       width: 100%;
-      padding: 0.55rem 0.95rem;
+      padding: 0.55rem 1rem;
       background: transparent;
       border: none !important;
       outline: none !important;
