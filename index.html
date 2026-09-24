@@ -13,23 +13,19 @@
     :root {
       --bg-canvas: #F4EFE6;
       --bg-surface: #FFFFFF;
-      --bg-subtle: #EAE4D9;
+      --bg-subtle: #EBE5DA;
       --bg-hover: #E2DBD0;
       --bg-pill: #ECE6DB;
 
       /* Highlights for notes */
       --bg-has-notes: #FDE68A;
       --bg-has-notes-hover: #FCD34D;
-      --border-has-notes: #F59E0B;
       --text-has-notes: #78350F;
 
-      --border-subtle: #DFD7CA;
-      --border-line: #E2DAD0;
-
       --text-main: #181716;
-      --text-muted: #3C3833;
-      --text-subtle: #8A847A;
-      --text-disabled: #B8B0A5;
+      --text-muted: #4A463F;
+      --text-subtle: #8E887E;
+      --text-disabled: #BDB6AA;
 
       --brand-primary: #0A37F5;
       --brand-primary-hover: #072CC4;
@@ -40,8 +36,8 @@
       --brand-success: #16A34A;
 
       --radius-full: 9999px;
-      --radius-lg: 16px;
-      --radius-md: 10px;
+      --radius-lg: 20px;
+      --radius-md: 12px;
 
       --font-display: 'Instrument Serif', Georgia, serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -62,11 +58,11 @@
       font-size: 15px;
       line-height: 1.5;
       min-height: 100vh;
-      padding-bottom: 4rem;
+      padding-bottom: 5rem;
     }
 
     .shell {
-      max-width: 1200px;
+      max-width: 1160px;
       width: 100%;
       margin: 0 auto;
       padding: 0 clamp(1rem, 4vw, 2.5rem);
@@ -81,17 +77,18 @@
       font-family: inherit;
       font-size: 0.875rem;
       font-weight: 600;
-      padding: 0.625rem 1.25rem;
+      padding: 0.65rem 1.35rem;
       border-radius: var(--radius-full);
       cursor: pointer;
       text-decoration: none;
       white-space: nowrap;
-      transition: background-color 0.15s ease;
+      border: none;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
     }
 
     .btn:disabled {
       cursor: not-allowed;
-      opacity: 0.6;
+      opacity: 0.55;
     }
 
     .btn.is-loading {
@@ -121,7 +118,7 @@
     .btn--dark {
       background-color: var(--brand-dark);
       color: #FFFFFF;
-      padding: 0.5rem 1.15rem;
+      padding: 0.55rem 1.25rem;
       font-size: 0.8125rem;
     }
     .btn--dark:hover:not(:disabled) {
@@ -137,21 +134,16 @@
     }
 
     .btn--subtle {
-      background-color: var(--bg-canvas);
+      background-color: var(--bg-pill);
       color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      padding: 0.5rem 1rem;
+      padding: 0.55rem 1.15rem;
       font-size: 0.8125rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
     }
     .btn--subtle:hover:not(:disabled) {
       background-color: var(--bg-hover);
-    }
-    .btn--subtle svg {
-      display: inline-block;
-      flex-shrink: 0;
     }
 
     .btn--danger {
@@ -171,7 +163,7 @@
       font-family: var(--font-display);
       font-style: italic;
       border-radius: var(--radius-full);
-      padding: 0.2rem 0.8rem;
+      padding: 0.25rem 0.9rem;
     }
 
     .hero__title .badge {
@@ -179,7 +171,7 @@
       color: var(--text-main);
     }
 
-    /* Modal Form Controls */
+    /* Form controls (Modals) */
     .field {
       margin-bottom: 1rem;
     }
@@ -203,6 +195,7 @@
       font-family: inherit;
       font-size: 0.9375rem;
       color: var(--text-main);
+      border: none;
       transition: background-color 0.15s ease;
     }
 
@@ -219,20 +212,20 @@
       background-position: right 1rem center;
     }
 
-    /* Header */
+    /* Site Header */
     .site-header {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.5rem clamp(1rem, 4vw, 3.5rem);
-      background: var(--bg-canvas);
+      padding: 1.75rem clamp(1rem, 4vw, 3.5rem);
+      background: transparent;
     }
 
     .brand-mark {
       font-family: var(--font-display);
       font-style: italic;
-      font-size: 1.875rem;
+      font-size: 2rem;
       letter-spacing: -0.02em;
       color: var(--text-main);
       line-height: 1;
@@ -249,7 +242,7 @@
 
     /* Hero */
     .hero {
-      padding: 3rem 1rem 1rem;
+      padding: 2.5rem 1rem 1rem;
       text-align: center;
       max-width: 760px;
       margin: 0 auto;
@@ -257,63 +250,61 @@
 
     .hero__title {
       font-family: var(--font-display);
-      font-size: clamp(2.25rem, 4vw, 3.75rem);
+      font-size: clamp(2.5rem, 5vw, 4rem);
       font-weight: 400;
-      line-height: 1.15;
+      line-height: 1.1;
       letter-spacing: -0.02em;
       color: var(--text-main);
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.75rem;
     }
 
     .hero__desc {
-      font-size: 1rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
       max-width: 520px;
       margin: 0 auto;
     }
 
     /* ========================================================
-       BEAUTIFUL & SIMPLE INLINE FILTER
+       NEW BORDERLESS & CLEAN CONTEXT FILTER
        ======================================================== */
     .filter-wrapper {
-      margin: 1.25rem auto 1.75rem;
+      margin: 1.5rem auto 2.5rem;
       text-align: center;
       width: 100%;
     }
 
-    /* Prominent, large, clean trigger button */
+    /* Borderless, soft, large trigger */
     .filter-trigger-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
       background-color: var(--bg-pill);
-      border: 1px solid var(--border-subtle);
       color: var(--text-main);
-      padding: 0.65rem 1.6rem;
+      padding: 0.75rem 1.85rem;
       border-radius: var(--radius-full);
       cursor: pointer;
+      border: none;
       font-family: inherit;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      max-width: 90vw;
+      transition: background-color 0.15s ease;
+      max-width: 92vw;
     }
 
     .filter-trigger-btn:hover {
       background-color: var(--bg-hover);
-      border-color: #D2C8B8;
     }
 
     .filter-trigger-btn__text {
-      font-size: 1.2rem;
+      font-size: 1.35rem;
       font-weight: 600;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
       line-height: 1.2;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    /* Sharp, bespoke SVG Chevron */
     .filter-trigger-btn__icon {
       width: 18px;
       height: 18px;
@@ -326,17 +317,15 @@
       transform: rotate(180deg);
     }
 
-    /* Simple Inline Drawer (Opens below in normal page flow) */
+    /* Borderless Inline Drawer */
     .filter-drawer {
       margin-top: 1.25rem;
-      padding: 1.15rem 0;
-      border-top: 1px solid var(--border-line);
-      border-bottom: 1px solid var(--border-line);
+      padding: 0.5rem 0;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 1.25rem;
+      gap: 1rem 1.5rem;
     }
 
     .filter-drawer[hidden] {
@@ -346,48 +335,42 @@
     .filter-item {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.55rem;
     }
 
     .filter-item label {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       color: var(--text-subtle);
       white-space: nowrap;
     }
 
-    /* Clean Pill-style Dropdown */
+    /* Soft borderless pill select */
     .filter-select {
       background-color: var(--bg-pill);
-      border: 1px solid var(--border-subtle);
       color: var(--text-main);
       font-family: inherit;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 600;
       border-radius: var(--radius-full);
-      padding: 0.5rem 2.2rem 0.5rem 1rem;
+      padding: 0.55rem 2.25rem 0.55rem 1.15rem;
       cursor: pointer;
+      border: none;
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%233C3833' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 0.9rem center;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      max-width: 280px;
+      background-position: right 1rem center;
+      transition: background-color 0.15s ease;
+      max-width: 290px;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .filter-select:hover {
-      background-color: var(--bg-hover);
-      border-color: #D2C8B8;
-    }
-
+    .filter-select:hover,
     .filter-select:focus {
-      outline: none;
       background-color: var(--bg-hover);
-      border-color: var(--brand-dark);
     }
 
     /* Content Area */
@@ -396,7 +379,7 @@
     }
 
     /* ========================================================
-       CALENDAR VIEW
+       CALENDAR VIEW (Border-free, Clean Air)
        ======================================================== */
     #calendar-view {
       background: transparent;
@@ -408,16 +391,16 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.85rem;
-      padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border: none;
       flex-wrap: wrap;
       gap: 1rem;
     }
 
     .calendar-nav__title {
       font-family: var(--font-display);
-      font-size: 2.75rem;
+      font-size: 3rem;
       font-weight: 400;
       letter-spacing: -0.02em;
       color: var(--text-main);
@@ -427,7 +410,7 @@
     .calendar-nav__actions {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.5rem;
     }
 
     .calendar-grid {
@@ -439,19 +422,19 @@
     }
 
     .calendar-grid th {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      color: var(--text-muted);
-      padding: 0.25rem 0.25rem 0.75rem;
+      color: var(--text-subtle);
+      padding: 0.25rem 0.25rem 0.85rem;
       text-align: center;
       background: transparent;
       border: none;
     }
 
     .calendar-cell {
-      height: 56px;
+      height: 58px;
       text-align: center;
       vertical-align: middle;
       background: transparent;
@@ -464,50 +447,47 @@
     }
 
     .calendar-cell__btn {
-      width: 48px;
-      height: 48px;
+      width: 50px;
+      height: 50px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: var(--bg-pill);
-      border: 1px solid var(--border-subtle);
+      border: none;
       font: inherit;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--text-main);
       border-radius: 50%;
       cursor: pointer;
-      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      transition: background-color 0.15s ease, color 0.15s ease;
     }
 
     .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
-      border-color: #D2C8B8;
       color: var(--text-main);
     }
 
     .calendar-cell.has-notes .calendar-cell__btn {
       background-color: var(--bg-has-notes);
-      border-color: var(--border-has-notes);
       color: var(--text-has-notes);
       font-weight: 700;
     }
 
     .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-has-notes-hover);
-      border-color: var(--border-has-notes);
       color: var(--text-has-notes);
     }
 
     .calendar-cell--today .calendar-cell__btn {
-      border: 2px solid var(--text-main);
+      outline: 2px solid var(--text-main);
       font-weight: 700;
     }
 
     .calendar-cell--today.has-notes .calendar-cell__btn {
       background-color: var(--bg-has-notes);
-      border: 2px solid var(--text-main);
+      outline: 2px solid var(--text-main);
       color: var(--text-has-notes);
       font-weight: 700;
     }
@@ -520,11 +500,11 @@
       background-color: transparent !important;
       border: none !important;
       color: var(--text-disabled) !important;
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: default;
     }
 
-    /* Course Specific View */
+    /* Course View */
     .course-dates-view {
       background: transparent;
       border: none;
@@ -535,30 +515,30 @@
       display: flex;
       align-items: baseline;
       gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border: none;
       flex-wrap: wrap;
     }
 
     .course-dates__title {
       font-family: var(--font-display);
-      font-size: 2.25rem;
+      font-size: 2.5rem;
       font-weight: 400;
       color: var(--text-main);
       line-height: 1.1;
     }
 
     .course-dates__count {
-      font-size: 0.875rem;
+      font-size: 0.9rem;
       color: var(--text-subtle);
       font-weight: 600;
     }
 
     .course-dates__grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 0.85rem;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
       width: 100%;
     }
 
@@ -566,23 +546,23 @@
       display: block;
     }
 
+    /* Border-free Course Card */
     .course-card {
       background-color: var(--bg-pill);
-      border: 1px solid var(--border-subtle);
+      border: none;
       border-radius: var(--radius-md);
-      padding: 0.95rem 1.15rem;
+      padding: 1.1rem 1.25rem;
       cursor: pointer;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 0.75rem;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
+      transition: background-color 0.15s ease;
       text-align: left;
     }
 
     .course-card:hover {
       background-color: var(--bg-hover);
-      border-color: #D2C8B8;
     }
 
     .course-card__info {
@@ -593,13 +573,13 @@
 
     .course-card__date {
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--text-main);
       line-height: 1.3;
     }
 
     .course-card__day {
-      font-size: 0.8125rem;
+      font-size: 0.85rem;
       color: var(--text-subtle);
       font-weight: 500;
     }
@@ -607,9 +587,9 @@
     .course-card__badge {
       align-self: flex-start;
       background-color: var(--bg-subtle);
-      border: 1px solid #D8D0C3;
+      border: none;
       color: var(--text-muted);
-      padding: 0.2rem 0.65rem;
+      padding: 0.25rem 0.75rem;
       border-radius: var(--radius-full);
       font-size: 0.75rem;
       font-weight: 600;
@@ -621,36 +601,35 @@
       position: fixed;
       inset: 0;
       margin: auto;
-      max-width: 500px;
+      max-width: 520px;
       width: calc(100% - 2rem);
       background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
+      border: none;
       border-radius: var(--radius-lg);
-      padding: 2rem;
+      padding: 2.25rem;
       color: var(--text-main);
     }
 
     .dialog-modal::backdrop {
       background: rgba(24, 23, 22, 0.45);
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
       cursor: pointer;
     }
 
     .dialog-modal__header {
       padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border-subtle);
     }
 
     .dialog-modal__title {
       font-family: var(--font-display);
-      font-size: 1.75rem;
+      font-size: 1.85rem;
       font-weight: 400;
       letter-spacing: -0.02em;
       margin-bottom: 0.2rem;
     }
 
     .dialog-modal__desc {
-      font-size: 0.8125rem;
+      font-size: 0.85rem;
       color: var(--text-subtle);
       font-weight: 600;
     }
@@ -660,7 +639,7 @@
       align-items: center;
       justify-content: flex-end;
       gap: 0.75rem;
-      margin-top: 1.5rem;
+      margin-top: 1.75rem;
     }
 
     .notes-stack {
@@ -689,11 +668,11 @@
       width: 44px;
       height: 44px;
       color: var(--text-subtle);
-      opacity: 0.75;
+      opacity: 0.7;
     }
 
     .empty-state__text {
-      font-size: 0.9375rem;
+      font-size: 0.95rem;
       color: var(--text-subtle);
       font-weight: 500;
       max-width: 420px;
@@ -703,21 +682,20 @@
     .note-cluster {
       background-color: #FAF6EF;
       border-radius: var(--radius-md);
-      padding: 0.95rem 1.15rem;
+      padding: 1rem 1.25rem;
     }
 
     .note-cluster__course {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 0.4rem;
-      border: none;
     }
 
     .note-cluster__topic-group {
       margin-left: 1.1rem;
-      margin-top: 0.45rem;
-      margin-bottom: 0.65rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.75rem;
     }
 
     .note-cluster__topic-group:last-child {
@@ -744,20 +722,19 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      padding: 0.15rem 0;
-      border: none;
+      padding: 0.2rem 0;
     }
 
     .note-row__left {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      font-size: 0.9rem;
+      gap: 0.5rem;
+      font-size: 0.925rem;
     }
 
     .note-row__icon {
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
       color: var(--text-subtle);
       flex-shrink: 0;
     }
@@ -821,14 +798,6 @@
       transition: opacity 0.25s ease;
     }
 
-    .toast--success {
-      border-left: 4px solid var(--brand-success);
-    }
-
-    .toast--error {
-      border-left: 4px solid var(--brand-danger);
-    }
-
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
@@ -837,15 +806,14 @@
     @media (max-width: 640px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding: 2rem 1rem 1rem; }
-      .filter-trigger-btn__text { font-size: 1.05rem; }
+      .filter-trigger-btn__text { font-size: 1.15rem; }
       .filter-drawer { flex-direction: column; align-items: stretch; gap: 0.85rem; }
       .filter-item { justify-content: space-between; }
       .filter-select { max-width: 65%; }
-      .calendar-nav__title { font-size: 2.15rem; }
-      .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
+      .calendar-nav__title { font-size: 2.25rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
-      .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
+      .calendar-cell__btn { width: 40px; height: 40px; font-size: 0.875rem; }
       .dialog-modal { padding: 1.5rem 1.25rem; }
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
@@ -864,29 +832,29 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Clean, Large Trigger & Inline Dropdown Filter -->
+    <!-- Borderless, Large, Minimal Context Switcher -->
     <div class="filter-wrapper">
       <button type="button" class="filter-trigger-btn" id="filter-trigger" aria-expanded="false">
-        <span class="filter-trigger-btn__text" id="filter-trigger-text">ENG | Section 28_A</span>
+        <span class="filter-trigger-btn__text" id="filter-trigger-text">ENG · Section 28_A</span>
         <svg class="filter-trigger-btn__icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M5 7.5L10 12.5L15 7.5" />
         </svg>
       </button>
 
-      <!-- Inline Drawer: Simple, clean pill selects (No white card) -->
+      <!-- Clean Inline Drawer: Zero borders, pure soft pills -->
       <div class="filter-drawer" id="filter-drawer" hidden>
         <div class="filter-item">
-          <label for="dept-select">Department:</label>
+          <label for="dept-select">Department</label>
           <select class="filter-select" id="dept-select"></select>
         </div>
 
         <div class="filter-item">
-          <label for="section-select">Section:</label>
+          <label for="section-select">Section</label>
           <select class="filter-select" id="section-select"></select>
         </div>
 
         <div class="filter-item">
-          <label for="course-select">Course:</label>
+          <label for="course-select">Course</label>
           <select class="filter-select" id="course-select"></select>
         </div>
       </div>
@@ -1242,9 +1210,9 @@
 
       function syncTriggerLabel() {
         if (state.course === "ALL") {
-          ui.filterTriggerText.textContent = `${state.dept} | Section ${state.sec}`;
+          ui.filterTriggerText.textContent = `${state.dept} · Section ${state.sec}`;
         } else {
-          ui.filterTriggerText.textContent = `${state.dept} | Sec ${state.sec} • ${state.course}`;
+          ui.filterTriggerText.textContent = `${state.dept} · Sec ${state.sec} • ${state.course}`;
         }
       }
 
@@ -1536,12 +1504,10 @@
       }
 
       function bindEvents() {
-        // Toggle inline drawer
         ui.filterTrigger.addEventListener("click", () => {
           toggleFilterDrawer();
         });
 
-        // Dropdown changes
         ui.dept.addEventListener("change", (e) => {
           state.dept = e.target.value;
           syncDropdownStates();
@@ -1562,7 +1528,6 @@
           render();
         });
 
-        // Modals outside click
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
             const rect = modal.getBoundingClientRect();
