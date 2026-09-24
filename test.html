@@ -15,12 +15,6 @@
       --bg-hover: #E2DBD0;
       --bg-pill: #ECE6DB;
 
-      /* Highlights for dates containing notes (Yellow fully replaced with Blue) */
-      --bg-has-notes: #0A37F5;
-      --bg-has-notes-hover: #072CC4;
-      --border-has-notes: #0A37F5;
-      --text-has-notes: #FFFFFF;
-
       /* Class Notes Specific Pink Accent */
       --bg-class-notes-badge: #FFB4F9;
 
@@ -38,7 +32,6 @@
       --brand-dark-hover: #2B2A28;
       --brand-danger: #DC2626;
       --brand-danger-hover: #B91C1C;
-      --brand-success: #16A34A;
 
       --radius-full: 9999px;
       --radius-lg: 16px;
@@ -102,7 +95,6 @@
       opacity: 0.6;
     }
 
-    /* Add Note / Primary button - Blue */
     .btn--primary {
       background-color: var(--brand-primary);
       color: #FFFFFF;
@@ -182,7 +174,7 @@
       padding: 0.15rem 0.85rem;
     }
 
-    /* Only class notes gets the exact #FFB4F9 color */
+    /* Hero Title: class notes badge (#FFB4F9) */
     .hero__title .badge {
       background-color: var(--bg-class-notes-badge);
       color: var(--text-main);
@@ -308,17 +300,14 @@
       line-height: 1.35;
     }
 
-    /* Selection Banner Badge - Blue Highlight */
     .selection-banner .badge {
-      background-color: var(--bg-has-notes);
-      color: var(--text-has-notes);
+      background-color: var(--brand-primary);
+      color: #FFFFFF;
       font-family: var(--font-display);
       font-style: italic;
       font-size: 0.95em;
       padding: 0.15rem 0.85rem;
       border-radius: var(--radius-full);
-      box-shadow: none;
-      border: none;
     }
 
     /* FILTERS BAR */
@@ -512,32 +501,35 @@
       border-color: #D2C8B8;
     }
 
-    /* Calendar cells containing notes - Solid Blue with White Text */
-    .calendar-cell.has-notes .calendar-cell__btn {
-      background-color: var(--bg-has-notes);
-      border-color: var(--border-has-notes);
-      color: var(--text-has-notes);
-      font-weight: 700;
-    }
-
-    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      background-color: var(--bg-has-notes-hover);
-      border-color: var(--bg-has-notes-hover);
-    }
-
+    /* Today without notes: normal black border */
     .calendar-cell--today .calendar-cell__btn {
       border: 2px solid var(--text-main);
       font-weight: 700;
     }
 
+    /* Dates with notes: Only border is blue, not full blue */
+    .calendar-cell.has-notes .calendar-cell__btn {
+      background-color: var(--bg-pill);
+      border: 2px solid var(--brand-primary);
+      color: var(--brand-primary);
+      font-weight: 700;
+    }
+
+    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
+      background-color: var(--bg-hover);
+      border-color: var(--brand-primary-hover);
+    }
+
+    /* Today with notes: No black border, only blue border */
     .calendar-cell--today.has-notes .calendar-cell__btn {
-      background-color: var(--bg-has-notes);
-      color: var(--text-has-notes);
-      border: 2px solid var(--text-main);
+      border: 2px solid var(--brand-primary);
+      color: var(--brand-primary);
+      background-color: var(--bg-pill);
     }
 
     .calendar-cell--today.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      background-color: var(--bg-has-notes-hover);
+      background-color: var(--bg-hover);
+      border-color: var(--brand-primary-hover);
     }
 
     .calendar-cell--disabled {
@@ -846,11 +838,6 @@
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
       transition: opacity 0.25s ease;
       border: none;
-    }
-
-    .toast--success,
-    .toast--error {
-      border-left: none;
     }
 
     @keyframes spin {
@@ -1326,7 +1313,6 @@
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
-        // ১. শুরুতে ডিপার্টমেন্ট সিলেক্ট না থাকলে
         if (!hasSelectedDept) {
           ui.selectionBanner.innerHTML = `
             Select your <span class="badge">department</span>
@@ -1334,7 +1320,6 @@
           return;
         }
 
-        // ২. ডিপার্টমেন্ট হয়েছে কিন্তু সেকশন বাকি থাকলে
         if (!hasSelectedSec) {
           ui.selectionBanner.innerHTML = `
             <span class="badge">${escapeHtml(state.dept)}</span> &mdash; select <span class="badge">section</span>
@@ -1342,7 +1327,6 @@
           return;
         }
 
-        // ৩. ডিপার্টমেন্ট এবং সেকশন উভয়ই সিলেক্ট থাকলে
         ui.selectionBanner.innerHTML = `
           Viewing notes for <span class="badge">${escapeHtml(state.dept)} &mdash; Sec ${escapeHtml(state.sec)}</span>
         `;
