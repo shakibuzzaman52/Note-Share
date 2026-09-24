@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ClassNotes — Organized Lecture Notes</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --bg-canvas: #F4EFE6;
@@ -277,17 +275,13 @@
     }
 
     /* ========================================================
-       FULL PAGE SCALE 4-COLUMN INLINE FILTERS:
-       - Spans 100% of page scale (left to right)
-       - Expands to fill available space dynamically
-       - Truncates with ellipsis (...) only when space runs out
-       - No borders, no click outlines, 100% 1-line on all devices
+       FULL PAGE SCALE 4-COLUMN INLINE FILTERS
     ======================================================== */
     .nav-filters {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr)); /* Exactly 4 equal parts scaling across full page */
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: clamp(0.35rem, 1.5vw, 0.85rem);
-      width: 100%; /* Spans full page container from left edge to right edge */
+      width: 100%;
       margin: 0.5rem 0 1.5rem;
       padding: 0.85rem 0 1.25rem;
       border-bottom: 1px solid var(--border-subtle);
@@ -320,7 +314,6 @@
       background-color: var(--bg-hover);
     }
 
-    /* Zero outline or border color on click/tap */
     .nav-filter__item:focus,
     .nav-filter__item:focus-within,
     .nav-filter__item:active,
@@ -332,7 +325,6 @@
       -webkit-tap-highlight-color: transparent !important;
     }
 
-    /* Shows full text when space permits, gracefully truncates with ... when space runs out */
     .nav-filter__text {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -341,6 +333,7 @@
       min-width: 0;
     }
 
+    /* পারফেক্ট ব্যালান্সড ‘v’ তীর চিহ্ন (১১.৫ x ৭ পিক্সেল) */
     .nav-filter__arrow {
       pointer-events: none;
       flex-shrink: 0;
@@ -823,48 +816,46 @@
   </style>
 </head>
 <body>
-
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
     <button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button>
   </header>
-
   <div class="shell">
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Full-page scaled 4-column filter buttons (Dynamic width & safe truncation) -->
+    <!-- Full-page scaled 4-column filter buttons (একদম পারফেক্ট ১১.৫ x ৭ সাইজ) -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item">
-        <span class="nav-filter__text" id="dept-label">CSE</span>
-        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <span class="nav-filter__text" id="dept-label">Department</span>
+        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="dept-select" aria-label="Department"></select>
       </div>
 
       <div class="nav-filter__item">
-        <span class="nav-filter__text" id="sec-label">Sec 73_L</span>
-        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <span class="nav-filter__text" id="sec-label">Section</span>
+        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="section-select" aria-label="Section"></select>
       </div>
 
       <div class="nav-filter__item">
-        <span class="nav-filter__text" id="course-label">All Courses</span>
-        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <span class="nav-filter__text" id="course-label">Course</span>
+        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="course-select" aria-label="Course"></select>
       </div>
 
       <div class="nav-filter__item">
-        <span class="nav-filter__text" id="topic-label">All Topics</span>
-        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <span class="nav-filter__text" id="topic-label">Topic</span>
+        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="topic-select" aria-label="Topic">
           <option value="ALL">All Topics</option>
@@ -996,11 +987,8 @@
       </form>
     </dialog>
   </div>
-
   <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
-
   <script src="config.js"></script>
-
   <script>
     (function () {
       "use strict";
@@ -1033,6 +1021,9 @@
         notes: [],
         manualTitleEdited: false
       };
+
+      let hasSelectedDept = false;
+      let hasSelectedSec = false;
 
       const ui = {
         dept: document.getElementById("dept-select"),
@@ -1198,17 +1189,25 @@
       }
 
       function updateFilterLabels() {
-        if (ui.deptLabel && ui.dept && ui.dept.selectedIndex >= 0) {
-          ui.deptLabel.textContent = ui.dept.options[ui.dept.selectedIndex]?.text || state.dept;
+        if (ui.deptLabel) {
+          ui.deptLabel.textContent = hasSelectedDept
+            ? (ui.dept.options[ui.dept.selectedIndex]?.text || state.dept)
+            : "Department";
         }
-        if (ui.secLabel && ui.sec && ui.sec.selectedIndex >= 0) {
-          ui.secLabel.textContent = ui.sec.options[ui.sec.selectedIndex]?.text || state.sec;
+        if (ui.secLabel) {
+          ui.secLabel.textContent = hasSelectedSec
+            ? (ui.sec.options[ui.sec.selectedIndex]?.text || state.sec)
+            : "Section";
         }
-        if (ui.courseLabel && ui.course && ui.course.selectedIndex >= 0) {
-          ui.courseLabel.textContent = ui.course.options[ui.course.selectedIndex]?.text || "All Courses";
+        if (ui.courseLabel) {
+          ui.courseLabel.textContent = (state.course === "ALL" || !state.course)
+            ? "Course"
+            : (ui.course.options[ui.course.selectedIndex]?.text || state.course);
         }
-        if (ui.topicLabel && ui.topic && ui.topic.selectedIndex >= 0) {
-          ui.topicLabel.textContent = ui.topic.options[ui.topic.selectedIndex]?.text || "All Topics";
+        if (ui.topicLabel) {
+          ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic)
+            ? "Topic"
+            : (ui.topic.options[ui.topic.selectedIndex]?.text || state.topic);
         }
       }
 
@@ -1564,6 +1563,7 @@
         });
 
         ui.dept.addEventListener("change", (e) => {
+          hasSelectedDept = true;
           state.dept = e.target.value;
           syncDropdownStates();
           state.sec = ui.sec.value;
@@ -1574,6 +1574,7 @@
         });
 
         ui.sec.addEventListener("change", (e) => {
+          hasSelectedSec = true;
           state.sec = e.target.value;
           syncTopicDropdown();
           updateFilterLabels();
