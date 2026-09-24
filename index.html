@@ -48,8 +48,16 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    button, input, select {
+      font-family: inherit;
       border: 0;
       outline: 0;
+    }
+
+    button {
+      background: transparent;
     }
 
     body {
@@ -75,7 +83,6 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      font-family: inherit;
       font-size: 0.875rem;
       font-weight: 600;
       padding: 0.625rem 1.25rem;
@@ -91,32 +98,12 @@
       opacity: 0.6;
     }
 
-    .btn.is-loading {
-      pointer-events: none;
-      color: transparent !important;
-    }
-
-    .btn.is-loading::after {
-      content: '';
-      position: absolute;
-      width: 1rem;
-      height: 1rem;
-      border: 2px solid currentColor;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
     .btn--primary {
       background-color: var(--brand-primary);
       color: #FFFFFF;
     }
     .btn--primary:hover:not(:disabled) {
       background-color: var(--brand-primary-hover);
-    }
-    .btn--primary.is-loading::after {
-      border-color: #FFFFFF;
-      border-top-color: transparent;
     }
 
     .btn--dark {
@@ -151,7 +138,6 @@
       background-color: #EAE3D5;
     }
     .btn--subtle svg {
-      display: inline-block;
       flex-shrink: 0;
     }
 
@@ -161,6 +147,23 @@
     }
     .btn--danger:hover:not(:disabled) {
       background-color: var(--brand-danger-hover);
+    }
+
+    /* Placed after button modifiers so color: transparent overrides variant text colors without !important */
+    .btn.is-loading {
+      pointer-events: none;
+      color: transparent;
+    }
+
+    .btn.is-loading::after {
+      content: '';
+      position: absolute;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid #FFFFFF;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
     }
 
     /* Badges */
@@ -202,7 +205,6 @@
       background: var(--bg-subtle);
       border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
-      font-family: inherit;
       font-size: 0.9375rem;
       color: var(--text-main);
       transition: background-color 0.15s ease;
@@ -274,9 +276,7 @@
       margin: 0 auto;
     }
 
-    /* ========================================================
-       FULL PAGE SCALE 4-COLUMN INLINE FILTERS
-    ======================================================== */
+    /* Filters bar */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -290,7 +290,6 @@
 
     .nav-filter__item {
       position: relative;
-      width: 100%;
       min-width: 0;
     }
 
@@ -300,32 +299,20 @@
       justify-content: center;
       gap: clamp(0.2rem, 0.8vw, 0.45rem);
       background-color: var(--bg-subtle);
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-      transform: none !important;
-      -webkit-tap-highlight-color: transparent !important;
       border-radius: var(--radius-full);
       padding: 0.55rem clamp(0.35rem, 1vw, 1rem);
       color: var(--text-main);
-      font-family: inherit;
       font-size: clamp(0.75rem, 1.1vw, 0.875rem);
       font-weight: 600;
       cursor: pointer;
       user-select: none;
       width: 100%;
+      -webkit-tap-highlight-color: transparent;
       transition: background-color 0.15s ease;
     }
 
     .nav-filter__trigger:hover {
       background-color: var(--bg-hover);
-    }
-
-    .nav-filter__trigger:focus,
-    .nav-filter__trigger:active {
-      outline: none !important;
-      box-shadow: none !important;
-      transform: none !important;
     }
 
     .nav-filter__text {
@@ -342,7 +329,6 @@
       color: var(--text-muted);
     }
 
-    /* পর্যাপ্ত চওড়া ও স্বাভাবিক ফ্ল্যাট মেনু */
     .nav-filter__menu {
       position: absolute;
       top: calc(100% + 5px);
@@ -357,15 +343,12 @@
       z-index: 150;
       max-height: 260px;
       overflow-y: auto;
-      box-shadow: none !important;
-      transform: none !important;
     }
 
     .nav-filter__menu[hidden] {
-      display: none !important;
+      display: none;
     }
 
-    /* ডানপাশের কোর্স ও টপিক যাতে ডান প্রান্ত ঘেঁষে সুন্দরভাবে থাকে */
     .nav-filter__item:nth-child(3) .nav-filter__menu,
     .nav-filter__item:nth-child(4) .nav-filter__menu {
       left: auto;
@@ -377,18 +360,11 @@
       align-items: center;
       width: 100%;
       padding: 0.55rem 0.95rem;
-      background: transparent;
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-      transform: none !important;
-      font-family: inherit;
       font-size: 0.8125rem;
       font-weight: 500;
       color: var(--text-main);
       text-align: left;
       cursor: pointer;
-      white-space: normal;
       word-break: break-word;
       line-height: 1.4;
       transition: background-color 0.12s ease;
@@ -411,8 +387,6 @@
 
     /* CALENDAR VIEW */
     #calendar-view {
-      background: transparent;
-      border: none;
       padding: 1rem 0;
     }
 
@@ -446,7 +420,6 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0 0.85rem;
-      border: none;
       table-layout: fixed;
     }
 
@@ -458,16 +431,12 @@
       color: var(--text-muted);
       padding: 0.25rem 0.25rem 0.75rem;
       text-align: center;
-      background: transparent;
-      border: none;
     }
 
     .calendar-cell {
       height: 56px;
       text-align: center;
       vertical-align: middle;
-      background: transparent;
-      border: none;
       padding: 0;
     }
 
@@ -484,7 +453,6 @@
       justify-content: center;
       background-color: var(--bg-pill);
       border: 1px solid #DFD7CA;
-      font: inherit;
       font-weight: 600;
       font-size: 0.95rem;
       color: var(--text-main);
@@ -496,7 +464,6 @@
     .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
       border-color: #D2C8B8;
-      color: var(--text-main);
     }
 
     .calendar-cell.has-notes .calendar-cell__btn {
@@ -508,8 +475,6 @@
 
     .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-has-notes-hover);
-      border-color: var(--border-has-notes);
-      color: var(--text-has-notes);
     }
 
     .calendar-cell--today .calendar-cell__btn {
@@ -519,15 +484,11 @@
 
     .calendar-cell--today.has-notes .calendar-cell__btn {
       background-color: var(--bg-has-notes);
-      border: 2px solid var(--text-main);
       color: var(--text-has-notes);
-      font-weight: 700;
     }
 
     .calendar-cell--today.has-notes .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-has-notes-hover);
-      border: 2px solid var(--text-main);
-      color: var(--text-has-notes);
     }
 
     .calendar-cell--disabled {
@@ -535,17 +496,15 @@
     }
 
     .calendar-cell--disabled .calendar-cell__btn {
-      background-color: transparent !important;
-      border: none !important;
-      color: var(--text-disabled) !important;
+      background-color: transparent;
+      border-color: transparent;
+      color: var(--text-disabled);
       opacity: 0.4;
       cursor: default;
     }
 
     /* COURSE & TOPIC VIEW */
     .course-dates-view {
-      background: transparent;
-      border: none;
       padding: 1rem 0;
     }
 
@@ -730,7 +689,6 @@
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 0.4rem;
-      border: none;
     }
 
     .note-cluster__topic-group {
@@ -764,7 +722,6 @@
       justify-content: space-between;
       gap: 0.75rem;
       padding: 0.15rem 0;
-      border: none;
     }
 
     .note-row__left {
@@ -804,7 +761,6 @@
     }
 
     .btn-report {
-      background: transparent;
       color: var(--text-subtle);
       font-size: 0.75rem;
       font-weight: 500;
@@ -861,7 +817,6 @@
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
       
-      /* মোবাইলের জন্য অপ্টিমাইজড মেনু সাইজ */
       .nav-filter__menu {
         min-width: 170px;
         max-width: calc(100vw - 1.5rem);
@@ -883,7 +838,7 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Full-page scaled 4-column filter bar -->
+    <!-- 4-column filter bar -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
       <!-- 1. Department -->
       <div class="nav-filter__item" data-filter="dept">
@@ -929,7 +884,7 @@
         <div class="nav-filter__menu" id="topic-menu" hidden role="listbox"></div>
       </div>
 
-      <strong id="class-badge" style="display: none;"></strong>
+      <strong id="class-badge" hidden></strong>
     </nav>
 
     <main class="content-area">
@@ -1198,7 +1153,7 @@
         if (!input) return "";
         let trimmed = String(input).trim();
         if (!trimmed) return "";
-        if (!/^[a-zA-Z][a-zA-Z\d+\-.]*?:/i.test(trimmed)) {
+        if (!/^[a-zA-Z][a-zA-d+\-.]*?:/i.test(trimmed)) {
           trimmed = "https://" + trimmed;
         }
         return trimmed;
@@ -1337,7 +1292,6 @@
         state.course = activeDept.courses.includes(state.course) || state.course === "ALL" ? state.course : "ALL";
         renderMenuOptions(ui.courseMenu, activeDept.courses, state.course, true, "All Courses");
 
-        // Modal Form options
         renderFormOptions(ui.formSec, activeDept.sections, "Sec");
         renderFormOptions(ui.formCourse, activeDept.courses);
 
@@ -1636,14 +1590,12 @@
       }
 
       function bindEvents() {
-        // বাইরে ক্লিক করলে ওপেন মেনু বন্ধ হওয়া
         document.addEventListener("click", (e) => {
           if (!e.target.closest(".nav-filter__item")) {
             closeAllMenus();
           }
         });
 
-        // ট্রিগার ক্লিক
         ui.deptTrigger.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleMenu(ui.deptMenu, ui.deptTrigger);
@@ -1664,7 +1616,6 @@
           toggleMenu(ui.topicMenu, ui.topicTrigger);
         });
 
-        // ডিপার্টমেন্ট সিলেক্ট
         ui.deptMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1675,7 +1626,6 @@
           render();
         });
 
-        // সেকশন সিলেক্ট
         ui.secMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1686,7 +1636,6 @@
           render();
         });
 
-        // কোর্স সিলেক্ট
         ui.courseMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1696,7 +1645,6 @@
           render();
         });
 
-        // টপিক সিলেক্ট
         ui.topicMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1706,7 +1654,6 @@
           render();
         });
 
-        // মডাল ব্যাকড্রপ ক্লোজ
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
             const rect = modal.getBoundingClientRect();
