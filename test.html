@@ -21,6 +21,9 @@
       --border-has-notes: #F59E0B;
       --text-has-notes: #78350F;
 
+      /* Class Notes Specific Pink Accent */
+      --bg-class-notes-badge: #FFB4F9;
+
       --border-subtle: #E5DFD3;
 
       --text-main: #181716;
@@ -28,6 +31,7 @@
       --text-subtle: #8A847A;
       --text-disabled: #B8B0A5;
 
+      /* Brand Primary (Blue for Add Note as original) */
       --brand-primary: #0A37F5;
       --brand-primary-hover: #072CC4;
       --brand-dark: #181716;
@@ -98,6 +102,7 @@
       opacity: 0.6;
     }
 
+    /* Add Note / Primary button - Original Blue */
     .btn--primary {
       background-color: var(--brand-primary);
       color: #FFFFFF;
@@ -177,8 +182,9 @@
       padding: 0.15rem 0.85rem;
     }
 
+    /* Only class notes gets the exact #FFB4F9 color */
     .hero__title .badge {
-      background-color: var(--bg-has-notes);
+      background-color: var(--bg-class-notes-badge);
       color: var(--text-main);
     }
 
@@ -249,7 +255,7 @@
       margin-left: 2px;
     }
 
-    /* Hero Section: প্রশস্ত ও আকর্ষণীয় স্পেসিং বজায় রাখা হয়েছে */
+    /* Hero Section */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       padding-bottom: 0;
@@ -276,10 +282,10 @@
       color: var(--text-muted);
       max-width: 500px;
       line-height: 1.6;
-      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem); /* ডেসক্রিপশন ও ব্যানারের মাঝে প্রশস্ত ফাঁকা জায়গা */
+      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
-    /* SELECTION BANNER: ফিল্টারের কাছাকাছি কানেক্টেড */
+    /* SELECTION BANNER */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -302,6 +308,7 @@
       line-height: 1.35;
     }
 
+    /* Selection Banner Badge retains original yellow template */
     .selection-banner .badge {
       background-color: var(--bg-has-notes);
       color: var(--text-main);
@@ -314,7 +321,7 @@
       border: none;
     }
 
-    /* FILTERS BAR: রেজাল্ট ও ব্যানারের সাথে সংযুক্ত */
+    /* FILTERS BAR */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -813,7 +820,7 @@
       color: var(--brand-danger);
     }
 
-    /* TOAST: বর্ডার-রেডিয়াস আগের মতো (radius-md) এবং কোনো লাল দাগ নেই */
+    /* TOAST */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
@@ -830,17 +837,17 @@
       background: var(--brand-dark);
       color: #FFFFFF;
       padding: 0.75rem 1.25rem;
-      border-radius: var(--radius-md); /* আগের মতো radius-md */
+      border-radius: var(--radius-md);
       font-size: 0.875rem;
       font-weight: 500;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
       transition: opacity 0.25s ease;
-      border: none; /* নো বর্ডার বা লাল দাগ */
+      border: none;
     }
 
     .toast--success,
     .toast--error {
-      border-left: none; /* সম্পূর্ণ লাল দাগ মুক্ত */
+      border-left: none;
     }
 
     @keyframes spin {
@@ -1213,7 +1220,6 @@
         return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
       }
 
-      // টোস্ট নোটিফিকেশন: ডুপ্লিকেট ছাড়া ক্লিন সিঙ্গেল মেসেজ
       function showToast(message) {
         ui.toastTray.innerHTML = "";
 
@@ -1317,10 +1323,10 @@
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
-        // ১. শুরুতে ডিপার্টমেন্ট সিলেক্ট না থাকলে
+        // ১. শুরুতে ডিপার্টমেন্ট সিলেক্ট না থাকলে (সংক্ষিপ্ত সংস্করণ)
         if (!hasSelectedDept) {
           ui.selectionBanner.innerHTML = `
-            Please select your <span class="badge">department</span> to get started
+            Select your <span class="badge">department</span>
           `;
           return;
         }
@@ -1422,7 +1428,6 @@
 
       function openDateDetails(dateKey) {
         if (!hasSelectedDept || !hasSelectedSec) {
-          // সংক্ষিপ্ত মেসেজ
           showToast("Select Department & Section first");
           return;
         }
