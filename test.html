@@ -274,7 +274,7 @@
       margin: 0 auto;
     }
 
-    /* DESIGN: Lecture archive & class notes স্টাইলে ব্যানার */
+    /* Lecture archive & class notes স্টাইলে কম্প্যাক্ট ব্যানার */
     .selection-banner-wrapper {
       margin: 1.25rem 0 0.25rem;
       display: flex;
@@ -872,7 +872,7 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Lecture archive & class notes স্টাইলে ব্যানার -->
+    <!-- Compact Status Banner -->
     <div class="selection-banner-wrapper">
       <div id="selection-banner" class="selection-banner"></div>
     </div>
@@ -1302,7 +1302,7 @@
         }
       }
 
-      // 'Lecture archive & class notes' স্টাইলে আপডেট করা ব্যানার
+      // অপশন ২: ব্যানার সবসময় কম্প্যাক্ট থাকবে (শুধু ডিপার্টমেন্ট ও সেকশন)
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
@@ -1322,18 +1322,10 @@
           return;
         }
 
-        // ৩. ডিপার্টমেন্ট এবং সেকশন উভয়ই সিলেক্ট থাকলে
-        let html = `Viewing notes for <span class="badge">${escapeHtml(state.dept)}</span> <span class="badge">Sec ${escapeHtml(state.sec)}</span>`;
-
-        if (state.course && state.course !== "ALL") {
-          html += ` &bull; <span class="badge">${escapeHtml(state.course)}</span>`;
-        }
-
-        if (state.topic && state.topic !== "ALL") {
-          html += ` &bull; <span class="badge">${escapeHtml(state.topic)}</span>`;
-        }
-
-        ui.selectionBanner.innerHTML = html;
+        // ৩. ডিপার্টমেন্ট এবং সেকশন সিলেক্ট হলে শুধু ক্লাসটিকে সুন্দর ও কম্প্যাক্ট রাখা
+        ui.selectionBanner.innerHTML = `
+          Viewing notes for <span class="badge">${escapeHtml(state.dept)} &mdash; Sec ${escapeHtml(state.sec)}</span>
+        `;
       }
 
       function syncTopicMenu() {
