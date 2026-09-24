@@ -276,6 +276,7 @@
 
     /* ========================================================
        FULL PAGE SCALE 4-COLUMN INLINE FILTERS
+       (NO SHADOW, NO TRANSFORM, 100% SIMPLE & FLAT)
     ======================================================== */
     .nav-filters {
       display: grid;
@@ -285,10 +286,16 @@
       margin: 0.5rem 0 1.5rem;
       padding: 0.85rem 0 1.25rem;
       border-bottom: 1px solid var(--border-subtle);
+      position: relative;
     }
 
     .nav-filter__item {
       position: relative;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .nav-filter__trigger {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -297,32 +304,29 @@
       border: none !important;
       outline: none !important;
       box-shadow: none !important;
+      transform: none !important;
       -webkit-tap-highlight-color: transparent !important;
       border-radius: var(--radius-full);
       padding: 0.55rem clamp(0.35rem, 1vw, 1rem);
       color: var(--text-main);
+      font-family: inherit;
       font-size: clamp(0.75rem, 1.1vw, 0.875rem);
       font-weight: 600;
       cursor: pointer;
       user-select: none;
-      min-width: 0;
       width: 100%;
       transition: background-color 0.15s ease;
     }
 
-    .nav-filter__item:hover {
+    .nav-filter__trigger:hover {
       background-color: var(--bg-hover);
     }
 
-    .nav-filter__item:focus,
-    .nav-filter__item:focus-within,
-    .nav-filter__item:active,
-    .nav-filter__select:focus,
-    .nav-filter__select:active {
+    .nav-filter__trigger:focus,
+    .nav-filter__trigger:active {
       outline: none !important;
       box-shadow: none !important;
-      border: none !important;
-      -webkit-tap-highlight-color: transparent !important;
+      transform: none !important;
     }
 
     .nav-filter__text {
@@ -333,25 +337,70 @@
       min-width: 0;
     }
 
-    /* পারফেক্ট ব্যালান্সড ‘v’ তীর চিহ্ন (১১.৫ x ৭ পিক্সেল) */
     .nav-filter__arrow {
       pointer-events: none;
       flex-shrink: 0;
       color: var(--text-muted);
     }
 
-    .nav-filter__select {
+    /* ফ্ল্যাট সিম্পল ড্রপডাউন মেনু (NO SHADOW, NO TRANSFORM) */
+    .nav-filter__menu {
       position: absolute;
-      inset: 0;
+      top: calc(100% + 5px);
+      left: 0;
+      min-width: 130px;
       width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      -webkit-appearance: none;
-      appearance: none;
-      outline: none !important;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.3rem 0;
+      z-index: 150;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .nav-filter__menu[hidden] {
+      display: none !important;
+    }
+
+    /* ডানপাশের ফিল্টারগুলো যাতে স্ক্রিনের বাইরে কেটে না যায় */
+    .nav-filter__item:nth-child(3) .nav-filter__menu,
+    .nav-filter__item:nth-child(4) .nav-filter__menu {
+      left: auto;
+      right: 0;
+    }
+
+    .nav-filter__option {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 0.8rem;
+      background: transparent;
       border: none !important;
-      -webkit-tap-highlight-color: transparent !important;
+      outline: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-main);
+      text-align: left;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background-color 0.12s ease;
+    }
+
+    .nav-filter__option:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .nav-filter__option.is-selected {
+      font-weight: 700;
+      background-color: var(--bg-pill);
+      color: var(--brand-primary);
     }
 
     /* Content Area */
@@ -826,40 +875,50 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Full-page scaled 4-column filter buttons (একদম পারফেক্ট ১১.৫ x ৭ সাইজ) -->
+    <!-- Custom Clean Flat Filter Bar (No Shadow, No Transform) -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
-      <div class="nav-filter__item">
-        <span class="nav-filter__text" id="dept-label">Department</span>
-        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <select class="nav-filter__select" id="dept-select" aria-label="Department"></select>
+      <!-- 1. Department -->
+      <div class="nav-filter__item" data-filter="dept">
+        <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter__text" id="dept-label">Department</span>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="nav-filter__menu" id="dept-menu" hidden role="listbox"></div>
       </div>
 
-      <div class="nav-filter__item">
-        <span class="nav-filter__text" id="sec-label">Section</span>
-        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <select class="nav-filter__select" id="section-select" aria-label="Section"></select>
+      <!-- 2. Section -->
+      <div class="nav-filter__item" data-filter="sec">
+        <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter__text" id="sec-label">Section</span>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="nav-filter__menu" id="sec-menu" hidden role="listbox"></div>
       </div>
 
-      <div class="nav-filter__item">
-        <span class="nav-filter__text" id="course-label">Course</span>
-        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <select class="nav-filter__select" id="course-select" aria-label="Course"></select>
+      <!-- 3. Course -->
+      <div class="nav-filter__item" data-filter="course">
+        <button type="button" class="nav-filter__trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter__text" id="course-label">Course</span>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="nav-filter__menu" id="course-menu" hidden role="listbox"></div>
       </div>
 
-      <div class="nav-filter__item">
-        <span class="nav-filter__text" id="topic-label">Topic</span>
-        <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-          <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <select class="nav-filter__select" id="topic-select" aria-label="Topic">
-          <option value="ALL">All Topics</option>
-        </select>
+      <!-- 4. Topic -->
+      <div class="nav-filter__item" data-filter="topic">
+        <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter__text" id="topic-label">Topic</span>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="nav-filter__menu" id="topic-menu" hidden role="listbox"></div>
       </div>
 
       <strong id="class-badge" style="display: none;"></strong>
@@ -1026,16 +1085,21 @@
       let hasSelectedSec = false;
 
       const ui = {
-        dept: document.getElementById("dept-select"),
-        sec: document.getElementById("section-select"),
-        course: document.getElementById("course-select"),
-        topic: document.getElementById("topic-select"),
-        badge: document.getElementById("class-badge"),
+        deptTrigger: document.getElementById("dept-trigger"),
+        secTrigger: document.getElementById("sec-trigger"),
+        courseTrigger: document.getElementById("course-trigger"),
+        topicTrigger: document.getElementById("topic-trigger"),
+
+        deptMenu: document.getElementById("dept-menu"),
+        secMenu: document.getElementById("sec-menu"),
+        courseMenu: document.getElementById("course-menu"),
+        topicMenu: document.getElementById("topic-menu"),
 
         deptLabel: document.getElementById("dept-label"),
         secLabel: document.getElementById("sec-label"),
         courseLabel: document.getElementById("course-label"),
         topicLabel: document.getElementById("topic-label"),
+        badge: document.getElementById("class-badge"),
 
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
@@ -1168,7 +1232,7 @@
           const data = await res.json();
           if (data?.success && Array.isArray(data.notes)) {
             state.notes = data.notes;
-            syncTopicDropdown();
+            syncTopicMenu();
             render();
           }
         } catch (err) {
@@ -1180,38 +1244,65 @@
         return config.departments.find(d => d.code === code) || config.departments[0];
       }
 
-      function renderSelectOptions(selectEl, list, includeAll = false, allLabel = "All Courses", prefix = "") {
-        const items = list.map(item => {
-          const displayLabel = prefix ? `${prefix} ${item}` : item;
-          return `<option value="${escapeHtml(item)}">${escapeHtml(displayLabel)}</option>`;
+      /* Modal form-এর সাধারণ <select> রেন্ডার */
+      function renderFormOptions(selectEl, list, prefix = "") {
+        selectEl.innerHTML = list.map(item => {
+          const display = prefix ? `${prefix} ${item}` : item;
+          return `<option value="${escapeHtml(item)}">${escapeHtml(display)}</option>`;
         }).join("");
-        selectEl.innerHTML = (includeAll ? `<option value="ALL">${escapeHtml(allLabel)}</option>` : "") + items;
+      }
+
+      /* ফ্ল্যাট কাস্টম মেনু আইটেম তৈরি (সিম্পল নো-শ্যাডো ডিজাইন) */
+      function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
+        let html = "";
+        if (includeAll) {
+          const isSel = selectedVal === "ALL";
+          html += `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="ALL">${escapeHtml(allLabel)}</button>`;
+        }
+        html += list.map(item => {
+          const isSel = String(selectedVal) === String(item);
+          const display = prefix ? `${prefix} ${item}` : item;
+          return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}">${escapeHtml(display)}</button>`;
+        }).join("");
+
+        container.innerHTML = html;
+      }
+
+      /* ড্রপডাউন খোলা ও বন্ধ করার ফাংশন */
+      function closeAllMenus() {
+        [ui.deptMenu, ui.secMenu, ui.courseMenu, ui.topicMenu].forEach(menu => {
+          if (menu) menu.hidden = true;
+        });
+        [ui.deptTrigger, ui.secTrigger, ui.courseTrigger, ui.topicTrigger].forEach(btn => {
+          if (btn) btn.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      function toggleMenu(menu, trigger) {
+        const isClosed = menu.hidden;
+        closeAllMenus();
+        if (isClosed) {
+          menu.hidden = false;
+          trigger.setAttribute("aria-expanded", "true");
+        }
       }
 
       function updateFilterLabels() {
         if (ui.deptLabel) {
-          ui.deptLabel.textContent = hasSelectedDept
-            ? (ui.dept.options[ui.dept.selectedIndex]?.text || state.dept)
-            : "Department";
+          ui.deptLabel.textContent = hasSelectedDept ? state.dept : "Department";
         }
         if (ui.secLabel) {
-          ui.secLabel.textContent = hasSelectedSec
-            ? (ui.sec.options[ui.sec.selectedIndex]?.text || state.sec)
-            : "Section";
+          ui.secLabel.textContent = hasSelectedSec ? `Sec ${state.sec}` : "Section";
         }
         if (ui.courseLabel) {
-          ui.courseLabel.textContent = (state.course === "ALL" || !state.course)
-            ? "Course"
-            : (ui.course.options[ui.course.selectedIndex]?.text || state.course);
+          ui.courseLabel.textContent = (state.course === "ALL" || !state.course) ? "Course" : state.course;
         }
         if (ui.topicLabel) {
-          ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic)
-            ? "Topic"
-            : (ui.topic.options[ui.topic.selectedIndex]?.text || state.topic);
+          ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
         }
       }
 
-      function syncTopicDropdown() {
+      function syncTopicMenu() {
         const matchingNotes = state.notes.filter(note =>
           note.department === state.dept &&
           note.section === state.sec &&
@@ -1221,14 +1312,10 @@
         );
 
         const uniqueTopics = [...new Set(matchingNotes.map(n => n.topic.trim()))].sort();
-        renderSelectOptions(ui.topic, uniqueTopics, true, "All Topics");
-
-        if (uniqueTopics.includes(state.topic)) {
-          ui.topic.value = state.topic;
-        } else {
+        if (!uniqueTopics.includes(state.topic)) {
           state.topic = "ALL";
-          ui.topic.value = "ALL";
         }
+        renderMenuOptions(ui.topicMenu, uniqueTopics, state.topic, true, "All Topics");
         updateFilterLabels();
       }
 
@@ -1236,19 +1323,20 @@
         const activeDept = getDeptMeta(state.dept);
         if (!activeDept) return;
 
-        renderSelectOptions(ui.sec, activeDept.sections, false, "", "Sec");
-        renderSelectOptions(ui.course, activeDept.courses, true, "All Courses");
-        renderSelectOptions(ui.formSec, activeDept.sections, false, "", "Sec");
-        renderSelectOptions(ui.formCourse, activeDept.courses);
+        const allDeptCodes = config.departments.map(d => d.code);
+        renderMenuOptions(ui.deptMenu, allDeptCodes, state.dept);
 
-        ui.dept.value = state.dept;
         state.sec = activeDept.sections.includes(state.sec) ? state.sec : activeDept.sections[0];
-        ui.sec.value = state.sec;
+        renderMenuOptions(ui.secMenu, activeDept.sections, state.sec, false, "", "Sec");
 
         state.course = activeDept.courses.includes(state.course) || state.course === "ALL" ? state.course : "ALL";
-        ui.course.value = state.course;
+        renderMenuOptions(ui.courseMenu, activeDept.courses, state.course, true, "All Courses");
 
-        syncTopicDropdown();
+        // Form modals
+        renderFormOptions(ui.formSec, activeDept.sections, "Sec");
+        renderFormOptions(ui.formCourse, activeDept.courses);
+
+        syncTopicMenu();
         syncBadgeText();
         updateFilterLabels();
       }
@@ -1256,8 +1344,8 @@
       function syncFormDropdowns() {
         const currentDept = getDeptMeta(ui.formDept.value);
         if (currentDept) {
-          renderSelectOptions(ui.formSec, currentDept.sections, false, "", "Sec");
-          renderSelectOptions(ui.formCourse, currentDept.courses);
+          renderFormOptions(ui.formSec, currentDept.sections, "Sec");
+          renderFormOptions(ui.formCourse, currentDept.courses);
         }
       }
 
@@ -1543,6 +1631,77 @@
       }
 
       function bindEvents() {
+        // বাইরে ক্লিক করলে ওপেন থাকা মেনু বন্ধ হবে
+        document.addEventListener("click", (e) => {
+          if (!e.target.closest(".nav-filter__item")) {
+            closeAllMenus();
+          }
+        });
+
+        // ট্রিগার বাটনে ক্লিক
+        ui.deptTrigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleMenu(ui.deptMenu, ui.deptTrigger);
+        });
+
+        ui.secTrigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleMenu(ui.secMenu, ui.secTrigger);
+        });
+
+        ui.courseTrigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleMenu(ui.courseMenu, ui.courseTrigger);
+        });
+
+        ui.topicTrigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleMenu(ui.topicMenu, ui.topicTrigger);
+        });
+
+        // ডিপার্টমেন্ট মেনুর অপশন সিলেক্ট
+        ui.deptMenu.addEventListener("click", (e) => {
+          const opt = e.target.closest(".nav-filter__option");
+          if (!opt) return;
+          hasSelectedDept = true;
+          state.dept = opt.dataset.value;
+          closeAllMenus();
+          syncDropdownStates();
+          render();
+        });
+
+        // সেকশন মেনুর অপশন সিলেক্ট
+        ui.secMenu.addEventListener("click", (e) => {
+          const opt = e.target.closest(".nav-filter__option");
+          if (!opt) return;
+          hasSelectedSec = true;
+          state.sec = opt.dataset.value;
+          closeAllMenus();
+          syncDropdownStates();
+          render();
+        });
+
+        // কোর্স মেনুর অপশন সিলেক্ট
+        ui.courseMenu.addEventListener("click", (e) => {
+          const opt = e.target.closest(".nav-filter__option");
+          if (!opt) return;
+          state.course = opt.dataset.value;
+          closeAllMenus();
+          syncDropdownStates();
+          render();
+        });
+
+        // টপিক মেনুর অপশন সিলেক্ট
+        ui.topicMenu.addEventListener("click", (e) => {
+          const opt = e.target.closest(".nav-filter__option");
+          if (!opt) return;
+          state.topic = opt.dataset.value;
+          closeAllMenus();
+          syncDropdownStates();
+          render();
+        });
+
+        // মডাল ক্লোজ
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
             const rect = modal.getBoundingClientRect();
@@ -1560,38 +1719,6 @@
 
         ui.notesModal.addEventListener("close", () => {
           state.activeDate = null;
-        });
-
-        ui.dept.addEventListener("change", (e) => {
-          hasSelectedDept = true;
-          state.dept = e.target.value;
-          syncDropdownStates();
-          state.sec = ui.sec.value;
-          state.course = ui.course.value;
-          state.topic = ui.topic.value;
-          updateFilterLabels();
-          render();
-        });
-
-        ui.sec.addEventListener("change", (e) => {
-          hasSelectedSec = true;
-          state.sec = e.target.value;
-          syncTopicDropdown();
-          updateFilterLabels();
-          render();
-        });
-
-        ui.course.addEventListener("change", (e) => {
-          state.course = e.target.value;
-          syncTopicDropdown();
-          updateFilterLabels();
-          render();
-        });
-
-        ui.topic.addEventListener("change", (e) => {
-          state.topic = e.target.value;
-          updateFilterLabels();
-          render();
         });
 
         ui.prevMonthBtn.addEventListener("click", () => {
@@ -1736,8 +1863,7 @@
 
       function init() {
         const codes = config.departments.map(d => d.code);
-        renderSelectOptions(ui.dept, codes);
-        renderSelectOptions(ui.formDept, codes);
+        renderFormOptions(ui.formDept, codes);
 
         ui.formDate.max = formatDateKey(new Date());
 
