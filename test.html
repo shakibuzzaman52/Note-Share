@@ -9,16 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-canvas: #F4EFE6;
+      /* Main Background & Harmonized Canvas Shades */
+      --bg-canvas: #f6f0e2;
       --bg-surface: #FFFFFF;
-      --bg-subtle: #EAE4D9;
-      --bg-hover: #E2DBD0;
-      --bg-pill: #ECE6DB;
+      --bg-subtle: #ECE5D7;
+      --bg-hover: #E3DCCF;
+      --bg-pill: #EBE4D5;
 
       /* Class Notes Specific Pink Accent */
       --bg-class-notes-badge: #FFB4F9;
 
-      --border-subtle: #E5DFD3;
+      --border-subtle: #E4DCD0;
 
       --text-main: #181716;
       --text-muted: #3C3833;
@@ -124,7 +125,7 @@
     .btn--subtle {
       background-color: var(--bg-canvas);
       color: var(--text-main);
-      border: 1px solid #DFD8CC;
+      border: 1px solid var(--border-subtle);
       padding: 0.5rem 1rem;
       font-size: 0.8125rem;
       display: inline-flex;
@@ -132,7 +133,7 @@
       gap: 0.4rem;
     }
     .btn--subtle:hover:not(:disabled) {
-      background-color: #EAE3D5;
+      background-color: var(--bg-subtle);
     }
     .btn--subtle svg {
       flex-shrink: 0;
@@ -486,7 +487,7 @@
       align-items: center;
       justify-content: center;
       background-color: var(--bg-pill);
-      border: 1px solid #DFD7CA;
+      border: 1px solid var(--border-subtle);
       font-weight: 600;
       font-size: 0.95rem;
       color: var(--text-main);
@@ -497,7 +498,7 @@
 
     .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
-      border-color: #D2C8B8;
+      border-color: #D6CEC0;
     }
 
     /* Today: normal black border */
@@ -569,7 +570,7 @@
 
     .course-card {
       background-color: var(--bg-pill);
-      border: 1px solid #DFD7CA;
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.95rem 1.15rem;
       cursor: pointer;
@@ -583,7 +584,7 @@
 
     .course-card:hover {
       background-color: var(--bg-hover);
-      border-color: #D2C8B8;
+      border-color: #D6CEC0;
     }
 
     .course-card__info {
@@ -608,7 +609,7 @@
     .course-card__badge {
       align-self: flex-start;
       background-color: var(--bg-subtle);
-      border: 1px solid #D8D0C3;
+      border: 1px solid var(--border-subtle);
       color: var(--text-muted);
       padding: 0.2rem 0.65rem;
       border-radius: var(--radius-full);
@@ -702,7 +703,7 @@
     }
 
     .note-cluster {
-      background-color: #FAF6EF;
+      background-color: #FAF5EB;
       border-radius: var(--radius-md);
       padding: 0.95rem 1.15rem;
     }
