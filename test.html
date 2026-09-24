@@ -67,7 +67,7 @@
       font-size: 15px;
       line-height: 1.5;
       min-height: 100vh;
-      padding-bottom: 4rem;
+      padding-bottom: 5rem;
     }
 
     .shell {
@@ -174,7 +174,7 @@
       font-family: var(--font-display);
       font-style: italic;
       border-radius: var(--radius-full);
-      padding: 0.15rem 0.75rem;
+      padding: 0.15rem 0.85rem;
     }
 
     .hero__title .badge {
@@ -227,7 +227,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.5rem clamp(1rem, 4vw, 3.5rem);
+      padding: 1.75rem clamp(1rem, 4vw, 3.5rem);
       background: var(--bg-canvas);
     }
 
@@ -249,34 +249,39 @@
       margin-left: 2px;
     }
 
-    /* Hero */
+    /* HERO: রেফারেন্স ইমেজের মতো উদার ও চমৎকার স্পেসিং */
     .hero {
-      padding: 2.5rem 1rem 0.5rem;
+      padding-top: clamp(3.5rem, 6vw, 5.5rem); /* উপর থেকে পর্যাপ্ত ফাঁকা জায়গা */
+      padding-bottom: 0;
       text-align: center;
-      max-width: 760px;
+      max-width: 840px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .hero__title {
       font-family: var(--font-display);
-      font-size: clamp(2.25rem, 4vw, 3.75rem);
+      font-size: clamp(2.5rem, 5vw, 4.25rem);
       font-weight: 400;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
       color: var(--text-main);
-      margin-bottom: 0.85rem;
+      margin-bottom: 1.4rem; /* টাইটেল ও ডেসক্রিপশনের মাঝের স্পেস */
     }
 
     .hero__desc {
-      font-size: 1rem;
+      font-size: clamp(1rem, 1.2vw, 1.125rem);
       color: var(--text-muted);
-      max-width: 520px;
-      margin: 0 auto;
+      max-width: 500px;
+      line-height: 1.6;
+      margin: 0 auto clamp(1.8rem, 3vw, 2.4rem); /* ডেসক্রিপশন ও ব্যানারের মাঝের স্পেস */
     }
 
-    /* SELECTION BANNER: আগের ফন্ট সাইজ এবং শ্যাডো ছাড়া ফ্ল্যাট ব্যাজ */
+    /* SELECTION BANNER WRAPPER */
     .selection-banner-wrapper {
-      margin: 1.25rem 0 0.25rem;
+      margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -285,16 +290,16 @@
 
     .selection-banner {
       font-family: var(--font-display);
-      font-size: clamp(1.25rem, 2.3vw, 1.65rem);
+      font-size: clamp(1.35rem, 2.2vw, 1.75rem);
       font-weight: 400;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.015em;
       color: var(--text-main);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
       gap: 0.45rem;
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .selection-banner .badge {
@@ -309,13 +314,13 @@
       border: none;
     }
 
-    /* Filters bar */
+    /* FILTERS BAR: ব্যানার থেকে ফিল্টারের আরামদায়ক দূরত্ব */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: clamp(0.35rem, 1.5vw, 0.85rem);
       width: 100%;
-      margin: 0.5rem 0 1.5rem;
+      margin: clamp(2.5rem, 4vw, 3.5rem) 0 1.5rem; /* ব্যানার ও ফিল্টার বারের মাঝের গ্যাপ */
       padding: 0.85rem 0 1.25rem;
       border-bottom: 1px solid var(--border-subtle);
       position: relative;
@@ -844,8 +849,10 @@
 
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
-      .hero { padding: 2rem 1rem 0.5rem; }
+      .hero { padding-top: 2.25rem; }
+      .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.25rem; }
+      .nav-filters { margin-top: 2rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
@@ -868,15 +875,16 @@
     <button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button>
   </header>
   <div class="shell">
+    <!-- Hero Section with Framer-like Whitespace -->
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
+      
+      <!-- Proper breathing room for Selection Banner -->
+      <div class="selection-banner-wrapper">
+        <div id="selection-banner" class="selection-banner"></div>
+      </div>
     </section>
-
-    <!-- Compact Status Banner -->
-    <div class="selection-banner-wrapper">
-      <div id="selection-banner" class="selection-banner"></div>
-    </div>
 
     <!-- 4-column filter bar -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
@@ -1314,7 +1322,7 @@
           return;
         }
 
-        // ২. ডিপার্টমেন্ট হয়েছে কিন্তু সেকশন বাকি থাকলে (ছোট ও গোছানো)
+        // ২. ডিপার্টমেন্ট হয়েছে কিন্তু সেকশন বাকি থাকলে
         if (!hasSelectedSec) {
           ui.selectionBanner.innerHTML = `
             <span class="badge">${escapeHtml(state.dept)}</span> &mdash; select <span class="badge">section</span>
