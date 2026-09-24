@@ -285,8 +285,14 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
       margin-top: 1rem;
+    }
+
+    .filter-bar__group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .filter-bar__label {
@@ -295,6 +301,7 @@
       letter-spacing: 0.05em;
       font-weight: 600;
       color: var(--text-subtle);
+      white-space: nowrap;
     }
 
     .filter-bar__select {
@@ -310,7 +317,7 @@
       background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%236E6961' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 0.85rem center;
-      min-width: 140px;
+      min-width: 135px;
     }
 
     .filter-bar__badge {
@@ -323,9 +330,7 @@
       margin-top: 1.5rem;
     }
 
-    /* ========================================================
-       CALENDAR VIEW
-       ======================================================== */
+    /* CALENDAR VIEW */
     #calendar-view {
       background: transparent;
       border: none;
@@ -366,7 +371,6 @@
       table-layout: fixed;
     }
 
-    /* Calendar Day Names */
     .calendar-grid th {
       font-size: 0.78rem;
       font-weight: 700;
@@ -392,7 +396,6 @@
       pointer-events: none;
     }
 
-    /* Date Button */
     .calendar-cell__btn {
       width: 48px;
       height: 48px;
@@ -411,14 +414,12 @@
       transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
-    /* Default Day Hover */
     .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
       border-color: #D2C8B8;
       color: var(--text-main);
     }
 
-    /* Days With Notes */
     .calendar-cell.has-notes .calendar-cell__btn {
       background-color: var(--bg-has-notes);
       border-color: var(--border-has-notes);
@@ -432,13 +433,11 @@
       color: var(--text-has-notes);
     }
 
-    /* Today (No notes) */
     .calendar-cell--today .calendar-cell__btn {
       border: 2px solid var(--text-main);
       font-weight: 700;
     }
 
-    /* Today WITH Notes */
     .calendar-cell--today.has-notes .calendar-cell__btn {
       background-color: var(--bg-has-notes);
       border: 2px solid var(--text-main);
@@ -452,7 +451,6 @@
       color: var(--text-has-notes);
     }
 
-    /* Disabled/Future Dates */
     .calendar-cell--disabled {
       pointer-events: none;
     }
@@ -465,9 +463,7 @@
       cursor: default;
     }
 
-    /* ========================================================
-       COURSE / TOPIC DATES VIEW (Card View)
-       ======================================================== */
+    /* COURSE & TOPIC VIEW */
     .course-dates-view {
       background: transparent;
       border: none;
@@ -742,7 +738,6 @@
       color: var(--brand-danger);
     }
 
-    /* Toast notification */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
@@ -777,12 +772,12 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Responsive */
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding: 2rem 1rem 1.25rem; }
       .filter-bar { padding: 1rem; }
-      .filter-bar__select { width: 100%; min-width: 0; }
+      .filter-bar__group { width: 100%; justify-content: space-between; }
+      .filter-bar__select { flex: 1; min-width: 0; }
       .filter-bar__badge { margin-left: 0; width: 100%; justify-content: center; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
@@ -807,25 +802,35 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Filter Bar -->
+    <!-- Filter panel with Department, Section, Course and Topic -->
     <section class="filter-bar">
-      <label class="filter-bar__label" for="dept-select">Department:</label>
-      <select class="filter-bar__select" id="dept-select"></select>
+      <div class="filter-bar__group">
+        <label class="filter-bar__label" for="dept-select">Department:</label>
+        <select class="filter-bar__select" id="dept-select"></select>
+      </div>
 
-      <label class="filter-bar__label" for="section-select">Section:</label>
-      <select class="filter-bar__select" id="section-select"></select>
+      <div class="filter-bar__group">
+        <label class="filter-bar__label" for="section-select">Section:</label>
+        <select class="filter-bar__select" id="section-select"></select>
+      </div>
 
-      <label class="filter-bar__label" for="course-select">Course:</label>
-      <select class="filter-bar__select" id="course-select"></select>
+      <div class="filter-bar__group">
+        <label class="filter-bar__label" for="course-select">Course:</label>
+        <select class="filter-bar__select" id="course-select"></select>
+      </div>
 
-      <label class="filter-bar__label" for="topic-select">Topic:</label>
-      <select class="filter-bar__select" id="topic-select"></select>
+      <div class="filter-bar__group">
+        <label class="filter-bar__label" for="topic-select">Topic:</label>
+        <select class="filter-bar__select" id="topic-select">
+          <option value="ALL">All Topics</option>
+        </select>
+      </div>
 
       <strong class="badge filter-bar__badge" id="class-badge"></strong>
     </section>
 
     <main class="content-area">
-      <!-- Calendar View: Only shown when All Courses AND All Topics are selected -->
+      <!-- Calendar View (Only visible when Course == ALL && Topic == ALL) -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
@@ -856,7 +861,7 @@
         </table>
       </section>
 
-      <!-- Dates List / Card View: Shown whenever Course is NOT ALL or Topic is NOT ALL -->
+      <!-- Filtered Cards View (Visible when Course != ALL or Topic != ALL) -->
       <section class="course-dates-view" id="course-view" hidden>
         <div class="course-dates__header">
           <h3 class="course-dates__title" id="course-view-title"></h3>
@@ -960,7 +965,7 @@
         departments: [
           {
             code: "CSE",
-            sections: ["73_L", "73_A", "73_B"],
+            sections: ["73_A", "73_B", "73_L"],
             courses: ["CSE Fundamentals", "CSE101", "CSE102", "CSE103"]
           }
         ]
@@ -973,90 +978,14 @@
       const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
       const now = new Date();
-
-      function getInitialSampleNotes() {
-        const d = new Date();
-        const y = d.getFullYear();
-        const m = d.getMonth() + 1;
-        const pad = (n) => String(n).padStart(2, "0");
-        const dt = (day) => `${y}-${pad(m)}-${pad(day)}`;
-
-        return [
-          {
-            row: 2,
-            department: "CSE",
-            section: "73_L",
-            date: dt(2),
-            course: "CSE Fundamentals",
-            topic: "Introduction & Flowcharts",
-            title: "Lecture 01 - Basics of Computing & Syntax",
-            link: "https://example.com/lecture-1.pdf",
-            status: "Approved",
-            reportCount: 0
-          },
-          {
-            row: 3,
-            department: "CSE",
-            section: "73_L",
-            date: dt(5),
-            course: "CSE Fundamentals",
-            topic: "Control Structures",
-            title: "Lecture 02 - Conditional Statements (If-Else, Switch)",
-            link: "https://example.com/lecture-2.pdf",
-            status: "Approved",
-            reportCount: 0
-          },
-          {
-            row: 4,
-            department: "CSE",
-            section: "73_L",
-            date: dt(8),
-            course: "CSE Fundamentals",
-            topic: "Control Structures",
-            title: "Lecture 03 - Iteration & Nested Loops",
-            link: "https://example.com/lecture-3.pdf",
-            status: "Approved",
-            reportCount: 0
-          },
-          {
-            row: 5,
-            department: "CSE",
-            section: "73_L",
-            date: dt(12),
-            course: "CSE Fundamentals",
-            topic: "Arrays & Strings",
-            title: "Lecture 04 - 1D & 2D Arrays in Memory",
-            link: "https://example.com/lecture-4.pdf",
-            status: "Approved",
-            reportCount: 0
-          },
-          {
-            row: 6,
-            department: "CSE",
-            section: "73_L",
-            date: dt(15),
-            course: "CSE Fundamentals",
-            topic: "Functions & Pointers",
-            title: "Lecture 05 - Modular Programming & Memory References",
-            link: "https://example.com/lecture-5.pdf",
-            status: "Approved",
-            reportCount: 0
-          }
-        ];
-      }
-
-      const defaultDept = config.departments[0]?.code || "CSE";
-      const defaultSec = config.departments[0]?.sections.includes("73_L") ? "73_L" : (config.departments[0]?.sections[0] || "");
-      const defaultCourse = "ALL";
-
       const state = {
-        dept: defaultDept,
-        sec: defaultSec,
-        course: defaultCourse,
+        dept: config.departments[0]?.code || "CSE",
+        sec: config.departments[0]?.sections.includes("73_L") ? "73_L" : (config.departments[0]?.sections[0] || ""),
+        course: "ALL",
         topic: "ALL",
         viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
         activeDate: null,
-        notes: getInitialSampleNotes(),
+        notes: [],
         manualTitleEdited: false
       };
 
@@ -1105,7 +1034,6 @@
         toastTray: document.getElementById("toast-tray")
       };
 
-      /* Safe Storage Wrapper */
       const safeStorage = {
         get(key) {
           try {
@@ -1118,7 +1046,7 @@
           try {
             localStorage.setItem(key, val);
           } catch {
-            // Silently ignore quota in private browsing
+            // Ignore quota errors
           }
         }
       };
@@ -1211,35 +1139,26 @@
         return config.departments.find(d => d.code === code) || config.departments[0];
       }
 
-      function renderSelectOptions(selectEl, list, includeAll = false, allLabel = "All") {
+      function renderSelectOptions(selectEl, list, includeAll = false, allLabel = "All Courses") {
         const items = list.map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
         selectEl.innerHTML = (includeAll ? `<option value="ALL">${escapeHtml(allLabel)}</option>` : "") + items;
       }
 
       function syncTopicDropdown() {
-        const relevantNotes = state.notes.filter(note => {
-          const matchDept = note.department === state.dept;
-          const matchSec = note.section === state.sec;
-          const matchCourse = (state.course === "ALL" || note.course === state.course);
-          const isApproved = String(note.status || "").toLowerCase() === "approved";
-          return matchDept && matchSec && matchCourse && isApproved;
-        });
+        // Collect available topics from approved notes matching current dept, sec, and course
+        const matchingNotes = state.notes.filter(note =>
+          note.department === state.dept &&
+          note.section === state.sec &&
+          (state.course === "ALL" || note.course === state.course) &&
+          String(note.status || "").toLowerCase() === "approved" &&
+          note.topic && note.topic.trim() !== ""
+        );
 
-        const topicsSet = new Set();
-        relevantNotes.forEach(n => {
-          if (n.topic && String(n.topic).trim()) {
-            topicsSet.add(String(n.topic).trim());
-          }
-        });
+        const uniqueTopics = [...new Set(matchingNotes.map(n => n.topic.trim()))].sort();
+        renderSelectOptions(ui.topic, uniqueTopics, true, "All Topics");
 
-        const topics = Array.from(topicsSet).sort((a, b) => a.localeCompare(b));
-
-        const previousVal = state.topic;
-        renderSelectOptions(ui.topic, topics, true, "All Topics");
-
-        if (previousVal && previousVal !== "ALL" && topics.includes(previousVal)) {
-          state.topic = previousVal;
-          ui.topic.value = previousVal;
+        if (uniqueTopics.includes(state.topic)) {
+          ui.topic.value = state.topic;
         } else {
           state.topic = "ALL";
           ui.topic.value = "ALL";
@@ -1275,15 +1194,15 @@
       }
 
       function syncBadgeText() {
-        if (state.course === "ALL") {
-          ui.badge.textContent = state.topic === "ALL"
-            ? `[ ${state.dept} | Section ${state.sec} ]`
-            : `[ ${state.dept} | Sec ${state.sec} | ${state.topic} ]`;
-        } else {
-          ui.badge.textContent = state.topic === "ALL"
-            ? `[ ${state.dept} | Sec ${state.sec} | ${state.course} ]`
-            : `[ ${state.dept} | Sec ${state.sec} | ${state.course} | ${state.topic} ]`;
+        let text = `[ ${state.dept} | Sec ${state.sec}`;
+        if (state.course !== "ALL") {
+          text += ` | ${state.course}`;
         }
+        if (state.topic !== "ALL") {
+          text += ` | ${state.topic}`;
+        }
+        text += ` ]`;
+        ui.badge.textContent = text;
       }
 
       function calculateDefaultTitle() {
@@ -1323,7 +1242,7 @@
 
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        let notes = filterActiveNotes();
+        const notes = filterActiveNotes();
 
         const notesCountMap = {};
         notes.forEach(n => {
@@ -1383,40 +1302,34 @@
       }
 
       function renderCourseDates() {
-        let activeNotes = filterActiveNotes();
+        let filteredNotes = filterActiveNotes();
 
         if (state.course !== "ALL") {
-          activeNotes = activeNotes.filter(n => n.course === state.course);
+          filteredNotes = filteredNotes.filter(n => n.course === state.course);
         }
-
         if (state.topic !== "ALL") {
-          activeNotes = activeNotes.filter(n => n.topic === state.topic);
+          filteredNotes = filteredNotes.filter(n => n.topic === state.topic);
         }
 
-        const uniqueDates = [...new Set(activeNotes.map(n => n.date))].sort();
+        const uniqueDates = [...new Set(filteredNotes.map(n => n.date))].sort();
 
-        // Update Title according to Course and Topic selection
-        if (state.course === "ALL") {
-          ui.courseTitle.textContent = `Topic: ${state.topic}`;
-        } else if (state.topic === "ALL") {
-          ui.courseTitle.textContent = `Classes: ${state.course}`;
-        } else {
-          ui.courseTitle.textContent = `Classes: ${state.course} — ${state.topic}`;
+        // Title Construction
+        let titleParts = [];
+        if (state.course !== "ALL") {
+          titleParts.push(state.course);
+        }
+        if (state.topic !== "ALL") {
+          titleParts.push(`Topic: ${state.topic}`);
+        }
+        if (titleParts.length === 0) {
+          titleParts.push("Filtered Classes");
         }
 
+        ui.courseTitle.textContent = titleParts.join(" • ");
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
 
         if (!uniqueDates.length) {
           ui.courseDatesList.style.display = "block";
-          let emptyMsg = "";
-          if (state.course === "ALL") {
-            emptyMsg = `No notes recorded under topic "${escapeHtml(state.topic)}".`;
-          } else if (state.topic === "ALL") {
-            emptyMsg = `No notes recorded for ${escapeHtml(state.course)} yet.`;
-          } else {
-            emptyMsg = `No notes recorded for ${escapeHtml(state.course)} under topic "${escapeHtml(state.topic)}".`;
-          }
-
           ui.courseDatesList.innerHTML = `
             <div class="empty-state">
               <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1424,7 +1337,7 @@
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="9" y1="13" x2="15" y2="13"></line>
               </svg>
-              <p class="empty-state__text">${emptyMsg}</p>
+              <p class="empty-state__text">No notes found matching your selected filters.</p>
             </div>
           `;
           return;
@@ -1433,23 +1346,14 @@
         ui.courseDatesList.style.display = "";
         ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
           const dateObj = parseLocalDate(dateStr);
-          const notesOnDate = activeNotes.filter(n => n.date === dateStr);
-          const noteCount = notesOnDate.length;
-          const dayName = DAY_NAMES[dateObj.getDay()] || "";
-
-          let subText = dayName;
-          if (state.course === "ALL") {
-            const courseNames = [...new Set(notesOnDate.map(n => n.course).filter(Boolean))].join(", ");
-            if (courseNames) {
-              subText += ` • ${courseNames}`;
-            }
-          }
+          const noteCount = filteredNotes.filter(n => n.date === dateStr).length;
+          const day = DAY_NAMES[dateObj.getDay()] || "";
 
           return `
             <div class="course-card" data-date="${escapeHtml(dateStr)}">
               <div class="course-card__info">
                 <span class="course-card__date">${formatReadableDate(dateStr)}</span>
-                <span class="course-card__day">${escapeHtml(subText)}</span>
+                <span class="course-card__day">${day}</span>
               </div>
               <span class="course-card__badge">${pluralize(noteCount, 'note', 'notes')}</span>
             </div>
@@ -1462,6 +1366,7 @@
         ui.modalDateLabel.textContent = `Date: ${formatReadableDate(state.activeDate)}`;
 
         let notes = filterActiveNotes().filter(n => n.date === state.activeDate);
+
         if (state.course !== "ALL") {
           notes = notes.filter(n => n.course === state.course);
         }
@@ -1479,7 +1384,7 @@
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="9" y1="13" x2="15" y2="13"></line>
               </svg>
-              <p class="empty-state__text">No lecture material attached to this date for selected filters.</p>
+              <p class="empty-state__text">No lecture material attached to this date for the selected criteria.</p>
             </div>
           `;
           return;
@@ -1553,9 +1458,10 @@
         ui.modalNotesStack.innerHTML = output;
       }
 
-      // RENDER: Shows Calendar ONLY if BOTH Course is "ALL" and Topic is "ALL"
       function render() {
         syncBadgeText();
+
+        // Calendar shows ONLY if BOTH Course is "ALL" and Topic is "ALL"
         const showCalendar = (state.course === "ALL" && state.topic === "ALL");
 
         ui.calendarView.hidden = !showCalendar;
@@ -1593,7 +1499,7 @@
           syncDropdownStates();
           state.sec = ui.sec.value;
           state.course = ui.course.value;
-          syncTopicDropdown();
+          state.topic = ui.topic.value;
           render();
         });
 
@@ -1657,11 +1563,8 @@
           if (state.course !== "ALL") {
             ui.formCourse.value = state.course;
           }
-
           if (state.topic !== "ALL") {
             ui.formTopic.value = state.topic;
-          } else {
-            ui.formTopic.value = "";
           }
 
           calculateDefaultTitle();
