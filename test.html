@@ -67,7 +67,7 @@
       font-size: 15px;
       line-height: 1.5;
       min-height: 100vh;
-      padding-bottom: 5rem;
+      padding-bottom: 4rem;
     }
 
     .shell {
@@ -227,7 +227,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.75rem clamp(1rem, 4vw, 3.5rem);
+      padding: 1.5rem clamp(1rem, 4vw, 3.5rem);
       background: var(--bg-canvas);
     }
 
@@ -249,9 +249,9 @@
       margin-left: 2px;
     }
 
-    /* HERO: রেফারেন্স ইমেজের মতো উদার ও চমৎকার স্পেসিং */
+    /* Hero Section */
     .hero {
-      padding-top: clamp(3.5rem, 6vw, 5.5rem); /* উপর থেকে পর্যাপ্ত ফাঁকা জায়গা */
+      padding-top: clamp(2.5rem, 5vw, 4rem);
       padding-bottom: 0;
       text-align: center;
       max-width: 840px;
@@ -268,7 +268,7 @@
       line-height: 1.12;
       letter-spacing: -0.025em;
       color: var(--text-main);
-      margin-bottom: 1.4rem; /* টাইটেল ও ডেসক্রিপশনের মাঝের স্পেস */
+      margin-bottom: 1.15rem;
     }
 
     .hero__desc {
@@ -276,12 +276,12 @@
       color: var(--text-muted);
       max-width: 500px;
       line-height: 1.6;
-      margin: 0 auto clamp(1.8rem, 3vw, 2.4rem); /* ডেসক্রিপশন ও ব্যানারের মাঝের স্পেস */
+      margin: 0 auto 1.75rem;
     }
 
-    /* SELECTION BANNER WRAPPER */
+    /* SELECTION BANNER: ফিল্টারের সাথে কানেক্টেড রাখার জন্য মার্জিন নিয়ন্ত্রিত */
     .selection-banner-wrapper {
-      margin: 0 auto;
+      margin: 0 auto 0.75rem; /* ফিল্টারের একদম কাছে এনে কানেক্টেড করা হয়েছে */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -290,7 +290,7 @@
 
     .selection-banner {
       font-family: var(--font-display);
-      font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+      font-size: clamp(1.25rem, 2.3vw, 1.65rem);
       font-weight: 400;
       letter-spacing: -0.015em;
       color: var(--text-main);
@@ -310,18 +310,18 @@
       font-size: 0.95em;
       padding: 0.15rem 0.85rem;
       border-radius: var(--radius-full);
-      box-shadow: none; /* নো শ্যাডো */
+      box-shadow: none;
       border: none;
     }
 
-    /* FILTERS BAR: ব্যানার থেকে ফিল্টারের আরামদায়ক দূরত্ব */
+    /* FILTERS BAR: ব্যানারের সাথে এবং নিচের রেজাল্টের সাথে সুন্দরভাবে যুক্ত */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: clamp(0.35rem, 1.5vw, 0.85rem);
       width: 100%;
-      margin: clamp(2.5rem, 4vw, 3.5rem) 0 1.5rem; /* ব্যানার ও ফিল্টার বারের মাঝের গ্যাপ */
-      padding: 0.85rem 0 1.25rem;
+      margin: 0 0 0.85rem; /* ব্যানার ও রেজাল্টের মাঝে কানেক্টেড রাখা */
+      padding: 0.35rem 0 1rem;
       border-bottom: 1px solid var(--border-subtle);
       position: relative;
     }
@@ -419,14 +419,14 @@
       color: var(--brand-primary);
     }
 
-    /* Content Area */
+    /* Content Area: ফিল্টারের ঠিক কাছে আনা হয়েছে */
     .content-area {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
 
     /* CALENDAR VIEW */
     #calendar-view {
-      padding: 1rem 0;
+      padding: 0.5rem 0 1rem;
     }
 
     .calendar-nav {
@@ -544,7 +544,7 @@
 
     /* COURSE & TOPIC VIEW */
     .course-dates-view {
-      padding: 1rem 0;
+      padding: 0.5rem 0 1rem;
     }
 
     .course-dates__header {
@@ -813,34 +813,39 @@
       color: var(--brand-danger);
     }
 
+    /* TOAST: লাল বর্ডার ছাড়া মার্জিত ও ক্লিন পিল ডিজাইন */
     .toast-tray {
       position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 1000;
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 0.5rem;
       pointer-events: none;
+      width: max-content;
+      max-width: 90vw;
     }
 
     .toast {
       pointer-events: auto;
       background: var(--brand-dark);
       color: #FFFFFF;
-      padding: 0.75rem 1.25rem;
-      border-radius: var(--radius-md);
+      padding: 0.7rem 1.4rem;
+      border-radius: var(--radius-full);
       font-size: 0.875rem;
       font-weight: 500;
-      transition: opacity 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      border: none; /* কোনো লাল বা অতিরিক্ত বর্ডার নেই */
+      text-align: center;
     }
 
-    .toast--success {
-      border-left: 4px solid var(--brand-success);
-    }
-
+    .toast--success,
     .toast--error {
-      border-left: 4px solid var(--brand-danger);
+      border-left: none; /* লাল দাগ সম্পূর্ণ বাদ */
     }
 
     @keyframes spin {
@@ -849,10 +854,9 @@
 
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
-      .hero { padding-top: 2.25rem; }
-      .hero__desc { margin-bottom: 1.5rem; }
-      .selection-banner { font-size: 1.25rem; }
-      .nav-filters { margin-top: 2rem; }
+      .hero { padding-top: 2rem; }
+      .hero__desc { margin-bottom: 1.25rem; }
+      .selection-banner { font-size: 1.2rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
@@ -865,7 +869,7 @@
       }
 
       .dialog-modal { padding: 1.5rem 1.25rem; }
-      .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
+      .toast-tray { bottom: 1.25rem; }
     }
   </style>
 </head>
@@ -875,18 +879,18 @@
     <button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button>
   </header>
   <div class="shell">
-    <!-- Hero Section with Framer-like Whitespace -->
+    <!-- Hero Section -->
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
       
-      <!-- Proper breathing room for Selection Banner -->
+      <!-- Selection Banner: Connected with Filters -->
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
       </div>
     </section>
 
-    <!-- 4-column filter bar -->
+    <!-- 4-column filter bar: Connected to Banner and Results -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
       <!-- 1. Department -->
       <div class="nav-filter__item" data-filter="dept">
@@ -934,7 +938,7 @@
     </nav>
 
     <main class="content-area">
-      <!-- Calendar View -->
+      <!-- Calendar View: Connected below filters -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
@@ -1055,6 +1059,7 @@
       </form>
     </dialog>
   </div>
+
   <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
   <script src="config.js"></script>
   <script>
@@ -1213,9 +1218,13 @@
         return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
       }
 
-      function showToast(message, type = "success") {
+      // টোস্ট নোটিফিকেশন: একাধিকবার ক্লিক করলেও একটি মেসেজই ক্লিন ভাবে দেখাবে
+      function showToast(message) {
+        // আগের কোনো টোস্ট থাকলে সাথে সাথে ক্লিয়ার করে দেওয়া যাতে স্তূপ না জমে
+        ui.toastTray.innerHTML = "";
+
         const toast = document.createElement("div");
-        toast.className = `toast toast--${type}`;
+        toast.className = "toast";
         toast.textContent = message;
 
         ui.toastTray.appendChild(toast);
@@ -1223,7 +1232,7 @@
         setTimeout(() => {
           toast.style.opacity = "0";
           setTimeout(() => toast.remove(), 250);
-        }, 3200);
+        }, 2800);
       }
 
       async function syncData(payload) {
@@ -1419,7 +1428,7 @@
 
       function openDateDetails(dateKey) {
         if (!hasSelectedDept || !hasSelectedSec) {
-          showToast("Please select your department and section first.", "error");
+          showToast("Please select your department and section first.");
           return;
         }
         state.activeDate = dateKey;
@@ -1854,7 +1863,7 @@
             state.manualTitleEdited = false;
             showToast("Note submitted successfully for section review!");
           } catch (err) {
-            showToast("Failed to submit note. Please retry.", "error");
+            showToast("Failed to submit note. Please retry.");
           } finally {
             ui.btnSubmitNote.disabled = false;
             ui.btnSubmitNote.classList.remove("is-loading");
@@ -1883,7 +1892,7 @@
 
           if (safeStorage.get(key)) {
             ui.reportModal.close();
-            showToast("You have already reported this link.", "error");
+            showToast("You have already reported this link.");
             return;
           }
 
@@ -1896,7 +1905,7 @@
             ui.reportModal.close();
             showToast("Thank you. Link report has been recorded.");
           } catch (err) {
-            showToast("Could not submit report. Check internet.", "error");
+            showToast("Could not submit report. Check internet.");
           } finally {
             ui.btnSubmitReport.disabled = false;
             ui.btnSubmitReport.classList.remove("is-loading");
