@@ -277,46 +277,42 @@
     }
 
     /* ========================================================
-       REBUILT INLINE FILTER BAR:
-       - No border, no focus outline on click
-       - Centered with equal left & right margins (no giant gap)
-       - Auto-truncates long text (no stretching)
-       - All 4 stay on the exact SAME line on all devices
+       FULL PAGE SCALE 4-COLUMN INLINE FILTERS:
+       - Spans 100% of page scale (left to right)
+       - Expands to fill available space dynamically
+       - Truncates with ellipsis (...) only when space runs out
+       - No borders, no click outlines, 100% 1-line on all devices
     ======================================================== */
     .nav-filters {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: nowrap; /* Always on 1 line across all devices */
-      width: 100%;
-      max-width: 720px; /* Keeps buttons nicely grouped without huge gaps */
-      margin: 0.5rem auto 1.25rem;
-      padding: 0.75rem 0 1.25rem;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr)); /* Exactly 4 equal parts scaling across full page */
+      gap: clamp(0.35rem, 1.5vw, 0.85rem);
+      width: 100%; /* Spans full page container from left edge to right edge */
+      margin: 0.5rem 0 1.5rem;
+      padding: 0.85rem 0 1.25rem;
       border-bottom: 1px solid var(--border-subtle);
-      gap: clamp(0.35rem, 1.8vw, 0.75rem); /* Proportional gap on all screens */
     }
 
     .nav-filter__item {
       position: relative;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.35rem;
+      gap: clamp(0.2rem, 0.8vw, 0.45rem);
       background-color: var(--bg-subtle);
       border: none !important;
       outline: none !important;
       box-shadow: none !important;
       -webkit-tap-highlight-color: transparent !important;
       border-radius: var(--radius-full);
-      padding: 0.45rem clamp(0.45rem, 1.6vw, 1.15rem);
+      padding: 0.55rem clamp(0.35rem, 1vw, 1rem);
       color: var(--text-main);
-      font-size: clamp(0.75rem, 1.6vw, 0.875rem);
+      font-size: clamp(0.75rem, 1.1vw, 0.875rem);
       font-weight: 600;
       cursor: pointer;
       user-select: none;
-      white-space: nowrap;
       min-width: 0;
-      max-width: clamp(72px, 22vw, 165px); /* Prevents button from stretching huge */
+      width: 100%;
       transition: background-color 0.15s ease;
     }
 
@@ -324,7 +320,7 @@
       background-color: var(--bg-hover);
     }
 
-    /* Completely eliminate any border/outline on click/focus */
+    /* Zero outline or border color on click/tap */
     .nav-filter__item:focus,
     .nav-filter__item:focus-within,
     .nav-filter__item:active,
@@ -336,13 +332,13 @@
       -webkit-tap-highlight-color: transparent !important;
     }
 
-    /* Truncates long text gracefully with ellipsis (...) */
+    /* Shows full text when space permits, gracefully truncates with ... when space runs out */
     .nav-filter__text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       pointer-events: none;
-      max-width: clamp(45px, 16vw, 125px);
+      min-width: 0;
     }
 
     .nav-filter__arrow {
@@ -839,7 +835,7 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Refined Inline Filters: Same line, no outline, auto-truncating, equal margins -->
+    <!-- Full-page scaled 4-column filter buttons (Dynamic width & safe truncation) -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item">
         <span class="nav-filter__text" id="dept-label">CSE</span>
