@@ -174,7 +174,6 @@
       padding: 0.15rem 0.85rem;
     }
 
-    /* Hero Title: class notes badge (#FFB4F9) */
     .hero__title .badge {
       background-color: var(--bg-class-notes-badge);
       color: var(--text-main);
@@ -277,7 +276,7 @@
       margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
-    /* SELECTION BANNER */
+    /* Selection Banner */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -310,7 +309,7 @@
       border-radius: var(--radius-full);
     }
 
-    /* FILTERS BAR */
+    /* Filters Bar */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -501,33 +500,21 @@
       border-color: #D2C8B8;
     }
 
-    /* Today without notes: normal black border */
+    /* Today: normal black border */
     .calendar-cell--today .calendar-cell__btn {
       border: 2px solid var(--text-main);
       font-weight: 700;
     }
 
-    /* Dates with notes: Only border is blue, not full blue */
+    /* Dates containing notes: clean blue border only (overrides black border if today has notes) */
     .calendar-cell.has-notes .calendar-cell__btn {
-      background-color: var(--bg-pill);
       border: 2px solid var(--brand-primary);
       color: var(--brand-primary);
       font-weight: 700;
-    }
-
-    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      background-color: var(--bg-hover);
-      border-color: var(--brand-primary-hover);
-    }
-
-    /* Today with notes: No black border, only blue border */
-    .calendar-cell--today.has-notes .calendar-cell__btn {
-      border: 2px solid var(--brand-primary);
-      color: var(--brand-primary);
       background-color: var(--bg-pill);
     }
 
-    .calendar-cell--today.has-notes .calendar-cell__btn:hover:not(:disabled) {
+    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
       border-color: var(--brand-primary-hover);
     }
@@ -544,7 +531,7 @@
       cursor: default;
     }
 
-    /* COURSE & TOPIC VIEW */
+    /* Course & Topic View */
     .course-dates-view {
       padding: 0.5rem 0 1rem;
     }
@@ -578,10 +565,6 @@
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 0.85rem;
       width: 100%;
-    }
-
-    .course-dates__grid:has(.empty-state) {
-      display: block;
     }
 
     .course-card {
@@ -648,7 +631,6 @@
       color: var(--text-main);
     }
 
-    .dialog-modal__backdrop,
     .dialog-modal::backdrop {
       background: rgba(24, 23, 22, 0.45);
       backdrop-filter: blur(6px);
@@ -815,7 +797,7 @@
       color: var(--brand-danger);
     }
 
-    /* TOAST */
+    /* Toast Notification */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
