@@ -253,7 +253,7 @@
 
     /* Hero */
     .hero {
-      padding: 3rem 1rem 1.75rem;
+      padding: 3rem 1rem 1.25rem;
       text-align: center;
       max-width: 760px;
       margin: 0 auto;
@@ -276,58 +276,67 @@
       margin: 0 auto;
     }
 
-    /* Filter panel */
-    .filter-bar {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 0.85rem 1.5rem;
+    /* Clean Navbar-style Inline Filter Menu with Beautiful Spacing */
+    .nav-filters {
       display: flex;
+      align-items: center;
+      justify-content: center;
       flex-wrap: wrap;
+      gap: clamp(1.75rem, 4vw, 3.25rem);
+      padding: 1.25rem 0 1.75rem;
+      margin: 0.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .nav-filter__item {
+      position: relative;
+      display: inline-flex;
       align-items: center;
-      gap: 0.85rem;
-      margin-top: 1rem;
-    }
-
-    .filter-bar__group {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .filter-bar__label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: 600;
-      color: var(--text-subtle);
-      white-space: nowrap;
-    }
-
-    .filter-bar__select {
-      background-color: var(--bg-subtle);
-      color: var(--text-main);
-      font-family: inherit;
-      font-size: 0.875rem;
-      font-weight: 600;
-      border-radius: var(--radius-full);
-      padding: 0.5rem 2rem 0.5rem 1rem;
+      gap: 0.45rem;
       cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%236E6961' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.85rem center;
-      min-width: 135px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius-md);
+      transition: color 0.15s ease, background-color 0.15s ease;
     }
 
-    .filter-bar__badge {
-      margin-left: auto;
-      font-size: 1.05rem;
+    .nav-filter__item:hover {
+      color: var(--brand-primary);
+    }
+
+    .nav-filter__item:focus-within {
+      outline: 2px solid var(--brand-primary);
+      outline-offset: 2px;
+    }
+
+    .nav-filter__text {
+      pointer-events: none;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .nav-filter__arrow {
+      pointer-events: none;
+      flex-shrink: 0;
+      color: currentColor;
+    }
+
+    .nav-filter__select {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     /* Content Area */
     .content-area {
-      margin-top: 1.5rem;
+      margin-top: 1rem;
     }
 
     /* CALENDAR VIEW */
@@ -569,6 +578,7 @@
       color: var(--text-main);
     }
 
+    .dialog-modal__backdrop,
     .dialog-modal::backdrop {
       background: rgba(24, 23, 22, 0.45);
       backdrop-filter: blur(6px);
@@ -775,10 +785,8 @@
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding: 2rem 1rem 1.25rem; }
-      .filter-bar { padding: 1rem; }
-      .filter-bar__group { width: 100%; justify-content: space-between; }
-      .filter-bar__select { flex: 1; min-width: 0; }
-      .filter-bar__badge { margin-left: 0; width: 100%; justify-content: center; }
+      .nav-filters { gap: 1rem 1.5rem; justify-content: center; padding: 1rem 0; }
+      .nav-filter__item { font-size: 0.875rem; padding: 0.3rem 0.4rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
@@ -802,32 +810,44 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Filter panel with Department, Section, Course and Topic -->
-    <section class="filter-bar">
-      <div class="filter-bar__group">
-        <label class="filter-bar__label" for="dept-select">Department:</label>
-        <select class="filter-bar__select" id="dept-select"></select>
+    <!-- Clean Inline Filter Menu with balanced spacing -->
+    <nav class="nav-filters" aria-label="Class and Lecture Filters">
+      <div class="nav-filter__item">
+        <span class="nav-filter__text" id="dept-label">CSE</span>
+        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <select class="nav-filter__select" id="dept-select" aria-label="Department"></select>
       </div>
 
-      <div class="filter-bar__group">
-        <label class="filter-bar__label" for="section-select">Section:</label>
-        <select class="filter-bar__select" id="section-select"></select>
+      <div class="nav-filter__item">
+        <span class="nav-filter__text" id="sec-label">Sec 73_L</span>
+        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <select class="nav-filter__select" id="section-select" aria-label="Section"></select>
       </div>
 
-      <div class="filter-bar__group">
-        <label class="filter-bar__label" for="course-select">Course:</label>
-        <select class="filter-bar__select" id="course-select"></select>
+      <div class="nav-filter__item">
+        <span class="nav-filter__text" id="course-label">All Courses</span>
+        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <select class="nav-filter__select" id="course-select" aria-label="Course"></select>
       </div>
 
-      <div class="filter-bar__group">
-        <label class="filter-bar__label" for="topic-select">Topic:</label>
-        <select class="filter-bar__select" id="topic-select">
+      <div class="nav-filter__item">
+        <span class="nav-filter__text" id="topic-label">All Topics</span>
+        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+          <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <select class="nav-filter__select" id="topic-select" aria-label="Topic">
           <option value="ALL">All Topics</option>
         </select>
       </div>
 
-      <strong class="badge filter-bar__badge" id="class-badge"></strong>
-    </section>
+      <strong id="class-badge" style="display: none;"></strong>
+    </nav>
 
     <main class="content-area">
       <!-- Calendar View (Only visible when Course == ALL && Topic == ALL) -->
@@ -996,6 +1016,11 @@
         topic: document.getElementById("topic-select"),
         badge: document.getElementById("class-badge"),
 
+        deptLabel: document.getElementById("dept-label"),
+        secLabel: document.getElementById("sec-label"),
+        courseLabel: document.getElementById("course-label"),
+        topicLabel: document.getElementById("topic-label"),
+
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
         calendarCells: document.getElementById("calendar-cells"),
@@ -1139,13 +1164,30 @@
         return config.departments.find(d => d.code === code) || config.departments[0];
       }
 
-      function renderSelectOptions(selectEl, list, includeAll = false, allLabel = "All Courses") {
-        const items = list.map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+      function renderSelectOptions(selectEl, list, includeAll = false, allLabel = "All Courses", prefix = "") {
+        const items = list.map(item => {
+          const displayLabel = prefix ? `${prefix} ${item}` : item;
+          return `<option value="${escapeHtml(item)}">${escapeHtml(displayLabel)}</option>`;
+        }).join("");
         selectEl.innerHTML = (includeAll ? `<option value="ALL">${escapeHtml(allLabel)}</option>` : "") + items;
       }
 
+      function updateFilterLabels() {
+        if (ui.deptLabel && ui.dept && ui.dept.selectedIndex >= 0) {
+          ui.deptLabel.textContent = ui.dept.options[ui.dept.selectedIndex]?.text || state.dept;
+        }
+        if (ui.secLabel && ui.sec && ui.sec.selectedIndex >= 0) {
+          ui.secLabel.textContent = ui.sec.options[ui.sec.selectedIndex]?.text || state.sec;
+        }
+        if (ui.courseLabel && ui.course && ui.course.selectedIndex >= 0) {
+          ui.courseLabel.textContent = ui.course.options[ui.course.selectedIndex]?.text || "All Courses";
+        }
+        if (ui.topicLabel && ui.topic && ui.topic.selectedIndex >= 0) {
+          ui.topicLabel.textContent = ui.topic.options[ui.topic.selectedIndex]?.text || "All Topics";
+        }
+      }
+
       function syncTopicDropdown() {
-        // Collect available topics from approved notes matching current dept, sec, and course
         const matchingNotes = state.notes.filter(note =>
           note.department === state.dept &&
           note.section === state.sec &&
@@ -1163,15 +1205,16 @@
           state.topic = "ALL";
           ui.topic.value = "ALL";
         }
+        updateFilterLabels();
       }
 
       function syncDropdownStates() {
         const activeDept = getDeptMeta(state.dept);
         if (!activeDept) return;
 
-        renderSelectOptions(ui.sec, activeDept.sections);
+        renderSelectOptions(ui.sec, activeDept.sections, false, "", "Sec");
         renderSelectOptions(ui.course, activeDept.courses, true, "All Courses");
-        renderSelectOptions(ui.formSec, activeDept.sections);
+        renderSelectOptions(ui.formSec, activeDept.sections, false, "", "Sec");
         renderSelectOptions(ui.formCourse, activeDept.courses);
 
         ui.dept.value = state.dept;
@@ -1183,17 +1226,19 @@
 
         syncTopicDropdown();
         syncBadgeText();
+        updateFilterLabels();
       }
 
       function syncFormDropdowns() {
         const currentDept = getDeptMeta(ui.formDept.value);
         if (currentDept) {
-          renderSelectOptions(ui.formSec, currentDept.sections);
+          renderSelectOptions(ui.formSec, currentDept.sections, false, "", "Sec");
           renderSelectOptions(ui.formCourse, currentDept.courses);
         }
       }
 
       function syncBadgeText() {
+        if (!ui.badge) return;
         let text = `[ ${state.dept} | Sec ${state.sec}`;
         if (state.course !== "ALL") {
           text += ` | ${state.course}`;
@@ -1313,7 +1358,6 @@
 
         const uniqueDates = [...new Set(filteredNotes.map(n => n.date))].sort();
 
-        // Title Construction
         let titleParts = [];
         if (state.course !== "ALL") {
           titleParts.push(state.course);
@@ -1460,8 +1504,8 @@
 
       function render() {
         syncBadgeText();
+        updateFilterLabels();
 
-        // Calendar shows ONLY if BOTH Course is "ALL" and Topic is "ALL"
         const showCalendar = (state.course === "ALL" && state.topic === "ALL");
 
         ui.calendarView.hidden = !showCalendar;
@@ -1500,23 +1544,27 @@
           state.sec = ui.sec.value;
           state.course = ui.course.value;
           state.topic = ui.topic.value;
+          updateFilterLabels();
           render();
         });
 
         ui.sec.addEventListener("change", (e) => {
           state.sec = e.target.value;
           syncTopicDropdown();
+          updateFilterLabels();
           render();
         });
 
         ui.course.addEventListener("change", (e) => {
           state.course = e.target.value;
           syncTopicDropdown();
+          updateFilterLabels();
           render();
         });
 
         ui.topic.addEventListener("change", (e) => {
           state.topic = e.target.value;
+          updateFilterLabels();
           render();
         });
 
@@ -1669,6 +1717,7 @@
 
         syncDropdownStates();
         bindEvents();
+        updateFilterLabels();
         render();
         loadNotes();
       }
