@@ -276,25 +276,24 @@
       margin: 0 auto;
     }
 
-    /* Pill Button Filters - Centered with Equal Margins Left & Right */
+    /* ========================================================
+       REBUILT INLINE FILTER BAR:
+       - No border, no focus outline on click
+       - Centered with equal left & right margins (no giant gap)
+       - Auto-truncates long text (no stretching)
+       - All 4 stay on the exact SAME line on all devices
+    ======================================================== */
     .nav-filters {
       display: flex;
       align-items: center;
-      justify-content: center; /* ডানে ও বামে সমান মার্জিন রাখার জন্য সেন্টারে অ্যালাইন */
-      flex-wrap: nowrap; /* সব ডিভাইসে একই লাইনে থাকবে */
-      gap: 0.75rem; /* পরিমিত ও সুন্দর দূরত্ব */
+      justify-content: center;
+      flex-wrap: nowrap; /* Always on 1 line across all devices */
       width: 100%;
-      padding: 0.85rem 0 1.25rem;
+      max-width: 720px; /* Keeps buttons nicely grouped without huge gaps */
       margin: 0.5rem auto 1.25rem;
+      padding: 0.75rem 0 1.25rem;
       border-bottom: 1px solid var(--border-subtle);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-
-    .nav-filters::-webkit-scrollbar {
-      display: none;
+      gap: clamp(0.35rem, 1.8vw, 0.75rem); /* Proportional gap on all screens */
     }
 
     .nav-filter__item {
@@ -302,33 +301,48 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.45rem;
+      gap: 0.35rem;
       background-color: var(--bg-subtle);
-      border: none; /* কোনো বর্ডার থাকবে না */
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-tap-highlight-color: transparent !important;
       border-radius: var(--radius-full);
-      padding: 0.5rem 1.15rem;
-      cursor: pointer;
+      padding: 0.45rem clamp(0.45rem, 1.6vw, 1.15rem);
       color: var(--text-main);
-      font-size: 0.875rem;
+      font-size: clamp(0.75rem, 1.6vw, 0.875rem);
       font-weight: 600;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: background-color 0.15s ease, color 0.15s ease;
+      cursor: pointer;
       user-select: none;
+      white-space: nowrap;
+      min-width: 0;
+      max-width: clamp(72px, 22vw, 165px); /* Prevents button from stretching huge */
+      transition: background-color 0.15s ease;
     }
 
     .nav-filter__item:hover {
       background-color: var(--bg-hover);
     }
 
-    .nav-filter__item:focus-within {
-      outline: 2px solid var(--brand-primary);
-      outline-offset: 2px;
+    /* Completely eliminate any border/outline on click/focus */
+    .nav-filter__item:focus,
+    .nav-filter__item:focus-within,
+    .nav-filter__item:active,
+    .nav-filter__select:focus,
+    .nav-filter__select:active {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+      -webkit-tap-highlight-color: transparent !important;
     }
 
+    /* Truncates long text gracefully with ellipsis (...) */
     .nav-filter__text {
-      pointer-events: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
+      pointer-events: none;
+      max-width: clamp(45px, 16vw, 125px);
     }
 
     .nav-filter__arrow {
@@ -346,6 +360,9 @@
       cursor: pointer;
       -webkit-appearance: none;
       appearance: none;
+      outline: none !important;
+      border: none !important;
+      -webkit-tap-highlight-color: transparent !important;
     }
 
     /* Content Area */
@@ -799,15 +816,6 @@
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding: 2rem 1rem 1.25rem; }
-      .nav-filters {
-        gap: 0.45rem;
-        padding: 0.75rem 0 1rem;
-      }
-      .nav-filter__item {
-        font-size: 0.8125rem;
-        padding: 0.45rem 0.85rem;
-        gap: 0.35rem;
-      }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
@@ -831,11 +839,11 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Pill Button Filters: Centered with equal margins left and right -->
+    <!-- Refined Inline Filters: Same line, no outline, auto-truncating, equal margins -->
     <nav class="nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item">
         <span class="nav-filter__text" id="dept-label">CSE</span>
-        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
           <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="dept-select" aria-label="Department"></select>
@@ -843,7 +851,7 @@
 
       <div class="nav-filter__item">
         <span class="nav-filter__text" id="sec-label">Sec 73_L</span>
-        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
           <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="section-select" aria-label="Section"></select>
@@ -851,7 +859,7 @@
 
       <div class="nav-filter__item">
         <span class="nav-filter__text" id="course-label">All Courses</span>
-        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
           <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="course-select" aria-label="Course"></select>
@@ -859,7 +867,7 @@
 
       <div class="nav-filter__item">
         <span class="nav-filter__text" id="topic-label">All Topics</span>
-        <svg class="nav-filter__arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+        <svg class="nav-filter__arrow" width="9" height="5" viewBox="0 0 10 6" fill="none" aria-hidden="true">
           <path d="M1.5 1.5L5 4.5L8.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <select class="nav-filter__select" id="topic-select" aria-label="Topic">
@@ -1447,9 +1455,7 @@
               <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="9" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
+                <line x1="9" y1="13" x2="15" y2="13"></line>
               </svg>
               <p class="empty-state__text">No lecture material attached to this date for the selected criteria.</p>
             </div>
