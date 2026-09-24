@@ -174,7 +174,7 @@
       font-family: var(--font-display);
       font-style: italic;
       border-radius: var(--radius-full);
-      padding: 0.2rem 0.8rem;
+      padding: 0.15rem 0.75rem;
     }
 
     .hero__title .badge {
@@ -274,75 +274,38 @@
       margin: 0 auto;
     }
 
-    /* SIMPLE & MINIMAL PROMPT / SELECTION BAR */
+    /* DESIGN: Lecture archive & class notes স্টাইলে ব্যানার */
     .selection-banner-wrapper {
       margin: 1.25rem 0 0.25rem;
       display: flex;
       justify-content: center;
       align-items: center;
-    }
-
-    .selection-banner {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      font-weight: 500;
       text-align: center;
     }
 
-    /* সিম্পল প্রম্পট ডিজাইন */
-    .selection-banner.is-prompt {
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      color: var(--text-subtle);
-      font-size: 0.875rem;
-      padding: 0.25rem 0;
-    }
-
-    .selection-banner.is-prompt strong {
+    .selection-banner {
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 2.3vw, 1.65rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
       color: var(--text-main);
-      font-weight: 600;
-    }
-
-    .selection-banner__label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-subtle);
-      margin-right: 0.2rem;
-    }
-
-    .selection-banner__crumbs {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      font-weight: 600;
-      color: var(--text-main);
+      justify-content: center;
       flex-wrap: wrap;
+      gap: 0.45rem;
+      line-height: 1.3;
     }
 
-    .selection-crumb-tag {
-      background: var(--bg-pill);
-      padding: 0.15rem 0.55rem;
-      border-radius: var(--radius-full);
-      border: 1px solid #DFD7CA;
-      font-size: 0.8125rem;
-    }
-
-    .selection-crumb-tag--dept {
-      font-weight: 700;
-      background: #EAE4D9;
-      border-color: #D6CEBF;
+    .selection-banner .badge {
+      background-color: var(--bg-has-notes);
       color: var(--text-main);
-    }
-
-    .selection-crumb-sep {
-      color: var(--text-disabled);
-      font-size: 0.75rem;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.95em;
+      padding: 0.15rem 0.85rem;
+      border-radius: var(--radius-full);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     }
 
     /* Filters bar */
@@ -881,6 +844,7 @@
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding: 2rem 1rem 0.5rem; }
+      .selection-banner { font-size: 1.25rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
@@ -908,9 +872,9 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Simple Selection Indicator / Prompt -->
+    <!-- Lecture archive & class notes স্টাইলে ব্যানার -->
     <div class="selection-banner-wrapper">
-      <div id="selection-banner" class="selection-banner is-prompt"></div>
+      <div id="selection-banner" class="selection-banner"></div>
     </div>
 
     <!-- 4-column filter bar -->
@@ -1338,53 +1302,38 @@
         }
       }
 
-      // সিম্পল ও মিনিমাল ব্যানার আপডেট
+      // 'Lecture archive & class notes' স্টাইলে আপডেট করা ব্যানার
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
+        // ১. শুরুতে ডিপার্টমেন্ট সিলেক্ট না থাকলে
         if (!hasSelectedDept) {
-          ui.selectionBanner.className = "selection-banner is-prompt";
-          ui.selectionBanner.innerHTML = `Please select your <strong>Department</strong> to get started`;
-          return;
-        }
-
-        if (!hasSelectedSec) {
-          ui.selectionBanner.className = "selection-banner is-prompt";
           ui.selectionBanner.innerHTML = `
-            <span class="selection-banner__crumbs">
-              <span class="selection-crumb-tag selection-crumb-tag--dept">${escapeHtml(state.dept)}</span>
-              <span class="selection-crumb-sep">›</span>
-              <span>Please select your <strong>Section</strong></span>
-            </span>
+            Please select your <span class="badge">department</span> to get started
           `;
           return;
         }
 
-        ui.selectionBanner.className = "selection-banner";
-        let crumbsHtml = `
-          <span class="selection-banner__label">Viewing:</span>
-          <span class="selection-banner__crumbs">
-            <span class="selection-crumb-tag selection-crumb-tag--dept">${escapeHtml(state.dept)}</span>
-            <span class="selection-crumb-sep">›</span>
-            <span class="selection-crumb-tag">Sec ${escapeHtml(state.sec)}</span>
-        `;
+        // ২. ডিপার্টমেন্ট হয়েছে কিন্তু সেকশন বাকি থাকলে
+        if (!hasSelectedSec) {
+          ui.selectionBanner.innerHTML = `
+            Department <span class="badge">${escapeHtml(state.dept)}</span> &mdash; please select your <span class="badge">section</span>
+          `;
+          return;
+        }
+
+        // ৩. ডিপার্টমেন্ট এবং সেকশন উভয়ই সিলেক্ট থাকলে
+        let html = `Viewing notes for <span class="badge">${escapeHtml(state.dept)}</span> <span class="badge">Sec ${escapeHtml(state.sec)}</span>`;
 
         if (state.course && state.course !== "ALL") {
-          crumbsHtml += `
-            <span class="selection-crumb-sep">›</span>
-            <span class="selection-crumb-tag">${escapeHtml(state.course)}</span>
-          `;
+          html += ` &bull; <span class="badge">${escapeHtml(state.course)}</span>`;
         }
 
         if (state.topic && state.topic !== "ALL") {
-          crumbsHtml += `
-            <span class="selection-crumb-sep">›</span>
-            <span class="selection-crumb-tag">Topic: ${escapeHtml(state.topic)}</span>
-          `;
+          html += ` &bull; <span class="badge">${escapeHtml(state.topic)}</span>`;
         }
 
-        crumbsHtml += `</span>`;
-        ui.selectionBanner.innerHTML = crumbsHtml;
+        ui.selectionBanner.innerHTML = html;
       }
 
       function syncTopicMenu() {
