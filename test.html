@@ -251,7 +251,7 @@
 
     /* Hero */
     .hero {
-      padding: 2.5rem 1rem 1rem;
+      padding: 2.5rem 1rem 0.5rem;
       text-align: center;
       max-width: 760px;
       margin: 0 auto;
@@ -274,30 +274,36 @@
       margin: 0 auto;
     }
 
-    /* Selection Indicator Bar */
+    /* SIMPLE & MINIMAL PROMPT / SELECTION BAR */
     .selection-banner-wrapper {
-      margin: 1.25rem 0 0.5rem;
+      margin: 1.25rem 0 0.25rem;
       display: flex;
       justify-content: center;
+      align-items: center;
     }
 
     .selection-banner {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.55rem 1.25rem;
-      border-radius: var(--radius-full);
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      gap: 0.45rem;
       font-size: 0.875rem;
-      transition: all 0.2s ease;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-align: center;
     }
 
+    /* সিম্পল প্রম্পট ডিজাইন */
     .selection-banner.is-prompt {
-      background: #FFFBEB;
-      border-color: #FCD34D;
-      color: #92400E;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      color: var(--text-subtle);
+      font-size: 0.875rem;
+      padding: 0.25rem 0;
+    }
+
+    .selection-banner.is-prompt strong {
+      color: var(--text-main);
       font-weight: 600;
     }
 
@@ -307,13 +313,13 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--text-subtle);
-      margin-right: 0.25rem;
+      margin-right: 0.2rem;
     }
 
     .selection-banner__crumbs {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
       font-weight: 600;
       color: var(--text-main);
       flex-wrap: wrap;
@@ -321,7 +327,7 @@
 
     .selection-crumb-tag {
       background: var(--bg-pill);
-      padding: 0.15rem 0.6rem;
+      padding: 0.15rem 0.55rem;
       border-radius: var(--radius-full);
       border: 1px solid #DFD7CA;
       font-size: 0.8125rem;
@@ -329,14 +335,14 @@
 
     .selection-crumb-tag--dept {
       font-weight: 700;
-      background: #E8EEFF;
-      border-color: #C7D7FE;
-      color: var(--brand-primary);
+      background: #EAE4D9;
+      border-color: #D6CEBF;
+      color: var(--text-main);
     }
 
     .selection-crumb-sep {
       color: var(--text-disabled);
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
 
     /* Filters bar */
@@ -874,8 +880,7 @@
 
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
-      .hero { padding: 2rem 1rem 1rem; }
-      .selection-banner { font-size: 0.8125rem; padding: 0.45rem 0.85rem; }
+      .hero { padding: 2rem 1rem 0.5rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
@@ -903,7 +908,7 @@
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
     </section>
 
-    <!-- Current Location / Selection Indicator (ফিল্টারগুলোর ঠিক উপরে) -->
+    <!-- Simple Selection Indicator / Prompt -->
     <div class="selection-banner-wrapper">
       <div id="selection-banner" class="selection-banner is-prompt"></div>
     </div>
@@ -956,7 +961,7 @@
     </nav>
 
     <main class="content-area">
-      <!-- Calendar View (Only visible when Course == ALL && Topic == ALL) -->
+      <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
@@ -987,7 +992,7 @@
         </table>
       </section>
 
-      <!-- Filtered Cards View (Visible when Course != ALL or Topic != ALL) -->
+      <!-- Filtered Cards View -->
       <section class="course-dates-view" id="course-view" hidden>
         <div class="course-dates__header">
           <h3 class="course-dates__title" id="course-view-title"></h3>
@@ -1102,7 +1107,6 @@
 
       const now = new Date();
 
-      // শুরুতে dept এবং sec খালি ("") থাকবে যেন কোনো অপশনই হাইলাইট না থাকে
       const state = {
         dept: "",
         sec: "",
@@ -1286,7 +1290,6 @@
         }).join("");
       }
 
-      // কোনো অপশন সিলেক্ট করা না থাকলে (selectedVal falsy হলে) কোনোটিই is-selected পাবে না
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         let html = "";
         if (includeAll) {
@@ -1335,14 +1338,13 @@
         }
       }
 
+      // সিম্পল ও মিনিমাল ব্যানার আপডেট
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
         if (!hasSelectedDept) {
           ui.selectionBanner.className = "selection-banner is-prompt";
-          ui.selectionBanner.innerHTML = `
-            <span>👉 Please select your <strong>Department</strong> to get started</span>
-          `;
+          ui.selectionBanner.innerHTML = `Please select your <strong>Department</strong> to get started`;
           return;
         }
 
@@ -1352,13 +1354,12 @@
             <span class="selection-banner__crumbs">
               <span class="selection-crumb-tag selection-crumb-tag--dept">${escapeHtml(state.dept)}</span>
               <span class="selection-crumb-sep">›</span>
-              <span style="color: #92400E;">👉 Now please select your <strong>Section</strong></span>
+              <span>Please select your <strong>Section</strong></span>
             </span>
           `;
           return;
         }
 
-        // ডিপার্টমেন্ট এবং সেকশন উভয়ই সিলেক্ট করা থাকলে
         ui.selectionBanner.className = "selection-banner";
         let crumbsHtml = `
           <span class="selection-banner__label">Viewing:</span>
@@ -1411,7 +1412,6 @@
       function syncDropdownStates() {
         const allDeptCodes = config.departments.map(d => d.code);
 
-        // যদি ইউজার ডিপার্টমেন্ট সিলেক্ট না করে থাকে, তবে null পাঠানো হবে যাতে CSE বা কোনো অপশন হাইলাইট না থাকে
         const selectedDeptVal = hasSelectedDept ? state.dept : null;
         renderMenuOptions(ui.deptMenu, allDeptCodes, selectedDeptVal);
 
@@ -1745,7 +1745,6 @@
           toggleMenu(ui.topicMenu, ui.topicTrigger);
         });
 
-        // ডিপার্টমেন্ট সিলেক্ট করার ইভেন্ট
         ui.deptMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
@@ -1753,7 +1752,6 @@
           hasSelectedDept = true;
           state.dept = opt.dataset.value;
 
-          // ডিপার্টমেন্ট বদলালে সেকশন আবার নতুন করে সিলেক্ট করতে হবে
           hasSelectedSec = false;
           state.sec = "";
           state.course = "ALL";
@@ -1764,7 +1762,6 @@
           render();
         });
 
-        // সেকশন সিলেক্ট করার ইভেন্ট
         ui.secMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
