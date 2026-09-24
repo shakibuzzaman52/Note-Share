@@ -15,11 +15,11 @@
       --bg-hover: #E2DBD0;
       --bg-pill: #ECE6DB;
 
-      /* Highlights only for dates containing notes */
-      --bg-has-notes: #FDE68A;
-      --bg-has-notes-hover: #FCD34D;
-      --border-has-notes: #F59E0B;
-      --text-has-notes: #78350F;
+      /* Highlights for dates containing notes (Yellow fully replaced with Blue) */
+      --bg-has-notes: #0A37F5;
+      --bg-has-notes-hover: #072CC4;
+      --border-has-notes: #0A37F5;
+      --text-has-notes: #FFFFFF;
 
       /* Class Notes Specific Pink Accent */
       --bg-class-notes-badge: #FFB4F9;
@@ -31,7 +31,7 @@
       --text-subtle: #8A847A;
       --text-disabled: #B8B0A5;
 
-      /* Brand Primary (Blue for Add Note as original) */
+      /* Brand Primary (Blue) */
       --brand-primary: #0A37F5;
       --brand-primary-hover: #072CC4;
       --brand-dark: #181716;
@@ -102,7 +102,7 @@
       opacity: 0.6;
     }
 
-    /* Add Note / Primary button - Original Blue */
+    /* Add Note / Primary button - Blue */
     .btn--primary {
       background-color: var(--brand-primary);
       color: #FFFFFF;
@@ -308,10 +308,10 @@
       line-height: 1.35;
     }
 
-    /* Selection Banner Badge retains original yellow template */
+    /* Selection Banner Badge - Blue Highlight */
     .selection-banner .badge {
       background-color: var(--bg-has-notes);
-      color: var(--text-main);
+      color: var(--text-has-notes);
       font-family: var(--font-display);
       font-style: italic;
       font-size: 0.95em;
@@ -512,6 +512,7 @@
       border-color: #D2C8B8;
     }
 
+    /* Calendar cells containing notes - Solid Blue with White Text */
     .calendar-cell.has-notes .calendar-cell__btn {
       background-color: var(--bg-has-notes);
       border-color: var(--border-has-notes);
@@ -521,6 +522,7 @@
 
     .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-has-notes-hover);
+      border-color: var(--bg-has-notes-hover);
     }
 
     .calendar-cell--today .calendar-cell__btn {
@@ -531,6 +533,7 @@
     .calendar-cell--today.has-notes .calendar-cell__btn {
       background-color: var(--bg-has-notes);
       color: var(--text-has-notes);
+      border: 2px solid var(--text-main);
     }
 
     .calendar-cell--today.has-notes .calendar-cell__btn:hover:not(:disabled) {
@@ -1323,7 +1326,7 @@
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
-        // ১. শুরুতে ডিপার্টমেন্ট সিলেক্ট না থাকলে (সংক্ষিপ্ত সংস্করণ)
+        // ১. শুরুতে ডিপার্টমেন্ট সিলেক্ট না থাকলে
         if (!hasSelectedDept) {
           ui.selectionBanner.innerHTML = `
             Select your <span class="badge">department</span>
