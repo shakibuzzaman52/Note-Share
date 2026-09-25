@@ -9,19 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-canvas: #F4EFE6;
+      --bg-canvas: #f6f0e2;
       --bg-surface: #FFFFFF;
-      --bg-subtle: #EAE4D9;
-      --bg-hover: #E2DBD0;
-      --bg-pill: #ECE6DB;
+      --bg-subtle: #ECE5D7;
+      --bg-hover: #E3DCCF;
+      --bg-pill: #EBE4D5;
+      --bg-class-notes-badge: #FFB4F9;
 
-      /* Highlights only for dates containing notes */
-      --bg-has-notes: #FDE68A;
-      --bg-has-notes-hover: #FCD34D;
-      --border-has-notes: #F59E0B;
-      --text-has-notes: #78350F;
-
-      --border-subtle: #E5DFD3;
+      --border-subtle: #E4DCD0;
 
       --text-main: #181716;
       --text-muted: #3C3833;
@@ -34,7 +29,6 @@
       --brand-dark-hover: #2B2A28;
       --brand-danger: #DC2626;
       --brand-danger-hover: #B91C1C;
-      --brand-success: #16A34A;
 
       --radius-full: 9999px;
       --radius-lg: 16px;
@@ -50,7 +44,7 @@
       padding: 0;
     }
 
-    button, input, select {
+    button, input {
       font-family: inherit;
       border: 0;
       outline: 0;
@@ -70,6 +64,11 @@
       padding-bottom: 4rem;
     }
 
+    body.sheet-open {
+      overflow: hidden;
+      touch-action: none;
+    }
+
     .shell {
       max-width: 1200px;
       width: 100%;
@@ -77,7 +76,7 @@
       padding: 0 clamp(1rem, 4vw, 2.5rem);
     }
 
-    /* Core button primitives */
+    /* Core buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -106,6 +105,13 @@
       background-color: var(--brand-primary-hover);
     }
 
+    .btn-plus {
+      font-size: 1.25em;
+      line-height: 1;
+      margin-right: 0.25rem;
+      display: inline-block;
+    }
+
     .btn--dark {
       background-color: var(--brand-dark);
       color: #FFFFFF;
@@ -127,18 +133,13 @@
     .btn--subtle {
       background-color: var(--bg-canvas);
       color: var(--text-main);
-      border: 1px solid #DFD8CC;
+      border: 1px solid var(--border-subtle);
       padding: 0.5rem 1rem;
       font-size: 0.8125rem;
-      display: inline-flex;
-      align-items: center;
       gap: 0.4rem;
     }
     .btn--subtle:hover:not(:disabled) {
-      background-color: #EAE3D5;
-    }
-    .btn--subtle svg {
-      flex-shrink: 0;
+      background-color: var(--bg-subtle);
     }
 
     .btn--danger {
@@ -149,7 +150,6 @@
       background-color: var(--brand-danger-hover);
     }
 
-    /* Placed after button modifiers so color: transparent overrides variant text colors without !important */
     .btn.is-loading {
       pointer-events: none;
       color: transparent;
@@ -166,71 +166,15 @@
       animation: spin 0.6s linear infinite;
     }
 
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      background: var(--bg-subtle);
-      color: var(--text-main);
-      font-family: var(--font-display);
-      font-style: italic;
-      border-radius: var(--radius-full);
-      padding: 0.2rem 0.8rem;
-    }
-
-    /* Hero "class notes" badge */
-    .hero__title .badge {
-      background-color: var(--bg-has-notes);
-      color: var(--text-main);
-    }
-
-    /* Form controls */
-    .field {
-      margin-bottom: 1rem;
-    }
-
-    .field label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-subtle);
-      margin-bottom: 0.35rem;
-    }
-
-    .field input,
-    .field select {
-      width: 100%;
-      background: var(--bg-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.75rem 1rem;
-      font-size: 0.9375rem;
-      color: var(--text-main);
-      transition: background-color 0.15s ease;
-    }
-
-    .field input:focus,
-    .field select:focus {
-      background: var(--bg-hover);
-    }
-
-    .field select {
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%236E6961' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-    }
-
-    /* Header */
+    /* Header & Navigation */
     .site-header {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.5rem clamp(1rem, 4vw, 3.5rem);
+      padding: 1.75rem clamp(1rem, 4vw, 3.5rem);
       background: var(--bg-canvas);
+      position: relative;
     }
 
     .brand-mark {
@@ -251,39 +195,148 @@
       margin-left: 2px;
     }
 
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(2.5rem, 4.5vw, 3.75rem);
+    }
+
+    .nav-link {
+      padding: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+    }
+
+    .header-menu-toggle {
+      display: none;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      font-family: var(--font-display);
+      font-style: italic;
+      border-radius: var(--radius-full);
+      padding: 0.15rem 0.85rem;
+    }
+
+    .hero__title .badge {
+      background-color: var(--bg-class-notes-badge);
+    }
+
+    /* Form controls */
+    .field {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-subtle);
+      margin-bottom: 0.35rem;
+    }
+
+    .field input {
+      width: 100%;
+      background-color: var(--bg-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      font-size: 0.9375rem;
+      color: var(--text-main);
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .field input:focus {
+      background-color: var(--bg-hover);
+    }
+
     /* Hero */
     .hero {
-      padding: 3rem 1rem 1.25rem;
+      padding-top: clamp(3.5rem, 6vw, 5.5rem);
       text-align: center;
-      max-width: 760px;
+      max-width: 840px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .hero__title {
       font-family: var(--font-display);
-      font-size: clamp(2.25rem, 4vw, 3.75rem);
+      font-size: clamp(2.5rem, 5vw, 4.25rem);
       font-weight: 400;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
       color: var(--text-main);
-      margin-bottom: 0.85rem;
+      margin-bottom: 1.4rem;
     }
 
     .hero__desc {
-      font-size: 1rem;
+      font-size: clamp(1rem, 1.2vw, 1.125rem);
       color: var(--text-muted);
-      max-width: 520px;
-      margin: 0 auto;
+      max-width: 500px;
+      line-height: 1.6;
+      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
-    /* Filters bar */
+    /* Selection Banner */
+    .selection-banner-wrapper {
+      margin: 0 auto 0.85rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .selection-banner {
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 2.3vw, 1.65rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      line-height: 1.35;
+    }
+
+    .selection-banner .badge {
+      background-color: var(--brand-primary);
+      color: #FFFFFF;
+      font-size: 0.95em;
+    }
+
+    /* Filters Bar */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: clamp(0.35rem, 1.5vw, 0.85rem);
       width: 100%;
-      margin: 0.5rem 0 1.5rem;
-      padding: 0.85rem 0 1.25rem;
+      margin: 0 0 1rem;
+      padding: 0.35rem 0 1rem;
       border-bottom: 1px solid var(--border-subtle);
       position: relative;
     }
@@ -308,11 +361,18 @@
       user-select: none;
       width: 100%;
       -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.15s ease;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      border: 1px solid transparent;
     }
 
-    .nav-filter__trigger:hover {
+    .nav-filter__trigger:hover,
+    .nav-filter__trigger:focus-visible {
       background-color: var(--bg-hover);
+    }
+
+    .nav-filter__trigger[aria-expanded="true"] {
+      background-color: var(--bg-hover);
+      border-color: var(--border-subtle);
     }
 
     .nav-filter__text {
@@ -327,6 +387,11 @@
       pointer-events: none;
       flex-shrink: 0;
       color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-filter__trigger[aria-expanded="true"] .nav-filter__arrow {
+      transform: rotate(180deg);
     }
 
     .nav-filter__menu {
@@ -343,6 +408,7 @@
       z-index: 150;
       max-height: 260px;
       overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
     .nav-filter__menu[hidden] {
@@ -380,14 +446,37 @@
       color: var(--brand-primary);
     }
 
-    /* Content Area */
-    .content-area {
-      margin-top: 1rem;
+    .nav-filter__empty {
+      padding: 0.75rem 1rem;
+      color: var(--text-subtle);
+      font-size: 0.8125rem;
     }
 
-    /* CALENDAR VIEW */
-    #calendar-view {
-      padding: 1rem 0;
+    /* Modal Form dropdowns */
+    .field .nav-filter__trigger {
+      justify-content: space-between;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      font-size: 0.9375rem;
+    }
+
+    .field .nav-filter__menu {
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      top: calc(100% + 4px);
+      z-index: 200;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .content-area {
+      margin-top: 0.5rem;
+    }
+
+    /* Views */
+    #calendar-view,
+    .course-dates-view {
+      padding: 0.5rem 0 1rem;
     }
 
     .calendar-nav {
@@ -452,7 +541,7 @@
       align-items: center;
       justify-content: center;
       background-color: var(--bg-pill);
-      border: 1px solid #DFD7CA;
+      border: 1px solid var(--border-subtle);
       font-weight: 600;
       font-size: 0.95rem;
       color: var(--text-main);
@@ -463,18 +552,7 @@
 
     .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
-      border-color: #D2C8B8;
-    }
-
-    .calendar-cell.has-notes .calendar-cell__btn {
-      background-color: var(--bg-has-notes);
-      border-color: var(--border-has-notes);
-      color: var(--text-has-notes);
-      font-weight: 700;
-    }
-
-    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      background-color: var(--bg-has-notes-hover);
+      border-color: #D6CEC0;
     }
 
     .calendar-cell--today .calendar-cell__btn {
@@ -482,13 +560,14 @@
       font-weight: 700;
     }
 
-    .calendar-cell--today.has-notes .calendar-cell__btn {
-      background-color: var(--bg-has-notes);
-      color: var(--text-has-notes);
+    .calendar-cell.has-notes .calendar-cell__btn {
+      border: 2px solid var(--brand-primary);
+      color: var(--brand-primary);
+      font-weight: 700;
     }
 
-    .calendar-cell--today.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      background-color: var(--bg-has-notes-hover);
+    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
+      border-color: var(--brand-primary-hover);
     }
 
     .calendar-cell--disabled {
@@ -501,11 +580,6 @@
       color: var(--text-disabled);
       opacity: 0.4;
       cursor: default;
-    }
-
-    /* COURSE & TOPIC VIEW */
-    .course-dates-view {
-      padding: 1rem 0;
     }
 
     .course-dates__header {
@@ -539,13 +613,9 @@
       width: 100%;
     }
 
-    .course-dates__grid:has(.empty-state) {
-      display: block;
-    }
-
     .course-card {
       background-color: var(--bg-pill);
-      border: 1px solid #DFD7CA;
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.95rem 1.15rem;
       cursor: pointer;
@@ -559,7 +629,7 @@
 
     .course-card:hover {
       background-color: var(--bg-hover);
-      border-color: #D2C8B8;
+      border-color: #D6CEC0;
     }
 
     .course-card__info {
@@ -584,7 +654,7 @@
     .course-card__badge {
       align-self: flex-start;
       background-color: var(--bg-subtle);
-      border: 1px solid #D8D0C3;
+      border: 1px solid var(--border-subtle);
       color: var(--text-muted);
       padding: 0.2rem 0.65rem;
       border-radius: var(--radius-full);
@@ -593,13 +663,18 @@
       white-space: nowrap;
     }
 
+    dialog:not([open]) {
+      display: none;
+    }
+
     /* Modals */
     .dialog-modal {
       position: fixed;
       inset: 0;
       margin: auto;
-      max-width: 500px;
+      max-width: 520px;
       width: calc(100% - 2rem);
+      max-height: 80vh;
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
@@ -607,16 +682,57 @@
       color: var(--text-main);
     }
 
-    .dialog-modal__backdrop,
+    .dialog-modal[open] {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-modal > form {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
     .dialog-modal::backdrop {
-      background: rgba(24, 23, 22, 0.45);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.55);
       cursor: pointer;
+    }
+
+    .bottom-sheet__handle-wrapper {
+      display: none;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 0 0.85rem;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .bottom-sheet__handle-wrapper:active {
+      cursor: grabbing;
+    }
+
+    .bottom-sheet__handle {
+      width: 42px;
+      height: 4.5px;
+      background-color: #D2CBC0;
+      border-radius: var(--radius-full);
+      transition: background-color 0.15s ease;
+    }
+
+    .bottom-sheet__handle-wrapper:hover .bottom-sheet__handle,
+    .bottom-sheet__handle-wrapper:active .bottom-sheet__handle {
+      background-color: #A69E90;
     }
 
     .dialog-modal__header {
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
     }
 
     .dialog-modal__title {
@@ -633,21 +749,42 @@
       font-weight: 600;
     }
 
+    .dialog-modal__text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
     .dialog-modal__actions {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       gap: 0.75rem;
-      margin-top: 1.5rem;
+      margin-top: 1rem;
+      flex-shrink: 0;
     }
 
     .notes-stack {
-      max-height: 52vh;
+      flex: 1 1 auto;
       overflow-y: auto;
-      margin-top: 1.25rem;
+      margin-top: 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.85rem;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    .modal-body-scroll {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      margin-top: 1rem;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      padding-bottom: 1.5rem;
+    }
+
+    .modal-body-scroll .field:last-child {
+      margin-bottom: 0;
     }
 
     .empty-state {
@@ -679,7 +816,7 @@
     }
 
     .note-cluster {
-      background-color: #FAF6EF;
+      background-color: #FAF5EB;
       border-radius: var(--radius-md);
       padding: 0.95rem 1.15rem;
     }
@@ -774,6 +911,7 @@
       color: var(--brand-danger);
     }
 
+    /* Toast Notification */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
@@ -793,15 +931,8 @@
       border-radius: var(--radius-md);
       font-size: 0.875rem;
       font-weight: 500;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
       transition: opacity 0.25s ease;
-    }
-
-    .toast--success {
-      border-left: 4px solid var(--brand-success);
-    }
-
-    .toast--error {
-      border-left: 4px solid var(--brand-danger);
     }
 
     @keyframes spin {
@@ -809,20 +940,95 @@
     }
 
     @media (max-width: 768px) {
-      .site-header { padding: 1.25rem 1rem; }
-      .hero { padding: 2rem 1rem 1.25rem; }
+      .site-header {
+        padding: 1.25rem 1rem;
+      }
+
+      .header-menu-toggle {
+        display: block;
+      }
+
+      .header-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: var(--bg-canvas);
+        padding: 1.5rem 1.25rem 2rem;
+        z-index: 250;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.85rem;
+      }
+
+      .header-nav.is-open {
+        display: flex;
+      }
+
+      .nav-link {
+        font-size: 1.15rem;
+        width: 100%;
+        text-align: left;
+      }
+
+      .header-nav .btn--primary {
+        width: 100%;
+        margin-top: 0.5rem;
+        padding: 0.8rem 1.25rem;
+        font-size: 0.95rem;
+      }
+
+      .hero { padding-top: 2rem; }
+      .hero__desc { margin-bottom: 1.5rem; }
+      .selection-banner { font-size: 1.2rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
-      
+
       .nav-filter__menu {
         min-width: 170px;
         max-width: calc(100vw - 1.5rem);
       }
 
       .dialog-modal { padding: 1.5rem 1.25rem; }
+
+      .dialog-modal.bottom-sheet {
+        inset: auto 0 0 0;
+        margin: 0 auto;
+        max-width: 100%;
+        width: 100%;
+        max-height: 68vh;
+        border-radius: 20px 20px 0 0;
+        border-bottom: 0;
+        padding: 0.5rem 1.25rem 1.25rem;
+        transform: translateY(100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        overscroll-behavior: contain;
+        will-change: transform;
+      }
+
+      .dialog-modal.bottom-sheet.is-open {
+        transform: translateY(0);
+      }
+
+      .dialog-modal.bottom-sheet.is-dragging {
+        transition: none;
+      }
+
+      .dialog-modal.bottom-sheet .dialog-modal__header {
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+      }
+
+      .bottom-sheet__handle-wrapper {
+        display: flex;
+      }
+
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
@@ -830,17 +1036,29 @@
 <body>
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
-    <button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button>
+
+    <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
+
+    <nav class="header-nav" id="header-nav">
+      <button type="button" class="nav-link">Features</button>
+      <button type="button" class="nav-link">How to Find</button>
+      <button type="button" class="nav-link">How to Upload</button>
+      <button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn-plus">+</span>Add Note</button>
+    </nav>
   </header>
+
   <div class="shell">
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
+
+      <div class="selection-banner-wrapper">
+        <div id="selection-banner" class="selection-banner"></div>
+      </div>
     </section>
 
-    <!-- 4-column filter bar -->
-    <nav class="nav-filters" aria-label="Class and Lecture Filters">
-      <!-- 1. Department -->
+    <!-- Filters Bar -->
+    <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="dept-label">Department</span>
@@ -851,7 +1069,6 @@
         <div class="nav-filter__menu" id="dept-menu" hidden role="listbox"></div>
       </div>
 
-      <!-- 2. Section -->
       <div class="nav-filter__item" data-filter="sec">
         <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="sec-label">Section</span>
@@ -862,7 +1079,6 @@
         <div class="nav-filter__menu" id="sec-menu" hidden role="listbox"></div>
       </div>
 
-      <!-- 3. Course -->
       <div class="nav-filter__item" data-filter="course">
         <button type="button" class="nav-filter__trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="course-label">Course</span>
@@ -873,7 +1089,6 @@
         <div class="nav-filter__menu" id="course-menu" hidden role="listbox"></div>
       </div>
 
-      <!-- 4. Topic -->
       <div class="nav-filter__item" data-filter="topic">
         <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="topic-label">Topic</span>
@@ -883,12 +1098,9 @@
         </button>
         <div class="nav-filter__menu" id="topic-menu" hidden role="listbox"></div>
       </div>
-
-      <strong id="class-badge" hidden></strong>
     </nav>
 
     <main class="content-area">
-      <!-- Calendar View (Only visible when Course == ALL && Topic == ALL) -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
@@ -919,7 +1131,6 @@
         </table>
       </section>
 
-      <!-- Filtered Cards View (Visible when Course != ALL or Topic != ALL) -->
       <section class="course-dates-view" id="course-view" hidden>
         <div class="course-dates__header">
           <h3 class="course-dates__title" id="course-view-title"></h3>
@@ -930,7 +1141,11 @@
     </main>
 
     <!-- Modal: View notes -->
-    <dialog class="dialog-modal" id="notes-modal">
+    <dialog class="dialog-modal bottom-sheet" id="notes-modal">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
+        <div class="bottom-sheet__handle"></div>
+      </div>
+
       <div class="dialog-modal__header">
         <h3 class="dialog-modal__title" id="modal-date-label"></h3>
         <span class="dialog-modal__desc" id="modal-notes-total"></span>
@@ -938,77 +1153,122 @@
 
       <div class="notes-stack" id="modal-notes-stack"></div>
 
-      <form method="dialog" class="dialog-modal__actions">
-        <button type="submit" class="btn btn--ghost">Close</button>
-      </form>
+      <div class="dialog-modal__actions">
+        <button type="button" class="btn btn--ghost" id="btn-close-notes" data-close-modal>Close</button>
+      </div>
     </dialog>
 
     <!-- Modal: Add note -->
-    <dialog class="dialog-modal" id="add-modal">
+    <dialog class="dialog-modal bottom-sheet" id="add-modal">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
+        <div class="bottom-sheet__handle"></div>
+      </div>
+
       <form id="add-note-form">
-        <h3 class="dialog-modal__title">Add Class Note</h3>
-
-        <div class="field">
-          <label for="input-dept">Department:</label>
-          <select id="input-dept" required></select>
+        <div class="dialog-modal__header">
+          <h3 class="dialog-modal__title">Add Class Note</h3>
+          <span class="dialog-modal__desc">Share lecture slides, handouts, and notes</span>
         </div>
 
-        <div class="field">
-          <label for="input-section">Section:</label>
-          <select id="input-section" required></select>
-        </div>
+        <div class="modal-body-scroll">
+          <div class="field">
+            <label>Department:</label>
+            <div class="nav-filter__item" data-field="dept">
+              <button type="button" class="nav-filter__trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="nav-filter__text" id="form-dept-label">Department</span>
+                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="nav-filter__menu" id="form-dept-menu" hidden role="listbox"></div>
+              <input type="hidden" id="input-dept" name="department" required>
+            </div>
+          </div>
 
-        <div class="field">
-          <label for="input-date">Date:</label>
-          <input type="date" id="input-date" required>
-        </div>
+          <div class="field">
+            <label>Section:</label>
+            <div class="nav-filter__item" data-field="sec">
+              <button type="button" class="nav-filter__trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="nav-filter__text" id="form-sec-label">Section</span>
+                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="nav-filter__menu" id="form-sec-menu" hidden role="listbox"></div>
+              <input type="hidden" id="input-section" name="section" required>
+            </div>
+          </div>
 
-        <div class="field">
-          <label for="input-course">Course:</label>
-          <select id="input-course" required></select>
-        </div>
+          <div class="field">
+            <label for="input-date">Date:</label>
+            <input type="date" id="input-date" required>
+          </div>
 
-        <div class="field">
-          <label for="input-topic">Topic:</label>
-          <input type="text" id="input-topic" placeholder="e.g. Graph Traversal Algorithms" required>
-        </div>
+          <div class="field">
+            <label>Course:</label>
+            <div class="nav-filter__item" data-field="course">
+              <button type="button" class="nav-filter__trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="nav-filter__text" id="form-course-label">Course</span>
+                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="nav-filter__menu" id="form-course-menu" hidden role="listbox"></div>
+              <input type="hidden" id="input-course" name="course" required>
+            </div>
+          </div>
 
-        <div class="field">
-          <label for="input-title">Title:</label>
-          <input type="text" id="input-title" placeholder="e.g. Lecture Slide 12" required>
-        </div>
+          <div class="field">
+            <label for="input-topic">Topic:</label>
+            <input type="text" id="input-topic" placeholder="e.g. Graph Traversal Algorithms" required>
+          </div>
 
-        <div class="field">
-          <label for="input-link">Resource URL:</label>
-          <input type="text" id="input-link" inputmode="url" placeholder="https://... (Drive, Notion, OneDrive, Dropbox, etc.)">
+          <div class="field">
+            <label for="input-title">Title:</label>
+            <input type="text" id="input-title" placeholder="e.g. Lecture Slide 12" required>
+          </div>
+
+          <div class="field">
+            <label for="input-link">Resource URL:</label>
+            <input type="text" id="input-link" inputmode="url" placeholder="https://... (Drive, Notion, OneDrive, Dropbox, etc.)">
+          </div>
         </div>
 
         <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" onclick="document.getElementById('add-modal').close()">Cancel</button>
+          <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--primary" id="btn-submit-note">Submit Note</button>
         </div>
       </form>
     </dialog>
 
     <!-- Modal: Report link -->
-    <dialog class="dialog-modal" id="report-modal">
+    <dialog class="dialog-modal bottom-sheet" id="report-modal">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
+        <div class="bottom-sheet__handle"></div>
+      </div>
       <form id="report-link-form">
-        <h3 class="dialog-modal__title">Report Broken Link</h3>
-        <p class="field">
-          <strong>Resource:</strong> <span id="report-note-title"></span><br>
-          <small id="report-note-context" class="dialog-modal__desc"></small>
-        </p>
-        <p class="field" style="font-size: 0.875rem; color: var(--text-muted);">
-          Flagging this note notifies section classmates that the link is expired or inaccessible.
-        </p>
+        <div class="dialog-modal__header">
+          <h3 class="dialog-modal__title">Report Broken Link</h3>
+          <span class="dialog-modal__desc">Notify classmates about broken links</span>
+        </div>
+        <div class="modal-body-scroll">
+          <p class="field">
+            <strong>Resource:</strong> <span id="report-note-title"></span><br>
+            <small id="report-note-context" class="dialog-modal__desc"></small>
+          </p>
+          <p class="field dialog-modal__text">
+            Flagging this note notifies section classmates that the link is expired or inaccessible.
+          </p>
+        </div>
 
         <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" onclick="document.getElementById('report-modal').close()">Cancel</button>
+          <button type="button" class="btn btn--ghost" id="btn-cancel-report" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
         </div>
       </form>
     </dialog>
   </div>
+
   <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
   <script src="config.js"></script>
   <script>
@@ -1033,9 +1293,10 @@
       const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
       const now = new Date();
+
       const state = {
-        dept: config.departments[0]?.code || "CSE",
-        sec: config.departments[0]?.sections.includes("73_L") ? "73_L" : (config.departments[0]?.sections[0] || ""),
+        dept: "",
+        sec: "",
         course: "ALL",
         topic: "ALL",
         viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
@@ -1044,14 +1305,12 @@
         manualTitleEdited: false
       };
 
-      let hasSelectedDept = false;
-      let hasSelectedSec = false;
-
       const ui = {
-        deptTrigger: document.getElementById("dept-trigger"),
-        secTrigger: document.getElementById("sec-trigger"),
-        courseTrigger: document.getElementById("course-trigger"),
-        topicTrigger: document.getElementById("topic-trigger"),
+        mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
+        headerNav: document.getElementById("header-nav"),
+
+        selectionBanner: document.getElementById("selection-banner"),
+        navFilters: document.getElementById("main-nav-filters"),
 
         deptMenu: document.getElementById("dept-menu"),
         secMenu: document.getElementById("sec-menu"),
@@ -1062,7 +1321,6 @@
         secLabel: document.getElementById("sec-label"),
         courseLabel: document.getElementById("course-label"),
         topicLabel: document.getElementById("topic-label"),
-        badge: document.getElementById("class-badge"),
 
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
@@ -1084,6 +1342,7 @@
         addModal: document.getElementById("add-modal"),
         addNoteBtn: document.getElementById("trigger-add-note"),
         addForm: document.getElementById("add-note-form"),
+
         formDept: document.getElementById("input-dept"),
         formSec: document.getElementById("input-section"),
         formDate: document.getElementById("input-date"),
@@ -1092,6 +1351,14 @@
         formTitle: document.getElementById("input-title"),
         formLink: document.getElementById("input-link"),
         btnSubmitNote: document.getElementById("btn-submit-note"),
+
+        formDeptMenu: document.getElementById("form-dept-menu"),
+        formSecMenu: document.getElementById("form-sec-menu"),
+        formCourseMenu: document.getElementById("form-course-menu"),
+
+        formDeptLabel: document.getElementById("form-dept-label"),
+        formSecLabel: document.getElementById("form-sec-label"),
+        formCourseLabel: document.getElementById("form-course-label"),
 
         reportModal: document.getElementById("report-modal"),
         reportForm: document.getElementById("report-link-form"),
@@ -1113,9 +1380,7 @@
         set(key, val) {
           try {
             localStorage.setItem(key, val);
-          } catch {
-            // Ignore quota errors
-          }
+          } catch {}
         }
       };
 
@@ -1125,8 +1390,8 @@
 
       function parseLocalDate(dateKey) {
         if (!dateKey) return new Date();
-        const parts = dateKey.split("-").map(Number);
-        return new Date(parts[0], parts[1] - 1, parts[2]);
+        const [year, month, day] = dateKey.split("-").map(Number);
+        return new Date(year, month - 1, day);
       }
 
       function formatReadableDate(dateKey) {
@@ -1150,32 +1415,45 @@
       }
 
       function normalizeUrl(input) {
-        if (!input) return "";
-        let trimmed = String(input).trim();
+        const trimmed = String(input || "").trim();
         if (!trimmed) return "";
-        if (!/^[a-zA-Z][a-zA-d+\-.]*?:/i.test(trimmed)) {
-          trimmed = "https://" + trimmed;
-        }
-        return trimmed;
+        return /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
       }
 
       function sanitizeUrl(rawUrl) {
-        if (!rawUrl) return "";
-        const clean = String(rawUrl).trim();
+        const clean = String(rawUrl || "").trim();
         return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
       }
 
-      function showToast(message, type = "success") {
-        const toast = document.createElement("div");
-        toast.className = `toast toast--${type}`;
-        toast.textContent = message;
+      function setButtonLoading(btn, isLoading) {
+        btn.disabled = isLoading;
+        btn.classList.toggle("is-loading", isLoading);
+      }
 
+      function renderEmptyState(message) {
+        return `
+          <div class="empty-state">
+            <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="9" y1="13" x2="15" y2="13"></line>
+            </svg>
+            <p class="empty-state__text">${escapeHtml(message)}</p>
+          </div>
+        `;
+      }
+
+      function showToast(message) {
+        ui.toastTray.innerHTML = "";
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
         ui.toastTray.appendChild(toast);
 
         setTimeout(() => {
           toast.style.opacity = "0";
           setTimeout(() => toast.remove(), 250);
-        }, 3200);
+        }, 2800);
       }
 
       async function syncData(payload) {
@@ -1204,14 +1482,8 @@
       }
 
       function getDeptMeta(code) {
-        return config.departments.find(d => d.code === code) || config.departments[0];
-      }
-
-      function renderFormOptions(selectEl, list, prefix = "") {
-        selectEl.innerHTML = list.map(item => {
-          const display = prefix ? `${prefix} ${item}` : item;
-          return `<option value="${escapeHtml(item)}">${escapeHtml(display)}</option>`;
-        }).join("");
+        if (!code) return null;
+        return config.departments.find(d => d.code === code) || null;
       }
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
@@ -1221,7 +1493,7 @@
           html += `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="ALL">${escapeHtml(allLabel)}</button>`;
         }
         html += list.map(item => {
-          const isSel = String(selectedVal) === String(item);
+          const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
           const display = prefix ? `${prefix} ${item}` : item;
           return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}">${escapeHtml(display)}</button>`;
         }).join("");
@@ -1230,12 +1502,8 @@
       }
 
       function closeAllMenus() {
-        [ui.deptMenu, ui.secMenu, ui.courseMenu, ui.topicMenu].forEach(menu => {
-          if (menu) menu.hidden = true;
-        });
-        [ui.deptTrigger, ui.secTrigger, ui.courseTrigger, ui.topicTrigger].forEach(btn => {
-          if (btn) btn.setAttribute("aria-expanded", "false");
-        });
+        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => { m.hidden = true; });
+        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => { b.setAttribute("aria-expanded", "false"); });
       }
 
       function toggleMenu(menu, trigger) {
@@ -1248,21 +1516,34 @@
       }
 
       function updateFilterLabels() {
-        if (ui.deptLabel) {
-          ui.deptLabel.textContent = hasSelectedDept ? state.dept : "Department";
+        ui.deptLabel.textContent = state.dept || "Department";
+        ui.secLabel.textContent = state.sec ? `Sec ${state.sec}` : "Section";
+        ui.courseLabel.textContent = (state.course === "ALL" || !state.course) ? "Course" : state.course;
+        ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
+      }
+
+      function updateSelectionBanner() {
+        if (!ui.selectionBanner) return;
+
+        if (!state.dept) {
+          ui.selectionBanner.innerHTML = 'Select your <span class="badge">department</span>';
+          return;
         }
-        if (ui.secLabel) {
-          ui.secLabel.textContent = hasSelectedSec ? `Sec ${state.sec}` : "Section";
+
+        if (!state.sec) {
+          ui.selectionBanner.innerHTML = `<span class="badge">${escapeHtml(state.dept)}</span> &mdash; select <span class="badge">section</span>`;
+          return;
         }
-        if (ui.courseLabel) {
-          ui.courseLabel.textContent = (state.course === "ALL" || !state.course) ? "Course" : state.course;
-        }
-        if (ui.topicLabel) {
-          ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
-        }
+
+        ui.selectionBanner.innerHTML = `Viewing notes for <span class="badge">${escapeHtml(state.dept)} &mdash; Sec ${escapeHtml(state.sec)}</span>`;
       }
 
       function syncTopicMenu() {
+        if (!state.dept || !state.sec) {
+          ui.topicMenu.innerHTML = `<div class="nav-filter__empty">Select Department & Section first</div>`;
+          return;
+        }
+
         const matchingNotes = state.notes.filter(note =>
           note.department === state.dept &&
           note.section === state.sec &&
@@ -1276,49 +1557,66 @@
           state.topic = "ALL";
         }
         renderMenuOptions(ui.topicMenu, uniqueTopics, state.topic, true, "All Topics");
-        updateFilterLabels();
       }
 
       function syncDropdownStates() {
-        const activeDept = getDeptMeta(state.dept);
-        if (!activeDept) return;
-
         const allDeptCodes = config.departments.map(d => d.code);
-        renderMenuOptions(ui.deptMenu, allDeptCodes, state.dept);
+        renderMenuOptions(ui.deptMenu, allDeptCodes, state.dept || null);
 
-        state.sec = activeDept.sections.includes(state.sec) ? state.sec : activeDept.sections[0];
-        renderMenuOptions(ui.secMenu, activeDept.sections, state.sec, false, "", "Sec");
+        const activeDept = getDeptMeta(state.dept);
 
-        state.course = activeDept.courses.includes(state.course) || state.course === "ALL" ? state.course : "ALL";
-        renderMenuOptions(ui.courseMenu, activeDept.courses, state.course, true, "All Courses");
-
-        renderFormOptions(ui.formSec, activeDept.sections, "Sec");
-        renderFormOptions(ui.formCourse, activeDept.courses);
+        if (activeDept && state.dept) {
+          renderMenuOptions(ui.secMenu, activeDept.sections, state.sec || null, false, "", "Sec");
+          const selectedCourse = state.sec ? state.course : "ALL";
+          renderMenuOptions(ui.courseMenu, activeDept.courses, selectedCourse, true, "All Courses");
+        } else {
+          ui.secMenu.innerHTML = `<div class="nav-filter__empty">Please select Department first</div>`;
+          ui.courseMenu.innerHTML = `<div class="nav-filter__empty">Please select Department first</div>`;
+        }
 
         syncTopicMenu();
-        syncBadgeText();
-        updateFilterLabels();
       }
 
-      function syncFormDropdowns() {
-        const currentDept = getDeptMeta(ui.formDept.value);
-        if (currentDept) {
-          renderFormOptions(ui.formSec, currentDept.sections, "Sec");
-          renderFormOptions(ui.formCourse, currentDept.courses);
+      function setModalDept(deptCode) {
+        ui.formDept.value = deptCode;
+        ui.formDeptLabel.textContent = deptCode || "Department";
+        renderMenuOptions(ui.formDeptMenu, config.departments.map(d => d.code), deptCode);
+        syncModalSubDropdowns();
+      }
+
+      function setModalSec(secCode) {
+        ui.formSec.value = secCode;
+        ui.formSecLabel.textContent = secCode ? `Sec ${secCode}` : "Section";
+        const dept = getDeptMeta(ui.formDept.value) || config.departments[0];
+        if (dept) renderMenuOptions(ui.formSecMenu, dept.sections, secCode, false, "", "Sec");
+      }
+
+      function setModalCourse(courseCode) {
+        ui.formCourse.value = courseCode;
+        ui.formCourseLabel.textContent = courseCode || "Course";
+        const dept = getDeptMeta(ui.formDept.value) || config.departments[0];
+        if (dept) renderMenuOptions(ui.formCourseMenu, dept.courses, courseCode);
+      }
+
+      function syncModalSubDropdowns() {
+        const dept = getDeptMeta(ui.formDept.value) || config.departments[0];
+        if (dept) {
+          const validSec = (dept.sections.includes(ui.formSec.value) && ui.formSec.value) || dept.sections[0] || "";
+          const validCourse = (dept.courses.includes(ui.formCourse.value) && ui.formCourse.value) || dept.courses[0] || "";
+          setModalSec(validSec);
+          setModalCourse(validCourse);
         }
       }
 
-      function syncBadgeText() {
-        if (!ui.badge) return;
-        let text = `[ ${state.dept} | Sec ${state.sec}`;
-        if (state.course !== "ALL") {
-          text += ` | ${state.course}`;
+      function setModalField(field, val) {
+        if (field === "dept") {
+          setModalDept(val);
+        } else if (field === "sec") {
+          setModalSec(val);
+        } else if (field === "course") {
+          setModalCourse(val);
         }
-        if (state.topic !== "ALL") {
-          text += ` | ${state.topic}`;
-        }
-        text += ` ]`;
-        ui.badge.textContent = text;
+        calculateDefaultTitle();
       }
 
       function calculateDefaultTitle() {
@@ -1336,19 +1634,190 @@
       }
 
       function filterActiveNotes() {
+        if (!state.dept || !state.sec) return [];
+
         return state.notes.filter(note =>
           note.department === state.dept &&
           note.section === state.sec &&
-          String(note.status || "").toLowerCase() === "approved"
+          String(note.status || "").toLowerCase() === "approved" &&
+          (state.course === "ALL" || note.course === state.course) &&
+          (state.topic === "ALL" || note.topic === state.topic)
         );
       }
 
+      function checkBodyScrollLock() {
+        if (!document.querySelector(".dialog-modal[open]")) {
+          document.body.classList.remove("sheet-open");
+        }
+      }
+
+      function isEventOutside(modal, e) {
+        const rect = modal.getBoundingClientRect();
+        return (
+          e.clientX < rect.left ||
+          e.clientX > rect.right ||
+          e.clientY < rect.top ||
+          e.clientY > rect.bottom
+        );
+      }
+
+      function openSheetModal(modalEl) {
+        if (!modalEl) return;
+        document.body.classList.add("sheet-open");
+        modalEl.style.transform = "";
+        if (!modalEl.open) modalEl.showModal();
+        modalEl.classList.add("is-open");
+      }
+
+      function closeSheetModal(modalEl, onClosed) {
+        if (!modalEl || !modalEl.open) {
+          if (onClosed) onClosed();
+          return;
+        }
+
+        modalEl.classList.remove("is-open");
+        modalEl.style.transform = "";
+
+        const isMobileSheet = modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768;
+        if (isMobileSheet) {
+          setTimeout(() => {
+            if (modalEl.open) modalEl.close();
+            checkBodyScrollLock();
+            if (onClosed) onClosed();
+          }, 280);
+        } else {
+          modalEl.close();
+          checkBodyScrollLock();
+          if (onClosed) onClosed();
+        }
+      }
+
+      function setMobileMenu(open) {
+        if (!ui.headerNav || !ui.mobileMenuToggle) return;
+        ui.headerNav.classList.toggle("is-open", open);
+        ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
+        ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
+      }
+
       function openDateDetails(dateKey) {
+        if (!state.dept || !state.sec) {
+          showToast("Select Department & Section first");
+          return;
+        }
         state.activeDate = dateKey;
         renderModalNotes();
-        if (!ui.notesModal.open) {
-          ui.notesModal.showModal();
+        openSheetModal(ui.notesModal);
+      }
+
+      function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
+        if (!sheet || !handle) return;
+
+        let startY = 0;
+        let currentTranslate = 0;
+        let isDragging = false;
+        let startTime = 0;
+        let isStartedOnContent = false;
+
+        function start(clientY, target) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          if (target && target.closest(".nav-filter__menu")) return;
+          startY = clientY;
+          currentTranslate = 0;
+          startTime = Date.now();
+          isStartedOnContent = Boolean(scrollableContent && scrollableContent.contains(target));
+          if (isStartedOnContent && scrollableContent.scrollTop > 0) {
+            isDragging = false;
+            return;
+          }
+          isDragging = true;
+          sheet.classList.add("is-dragging");
         }
+
+        function move(clientY, cancelable, preventDefault) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          if (!isDragging) {
+            if (isStartedOnContent && scrollableContent && scrollableContent.scrollTop <= 0) {
+              const delta = clientY - startY;
+              if (delta > 0) {
+                isDragging = true;
+                startY = clientY;
+                sheet.classList.add("is-dragging");
+              }
+            }
+            return;
+          }
+          const deltaY = clientY - startY;
+          if (deltaY > 0) {
+            currentTranslate = deltaY;
+            sheet.style.transform = `translateY(${deltaY}px)`;
+            if (cancelable && preventDefault) preventDefault();
+          } else {
+            currentTranslate = 0;
+            sheet.style.transform = "translateY(0px)";
+          }
+        }
+
+        function end() {
+          if (!isDragging) {
+            isStartedOnContent = false;
+            return;
+          }
+          isDragging = false;
+          isStartedOnContent = false;
+          sheet.classList.remove("is-dragging");
+
+          const elapsed = Date.now() - startTime;
+          const velocity = currentTranslate / (elapsed || 1);
+          const sheetHeight = sheet.offsetHeight || 340;
+
+          if (currentTranslate > sheetHeight * 0.45 || (currentTranslate > 50 && velocity > 0.45)) {
+            closeCallback();
+          } else {
+            sheet.style.transform = "";
+          }
+        }
+
+        function onTouchMove(e) {
+          move(e.touches[0].clientY, e.cancelable, () => e.preventDefault());
+        }
+
+        function onTouchEnd() {
+          window.removeEventListener("touchmove", onTouchMove);
+          window.removeEventListener("touchend", onTouchEnd);
+          window.removeEventListener("touchcancel", onTouchEnd);
+          end();
+        }
+
+        function onTouchStart(e) {
+          start(e.touches[0].clientY, e.target);
+          window.addEventListener("touchmove", onTouchMove, { passive: false });
+          window.addEventListener("touchend", onTouchEnd, { passive: true });
+          window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+        }
+
+        [handle, header, scrollableContent].filter(Boolean).forEach(el => {
+          el.addEventListener("touchstart", onTouchStart, { passive: true });
+        });
+
+        handle.addEventListener("mousedown", (e) => {
+          start(e.clientY, e.target);
+          function onMouseMove(me) { move(me.clientY); }
+          function onMouseUp() {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+            end();
+          }
+          window.addEventListener("mousemove", onMouseMove);
+          window.addEventListener("mouseup", onMouseUp);
+        });
+
+        [handle, header].filter(Boolean).forEach(el => {
+          el.addEventListener("wheel", (e) => {
+            if (window.innerWidth <= 768 && sheet.open && e.deltaY > 30) {
+              closeCallback();
+            }
+          }, { passive: true });
+        });
       }
 
       function renderCalendarGrid() {
@@ -1391,12 +1860,12 @@
 
           const classes = [
             "calendar-cell",
-            isToday ? "calendar-cell--today" : "",
-            isFuture ? "calendar-cell--disabled" : "",
-            hasNotes ? "has-notes" : ""
+            isToday && "calendar-cell--today",
+            isFuture && "calendar-cell--disabled",
+            hasNotes && "has-notes"
           ].filter(Boolean).join(" ");
 
-          const noteTooltip = hasNotes ? `title="${noteCount} ${noteCount === 1 ? 'note' : 'notes'}"` : "";
+          const noteTooltip = hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : "";
 
           markup += `
             <td class="${classes}" data-date="${dateKey}">
@@ -1418,18 +1887,10 @@
       }
 
       function renderCourseDates() {
-        let filteredNotes = filterActiveNotes();
+        const filteredNotes = filterActiveNotes();
+        const uniqueDates = [...new Set(filteredNotes.map(n => n.date).filter(Boolean))].sort();
 
-        if (state.course !== "ALL") {
-          filteredNotes = filteredNotes.filter(n => n.course === state.course);
-        }
-        if (state.topic !== "ALL") {
-          filteredNotes = filteredNotes.filter(n => n.topic === state.topic);
-        }
-
-        const uniqueDates = [...new Set(filteredNotes.map(n => n.date))].sort();
-
-        let titleParts = [];
+        const titleParts = [];
         if (state.course !== "ALL") {
           titleParts.push(state.course);
         }
@@ -1444,21 +1905,13 @@
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
 
         if (!uniqueDates.length) {
-          ui.courseDatesList.style.display = "block";
-          ui.courseDatesList.innerHTML = `
-            <div class="empty-state">
-              <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="9" y1="13" x2="15" y2="13"></line>
-              </svg>
-              <p class="empty-state__text">No notes found matching your selected filters.</p>
-            </div>
-          `;
+          const emptyMsg = (!state.dept || !state.sec)
+            ? "Please select department and section to view notes."
+            : "No notes found matching your selected filters.";
+          ui.courseDatesList.innerHTML = renderEmptyState(emptyMsg);
           return;
         }
 
-        ui.courseDatesList.style.display = "";
         ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
           const dateObj = parseLocalDate(dateStr);
           const noteCount = filteredNotes.filter(n => n.date === dateStr).length;
@@ -1480,28 +1933,14 @@
         if (!state.activeDate) return;
         ui.modalDateLabel.textContent = `Date: ${formatReadableDate(state.activeDate)}`;
 
-        let notes = filterActiveNotes().filter(n => n.date === state.activeDate);
-
-        if (state.course !== "ALL") {
-          notes = notes.filter(n => n.course === state.course);
-        }
-        if (state.topic !== "ALL") {
-          notes = notes.filter(n => n.topic === state.topic);
-        }
-
+        const notes = filterActiveNotes().filter(n => n.date === state.activeDate);
         ui.modalNotesTotal.textContent = `Total: ${pluralize(notes.length, 'note', 'notes')}`;
 
         if (!notes.length) {
-          ui.modalNotesStack.innerHTML = `
-            <div class="empty-state">
-              <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="9" y1="13" x2="15" y2="13"></line>
-              </svg>
-              <p class="empty-state__text">No lecture material attached to this date for the selected criteria.</p>
-            </div>
-          `;
+          const emptyMsg = (!state.dept || !state.sec)
+            ? "Please select department and section first."
+            : "No lecture material attached to this date for the selected criteria.";
+          ui.modalNotesStack.innerHTML = renderEmptyState(emptyMsg);
           return;
         }
 
@@ -1530,7 +1969,8 @@
 
             groups[course][topic].forEach((item) => {
               const isReported = Number(item.reportCount || 0) >= 3;
-              const title = escapeHtml(item.title || "View Note");
+              const rawTitle = item.title || "View Note";
+              const title = escapeHtml(rawTitle);
               const link = sanitizeUrl(item.link);
               const hasLink = Boolean(link && link !== "#");
 
@@ -1574,11 +2014,10 @@
       }
 
       function render() {
-        syncBadgeText();
+        updateSelectionBanner();
         updateFilterLabels();
 
         const showCalendar = (state.course === "ALL" && state.topic === "ALL");
-
         ui.calendarView.hidden = !showCalendar;
         ui.courseView.hidden = showCalendar;
 
@@ -1589,88 +2028,142 @@
         }
       }
 
+      function onFilterSelect(key, val) {
+        if (key === "dept") {
+          state.dept = val;
+          state.sec = "";
+          state.course = "ALL";
+          state.topic = "ALL";
+        } else if (key === "sec") {
+          state.sec = val;
+          state.course = "ALL";
+          state.topic = "ALL";
+        } else if (key === "course") {
+          state.course = val;
+        } else if (key === "topic") {
+          state.topic = val;
+        }
+        closeAllMenus();
+        syncDropdownStates();
+        render();
+      }
+
       function bindEvents() {
+        if (ui.mobileMenuToggle && ui.headerNav) {
+          ui.mobileMenuToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
+            setMobileMenu(!ui.headerNav.classList.contains("is-open"));
+          });
+
+          document.addEventListener("click", (e) => {
+            if (!ui.headerNav.contains(e.target) && !ui.mobileMenuToggle.contains(e.target)) {
+              if (ui.headerNav.classList.contains("is-open")) {
+                setMobileMenu(false);
+              }
+            }
+          });
+
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && ui.headerNav.classList.contains("is-open")) {
+              setMobileMenu(false);
+            }
+          });
+        }
+
         document.addEventListener("click", (e) => {
           if (!e.target.closest(".nav-filter__item")) {
             closeAllMenus();
           }
         });
 
-        ui.deptTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.deptMenu, ui.deptTrigger);
-        });
-
-        ui.secTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.secMenu, ui.secTrigger);
-        });
-
-        ui.courseTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.courseMenu, ui.courseTrigger);
-        });
-
-        ui.topicTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.topicMenu, ui.topicTrigger);
-        });
-
-        ui.deptMenu.addEventListener("click", (e) => {
+        ui.navFilters.addEventListener("click", (e) => {
+          const trigger = e.target.closest(".nav-filter__trigger");
+          if (trigger) {
+            const item = trigger.closest(".nav-filter__item");
+            const menu = item.querySelector(".nav-filter__menu");
+            toggleMenu(menu, trigger);
+            return;
+          }
           const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-          hasSelectedDept = true;
-          state.dept = opt.dataset.value;
-          closeAllMenus();
-          syncDropdownStates();
-          render();
+          if (opt) {
+            const item = opt.closest(".nav-filter__item");
+            onFilterSelect(item.dataset.filter, opt.dataset.value);
+          }
         });
 
-        ui.secMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-          hasSelectedSec = true;
-          state.sec = opt.dataset.value;
-          closeAllMenus();
-          syncDropdownStates();
-          render();
-        });
-
-        ui.courseMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-          state.course = opt.dataset.value;
-          closeAllMenus();
-          syncDropdownStates();
-          render();
-        });
-
-        ui.topicMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-          state.topic = opt.dataset.value;
-          closeAllMenus();
-          syncDropdownStates();
-          render();
+        ui.addModal.addEventListener("click", (e) => {
+          const trigger = e.target.closest(".field .nav-filter__trigger");
+          if (trigger) {
+            const item = trigger.closest(".nav-filter__item");
+            const menu = item.querySelector(".nav-filter__menu");
+            toggleMenu(menu, trigger);
+            return;
+          }
+          const opt = e.target.closest(".field .nav-filter__option");
+          if (opt && opt.dataset.value) {
+            const item = opt.closest(".nav-filter__item");
+            setModalField(item.dataset.field, opt.dataset.value);
+            closeAllMenus();
+          }
         });
 
         document.querySelectorAll(".dialog-modal").forEach(modal => {
+          let touchStartOutside = false;
+          let touchStartY = 0;
+          let touchStartX = 0;
+
           modal.addEventListener("click", (e) => {
-            const rect = modal.getBoundingClientRect();
-            const isClickInside = (
-              e.clientX >= rect.left &&
-              e.clientX <= rect.right &&
-              e.clientY >= rect.top &&
-              e.clientY <= rect.bottom
-            );
-            if (!isClickInside) {
-              modal.close();
+            if (e.target === modal && isEventOutside(modal, e)) {
+              closeSheetModal(modal);
             }
+          });
+
+          modal.addEventListener("touchstart", (e) => {
+            touchStartOutside = isEventOutside(modal, e.touches[0]);
+            if (touchStartOutside) {
+              touchStartY = e.touches[0].clientY;
+              touchStartX = e.touches[0].clientX;
+            }
+          }, { passive: true });
+
+          modal.addEventListener("touchmove", (e) => {
+            if (!touchStartOutside) return;
+            const dy = Math.abs(e.touches[0].clientY - touchStartY);
+            const dx = Math.abs(e.touches[0].clientX - touchStartX);
+            if (dy > 6 || dx > 6) {
+              touchStartOutside = false;
+              closeSheetModal(modal);
+            }
+          }, { passive: true });
+
+          modal.addEventListener("wheel", (e) => {
+            if (isEventOutside(modal, e)) {
+              closeSheetModal(modal);
+            }
+          }, { passive: true });
+
+          modal.addEventListener("cancel", (e) => {
+            e.preventDefault();
+            closeSheetModal(modal);
+          });
+        });
+
+        document.querySelectorAll("[data-close-modal]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const modal = btn.closest("dialog");
+            if (modal) closeSheetModal(modal);
           });
         });
 
         ui.notesModal.addEventListener("close", () => {
           state.activeDate = null;
+          checkBodyScrollLock();
+        });
+
+        ui.reportModal.addEventListener("close", checkBodyScrollLock);
+        ui.addModal.addEventListener("close", () => {
+          closeAllMenus();
+          checkBodyScrollLock();
         });
 
         ui.prevMonthBtn.addEventListener("click", () => {
@@ -1698,40 +2191,37 @@
 
         ui.courseDatesList.addEventListener("click", (e) => {
           const card = e.target.closest("[data-date]");
-          if (card && card.dataset.date) {
+          if (card?.dataset.date) {
             openDateDetails(card.dataset.date);
           }
         });
 
         ui.addNoteBtn.addEventListener("click", () => {
+          setMobileMenu(false);
+
           state.manualTitleEdited = false;
+          ui.addForm.reset();
           const today = formatDateKey(new Date());
 
           ui.formDate.max = today;
-          ui.formDept.value = state.dept;
-          syncFormDropdowns();
-          ui.formSec.value = state.sec;
+          const deptCode = state.dept || config.departments[0]?.code;
+          setModalDept(deptCode);
+
+          if (state.sec) {
+            setModalSec(state.sec);
+          }
           ui.formDate.value = (state.activeDate && state.activeDate <= today) ? state.activeDate : today;
 
           if (state.course !== "ALL") {
-            ui.formCourse.value = state.course;
+            setModalCourse(state.course);
           }
-          if (state.topic !== "ALL") {
-            ui.formTopic.value = state.topic;
-          }
+          ui.formTopic.value = (state.topic !== "ALL") ? state.topic : "";
 
           calculateDefaultTitle();
-          ui.addModal.showModal();
+          openSheetModal(ui.addModal);
         });
 
-        ui.formDept.addEventListener("change", () => {
-          syncFormDropdowns();
-          calculateDefaultTitle();
-        });
-
-        [ui.formSec, ui.formDate, ui.formCourse].forEach(el => {
-          el.addEventListener("change", calculateDefaultTitle);
-        });
+        ui.formDate.addEventListener("change", calculateDefaultTitle);
 
         ui.formTitle.addEventListener("input", () => {
           state.manualTitleEdited = ui.formTitle.value.trim().length > 0;
@@ -1740,11 +2230,9 @@
         ui.addForm.addEventListener("submit", async (e) => {
           e.preventDefault();
 
-          ui.btnSubmitNote.disabled = true;
-          ui.btnSubmitNote.classList.add("is-loading");
+          setButtonLoading(ui.btnSubmitNote, true);
 
           const formattedUrl = normalizeUrl(ui.formLink.value);
-
           const payload = {
             department: ui.formDept.value,
             section: ui.formSec.value,
@@ -1758,15 +2246,15 @@
 
           try {
             await syncData(payload);
-            ui.addModal.close();
+            closeSheetModal(ui.addModal);
             ui.addForm.reset();
             state.manualTitleEdited = false;
+            setModalDept(state.dept || config.departments[0]?.code);
             showToast("Note submitted successfully for section review!");
           } catch (err) {
-            showToast("Failed to submit note. Please retry.", "error");
+            showToast("Failed to submit note. Please retry.");
           } finally {
-            ui.btnSubmitNote.disabled = false;
-            ui.btnSubmitNote.classList.remove("is-loading");
+            setButtonLoading(ui.btnSubmitNote, false);
           }
         });
 
@@ -1774,14 +2262,17 @@
           const btn = e.target.closest(".btn-report");
           if (!btn) return;
 
-          ui.btnSubmitReport.disabled = false;
-          ui.btnSubmitReport.classList.remove("is-loading");
+          setButtonLoading(ui.btnSubmitReport, false);
+          const title = btn.dataset.title;
+          const context = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
+          const row = btn.dataset.row;
 
-          ui.reportTitle.textContent = btn.dataset.title;
-          ui.reportContext.textContent = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
-          ui.reportForm.dataset.targetRow = btn.dataset.row;
-
-          ui.reportModal.showModal();
+          closeSheetModal(ui.notesModal, () => {
+            ui.reportTitle.textContent = title;
+            ui.reportContext.textContent = context;
+            ui.reportForm.dataset.targetRow = row;
+            openSheetModal(ui.reportModal);
+          });
         });
 
         ui.reportForm.addEventListener("submit", async (e) => {
@@ -1791,42 +2282,46 @@
           const key = `reported_row_${row}`;
 
           if (safeStorage.get(key)) {
-            ui.reportModal.close();
-            showToast("You have already reported this link.", "error");
+            closeSheetModal(ui.reportModal);
+            showToast("You have already reported this link.");
             return;
           }
 
-          ui.btnSubmitReport.disabled = true;
-          ui.btnSubmitReport.classList.add("is-loading");
+          setButtonLoading(ui.btnSubmitReport, true);
 
           try {
             await syncData({ type: "report", row });
             safeStorage.set(key, "true");
-            ui.reportModal.close();
+            closeSheetModal(ui.reportModal);
             showToast("Thank you. Link report has been recorded.");
           } catch (err) {
-            showToast("Could not submit report. Check internet.", "error");
+            showToast("Could not submit report. Check internet.");
           } finally {
-            ui.btnSubmitReport.disabled = false;
-            ui.btnSubmitReport.classList.remove("is-loading");
+            setButtonLoading(ui.btnSubmitReport, false);
           }
+        });
+
+        document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
+          const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
+          const header = sheet.querySelector(".dialog-modal__header");
+          const content = sheet.querySelector(".notes-stack, .modal-body-scroll");
+          setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
         });
       }
 
       function init() {
-        const codes = config.departments.map(d => d.code);
-        renderFormOptions(ui.formDept, codes);
-
-        ui.formDate.max = formatDateKey(new Date());
-
+        setModalDept(config.departments[0]?.code || "CSE");
         syncDropdownStates();
         bindEvents();
-        updateFilterLabels();
         render();
         loadNotes();
       }
 
-      document.addEventListener("DOMContentLoaded", init);
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
     })();
   </script>
 </body>
