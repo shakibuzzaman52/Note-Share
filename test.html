@@ -627,8 +627,7 @@
     }
 
     .dialog-modal::backdrop {
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(2px);
+      background: rgba(0, 0, 0, 0.6);
       cursor: pointer;
     }
 
@@ -863,6 +862,7 @@
         overflow-y: auto;
         overscroll-behavior: contain;
         animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        touch-action: pan-y;
       }
 
       .dialog-modal::before {
@@ -1702,6 +1702,110 @@
         });
 
         document.querySelectorAll(".dialog-modal").forEach(modal => {
+          let startY = 0;
+          let currentY = 0;
+          let startTime = 0;
+          let isDragging = false;
+          let canDrag = false;
+
+          // Instant dismiss when touching backdrop outside the sheet
+          modal.addEventListener("touchstart", (e) => {
+            const rect = modal.getBoundingClientRect();
+            const touch = e.touches[0];
+            const isOutside = (
+              touch.clientY < rect.top ||
+              touch.clientY > rect.bottom ||
+              touch.clientX < rect.left ||
+              touch.clientX > rect.right
+            );
+
+            if (isOutside) {
+              if (e.cancelable) e.preventDefault();
+              modal.close();
+              return;
+            }
+
+            startY = touch.clientY;
+            currentY = startY;
+            startTime = Date.now();
+            isDragging = false;
+
+            const isHeader = Boolean(e.target.closest(".dialog-modal__header") || e.target === modal);
+            const scrollable = modal.querySelector(".notes-stack") || modal;
+            const isAtTop = scrollable.scrollTop <= 0;
+
+            canDrag = isHeader || isAtTop;
+          }, { passive: false });
+
+          modal.addEventListener("touchmove", (e) => {
+            if (!canDrag) return;
+            const touch = e.touches[0];
+            currentY = touch.clientY;
+            const diffY = currentY - startY;
+
+            if (diffY > 0) {
+              const scrollable = modal.querySelector(".notes-stack") || modal;
+              if (scrollable && scrollable.scrollTop > 0) return;
+
+              isDragging = true;
+              if (e.cancelable) e.preventDefault();
+              modal.style.animation = "none";
+              modal.style.transition = "none";
+              modal.style.transform = `translateY(${diffY}px)`;
+            } else if (isDragging) {
+              modal.style.transform = "translateY(0)";
+            }
+          }, { passive: false });
+
+          modal.addEventListener("touchend", () => {
+            if (!isDragging) {
+              canDrag = false;
+              return;
+            }
+
+            isDragging = false;
+            canDrag = false;
+
+            const diffY = currentY - startY;
+            const elapsed = Math.max(Date.now() - startTime, 1);
+            const velocity = diffY / elapsed;
+            const shouldDismiss = diffY > 80 || (diffY > 40 && velocity > 0.35);
+
+            if (shouldDismiss) {
+              modal.style.transition = "transform 0.22s ease-out";
+              modal.style.transform = "translateY(100%)";
+              setTimeout(() => {
+                modal.close();
+                modal.style.animation = "";
+                modal.style.transition = "";
+                modal.style.transform = "";
+              }, 220);
+            } else {
+              modal.style.transition = "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
+              modal.style.transform = "translateY(0)";
+              setTimeout(() => {
+                modal.style.animation = "";
+                modal.style.transition = "";
+                modal.style.transform = "";
+              }, 200);
+            }
+          });
+
+          modal.addEventListener("touchcancel", () => {
+            if (isDragging) {
+              modal.style.transition = "transform 0.2s ease-out";
+              modal.style.transform = "translateY(0)";
+              setTimeout(() => {
+                modal.style.animation = "";
+                modal.style.transition = "";
+                modal.style.transform = "";
+              }, 200);
+            }
+            isDragging = false;
+            canDrag = false;
+          });
+
+          // Desktop click outside backdrop to close
           modal.addEventListener("click", (e) => {
             if (e.target !== modal) return;
             const rect = modal.getBoundingClientRect();
@@ -1714,6 +1818,12 @@
             if (!isClickInside) {
               modal.close();
             }
+          });
+
+          modal.addEventListener("close", () => {
+            modal.style.animation = "";
+            modal.style.transition = "";
+            modal.style.transform = "";
           });
         });
 
