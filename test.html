@@ -65,7 +65,7 @@
       padding-bottom: 4rem;
     }
 
-    /* Background Lock when any Bottom Sheet is open */
+    /* Background Lock when any Modal/Sheet is open */
     body.sheet-open {
       overflow: hidden !important;
       touch-action: none;
@@ -611,12 +611,17 @@
       white-space: nowrap;
     }
 
-    /* Standard Modals Base */
+    /* CRITICAL FIX: Closed dialogs MUST NEVER display */
+    dialog:not([open]) {
+      display: none !important;
+    }
+
+    /* Base Modal Defaults */
     .dialog-modal {
       position: fixed;
       inset: 0;
       margin: auto;
-      max-width: 500px;
+      max-width: 520px;
       width: calc(100% - 2rem);
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
@@ -626,19 +631,24 @@
       box-shadow: none; /* No outer shadow */
     }
 
+    .dialog-modal[open] {
+      display: flex;
+      flex-direction: column;
+    }
+
     /* YouTube style dark shadow/dim backdrop: NO BLUR */
     .dialog-modal::backdrop {
       background: rgba(0, 0, 0, 0.55);
       cursor: pointer;
     }
 
-    /* DESKTOP VIEW: Modals are Centered Popups */
+    /* DESKTOP VIEW (> 768px): Both Modals are Clean Centered Dialogs */
     @media (min-width: 769px) {
       .dialog-modal.bottom-sheet {
         position: fixed;
         inset: 0;
         margin: auto;
-        max-width: 540px;
+        max-width: 520px;
         width: calc(100% - 2rem);
         max-height: 80vh;
         border-radius: var(--radius-lg);
@@ -646,6 +656,9 @@
         padding: 2rem;
         transform: none !important;
         box-shadow: none;
+      }
+
+      .dialog-modal.bottom-sheet[open] {
         display: flex;
         flex-direction: column;
       }
@@ -655,7 +668,7 @@
       }
     }
 
-    /* MOBILE VIEW: YouTube-style Compact Bottom Sheet */
+    /* MOBILE VIEW (<= 768px): YouTube-style Compact Bottom Sheet */
     @media (max-width: 768px) {
       .dialog-modal.bottom-sheet {
         position: fixed;
@@ -663,19 +676,22 @@
         margin: 0 auto;
         max-width: 100%;
         width: 100%;
-        max-height: 68vh; /* ektu soto / compact height */
+        max-height: 68vh; /* Compact height */
         border-radius: 20px 20px 0 0;
         border: 1px solid var(--border-subtle);
         border-bottom: 0;
         padding: 0.5rem 1.25rem 1.25rem;
         background: var(--bg-surface);
         box-shadow: none; /* No outer shadow */
-        display: flex;
-        flex-direction: column;
         transform: translateY(100%);
         transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         overscroll-behavior: contain;
         will-change: transform;
+      }
+
+      .dialog-modal.bottom-sheet[open] {
+        display: flex;
+        flex-direction: column;
       }
 
       .dialog-modal.bottom-sheet.is-open {
@@ -721,32 +737,16 @@
       background-color: #A69E90;
     }
 
-    .bottom-sheet .dialog-modal__header {
-      flex-shrink: 0;
-      user-select: none;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border-subtle);
-      cursor: grab;
-      touch-action: none;
-    }
-
-    .bottom-sheet .notes-stack {
-      flex: 1 1 auto;
-      max-height: none;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-      margin-top: 0.85rem;
-    }
-
-    .bottom-sheet .dialog-modal__actions {
-      flex-shrink: 0;
-      margin-top: 1rem;
-    }
-
     .dialog-modal__header {
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .dialog-modal.bottom-sheet .dialog-modal__header {
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
     }
 
     .dialog-modal__title {
@@ -774,15 +774,28 @@
       justify-content: flex-end;
       gap: 0.75rem;
       margin-top: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .dialog-modal.bottom-sheet .dialog-modal__actions {
+      margin-top: 1rem;
     }
 
     .notes-stack {
-      max-height: 52vh;
+      flex: 1 1 auto;
       overflow-y: auto;
-      margin-top: 1.25rem;
+      margin-top: 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.85rem;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    .modal-body-scroll {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .empty-state {
@@ -1087,7 +1100,7 @@
       <form id="add-note-form">
         <h3 class="dialog-modal__title">Add Class Note</h3>
 
-        <div class="field">
+        <div class="field" style="margin-top: 1rem;">
           <label for="input-dept">Department:</label>
           <select id="input-dept" required></select>
         </div>
@@ -1139,7 +1152,7 @@
           <h3 class="dialog-modal__title">Report Broken Link</h3>
           <span class="dialog-modal__desc">Notify classmates about broken links</span>
         </div>
-        <div class="modal-body-content" style="margin-top: 1rem;">
+        <div class="modal-body-scroll" style="margin-top: 1rem;">
           <p class="field">
             <strong>Resource:</strong> <span id="report-note-title"></span><br>
             <small id="report-note-context" class="dialog-modal__desc"></small>
@@ -1512,6 +1525,7 @@
 
       /* Unified Responsive Modal Manager (Bottom Sheet on mobile, Centered on desktop) */
       function openSheetModal(modalEl) {
+        if (!modalEl) return;
         document.body.classList.add("sheet-open");
         const isMobile = window.innerWidth <= 768;
 
@@ -1573,7 +1587,7 @@
         openSheetModal(ui.notesModal);
       }
 
-      /* Interactive Drag & Dominant Snap physics (for Mobile Bottom Sheets) */
+      /* Interactive Drag & Dominant Snap physics (Active ONLY on Mobile) */
       function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
         if (!sheet || !handle) return;
 
@@ -1584,7 +1598,7 @@
         let isStartedOnContent = false;
 
         function onTouchStart(e) {
-          if (window.innerWidth > 768) return; // Desktop uses centered modal
+          if (window.innerWidth > 768) return; // Desktop is standard modal
           const touch = e.touches ? e.touches[0] : e;
           startY = touch.clientY;
           currentTranslate = 0;
@@ -1618,12 +1632,10 @@
           const deltaY = touch.clientY - startY;
 
           if (deltaY > 0) {
-            // Dragging downward
             currentTranslate = deltaY;
             sheet.style.transform = `translateY(${deltaY}px)`;
             if (e.cancelable) e.preventDefault();
           } else {
-            // Dragging upward: NO STRETCHING, clamped strictly at 0
             currentTranslate = 0;
             sheet.style.transform = "translateY(0px)";
           }
@@ -1639,11 +1651,9 @@
           const sheetHeight = sheet.offsetHeight || 340;
 
           // Dominant part rule:
-          // If pulled down past midpoint (45% of height) or fast swipe down:
           if (currentTranslate > sheetHeight * 0.45 || (currentTranslate > 50 && velocity > 0.45)) {
             closeCallback();
           } else {
-            // Dominant part is at the top -> Snaps back and stays OPEN!
             sheet.style.transform = "";
           }
         }
@@ -1656,7 +1666,7 @@
         window.addEventListener("touchend", onTouchEnd, { passive: true });
         window.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
-        // Mouse Drag on Handle (for mobile testing / desktop drag)
+        // Mouse Drag on Handle (only when mobile viewport emulated)
         handle.addEventListener("mousedown", (e) => {
           if (window.innerWidth > 768) return;
           startY = e.clientY;
@@ -1688,7 +1698,7 @@
           window.addEventListener("mouseup", onMouseUp);
         });
 
-        // Mouse Wheel downward on handle or header dismisses sheet
+        // Mouse Wheel downward on mobile dismisses
         [handle, header].filter(Boolean).forEach(el => {
           el.addEventListener("wheel", (e) => {
             if (window.innerWidth <= 768 && e.deltaY > 30) {
@@ -1965,7 +1975,7 @@
           render();
         });
 
-        // Close on clicking backdrop
+        // Close on clicking backdrop (Desktop & Mobile)
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
             if (e.target !== modal) return;
@@ -1977,17 +1987,12 @@
               e.clientY <= rect.bottom
             );
             if (!isClickInside) {
-              if (modal === ui.notesModal || modal === ui.reportModal) {
-                closeSheetModal(modal);
-              } else {
-                modal.close();
-                checkBodyScrollLock();
-              }
+              closeSheetModal(modal);
             }
           });
         });
 
-        // Escape Key smoothly slides down bottom sheet / closes modal
+        // Escape Key smoothly closes modal
         ui.notesModal.addEventListener("cancel", (e) => {
           e.preventDefault();
           closeSheetModal(ui.notesModal);
@@ -1996,6 +2001,11 @@
         ui.reportModal.addEventListener("cancel", (e) => {
           e.preventDefault();
           closeSheetModal(ui.reportModal);
+        });
+
+        ui.addModal.addEventListener("cancel", (e) => {
+          e.preventDefault();
+          closeSheetModal(ui.addModal);
         });
 
         ui.btnCloseNotes.addEventListener("click", () => {
@@ -2009,11 +2019,8 @@
         document.querySelectorAll("[data-close-modal]").forEach(btn => {
           btn.addEventListener("click", () => {
             const modal = btn.closest("dialog");
-            if (modal === ui.notesModal || modal === ui.reportModal) {
+            if (modal) {
               closeSheetModal(modal);
-            } else {
-              modal?.close();
-              checkBodyScrollLock();
             }
           });
         });
@@ -2024,6 +2031,10 @@
         });
 
         ui.reportModal.addEventListener("close", () => {
+          checkBodyScrollLock();
+        });
+
+        ui.addModal.addEventListener("close", () => {
           checkBodyScrollLock();
         });
 
@@ -2081,10 +2092,6 @@
           ui.addModal.showModal();
         });
 
-        ui.addModal.addEventListener("close", () => {
-          checkBodyScrollLock();
-        });
-
         ui.formDept.addEventListener("change", () => {
           syncFormDropdowns();
           calculateDefaultTitle();
@@ -2117,7 +2124,7 @@
 
           try {
             await syncData(payload);
-            ui.addModal.close();
+            closeSheetModal(ui.addModal);
             ui.addForm.reset();
             state.manualTitleEdited = false;
             showToast("Note submitted successfully for section review!");
@@ -2187,7 +2194,7 @@
           ui.reportModal,
           ui.reportDragHandle,
           ui.reportHeader,
-          document.querySelector("#report-modal .modal-body-content"),
+          document.querySelector("#report-modal .modal-body-scroll"),
           () => closeSheetModal(ui.reportModal)
         );
       }
