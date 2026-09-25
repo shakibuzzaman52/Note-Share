@@ -217,7 +217,6 @@
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
-      background-color: var(--bg-subtle);
       background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.75 2.25L6 6.25L10.25 2.25' stroke='%233C3833' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 1rem center;
@@ -314,7 +313,7 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar */
+    /* Filters Bar & Custom Dropdown Components */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -350,8 +349,14 @@
       border: 1px solid transparent;
     }
 
-    .nav-filter__trigger:hover {
+    .nav-filter__trigger:hover,
+    .nav-filter__trigger:focus-visible {
       background-color: var(--bg-hover);
+    }
+
+    .nav-filter__trigger[aria-expanded="true"] {
+      background-color: var(--bg-hover);
+      border-color: var(--border-subtle);
     }
 
     .nav-filter__text {
@@ -387,7 +392,7 @@
       z-index: 150;
       max-height: 260px;
       overflow-y: auto;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
     .nav-filter__menu[hidden] {
@@ -431,69 +436,21 @@
       font-size: 0.8125rem;
     }
 
-    /* Modal Form Custom Select Dropdowns */
-    .form-filter__item {
-      position: relative;
-      width: 100%;
-    }
-
-    .form-filter__trigger {
-      display: flex;
-      align-items: center;
+    /* Reused dropdown modifiers within form fields */
+    .field .nav-filter__trigger {
       justify-content: space-between;
-      width: 100%;
-      background-color: var(--bg-subtle);
       border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      border: 1px solid transparent;
-      -webkit-tap-highlight-color: transparent;
     }
 
-    .form-filter__trigger:hover,
-    .form-filter__trigger:focus {
-      background-color: var(--bg-hover);
-    }
-
-    .form-filter__trigger[aria-expanded="true"] {
-      background-color: var(--bg-hover);
-      border-color: var(--border-subtle);
-    }
-
-    .form-filter__trigger .nav-filter__arrow {
-      flex-shrink: 0;
-      color: var(--text-muted);
-      transition: transform 0.2s ease;
-    }
-
-    .form-filter__trigger[aria-expanded="true"] .nav-filter__arrow {
-      transform: rotate(180deg);
-    }
-
-    .form-filter__menu {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
+    .field .nav-filter__menu {
       width: 100%;
       min-width: 100%;
       max-width: 100%;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.35rem 0;
-      z-index: 250;
-      max-height: 220px;
-      overflow-y: auto;
+      top: calc(100% + 4px);
+      z-index: 200;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .form-filter__menu[hidden] {
-      display: none;
     }
 
     /* Content Area */
@@ -1043,7 +1000,7 @@
     </section>
 
     <!-- 4-column filter bar -->
-    <nav class="nav-filters" aria-label="Class and Lecture Filters">
+    <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
       <!-- 1. Department -->
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
@@ -1133,11 +1090,11 @@
 
     <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
-      <div class="bottom-sheet__handle-wrapper" id="sheet-drag-handle" title="Drag down to close">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
 
-      <div class="dialog-modal__header" id="sheet-header">
+      <div class="dialog-modal__header">
         <h3 class="dialog-modal__title" id="modal-date-label"></h3>
         <span class="dialog-modal__desc" id="modal-notes-total"></span>
       </div>
@@ -1149,45 +1106,45 @@
       </div>
     </dialog>
 
-    <!-- Modal: Add note (With custom dropdowns matching main filter design) -->
+    <!-- Modal: Add note -->
     <dialog class="dialog-modal bottom-sheet" id="add-modal">
-      <div class="bottom-sheet__handle-wrapper" id="add-drag-handle" title="Drag down to close">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
 
       <form id="add-note-form">
-        <div class="dialog-modal__header" id="add-header">
+        <div class="dialog-modal__header">
           <h3 class="dialog-modal__title">Add Class Note</h3>
           <span class="dialog-modal__desc">Share lecture slides, handouts, and notes</span>
         </div>
 
-        <div class="modal-body-scroll" id="add-modal-body" style="margin-top: 1rem;">
+        <div class="modal-body-scroll" style="margin-top: 1rem;">
           <!-- Department Custom Dropdown -->
           <div class="field">
-            <label id="label-form-dept">Department:</label>
-            <div class="nav-filter__item form-filter__item" data-filter="form-dept">
-              <button type="button" class="nav-filter__trigger form-filter__trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="label-form-dept form-dept-label">
+            <label>Department:</label>
+            <div class="nav-filter__item" data-field="dept">
+              <button type="button" class="nav-filter__trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-dept-label">Department</span>
                 <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
                   <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <div class="nav-filter__menu form-filter__menu" id="form-dept-menu" hidden role="listbox"></div>
+              <div class="nav-filter__menu" id="form-dept-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-dept" name="department" required>
             </div>
           </div>
 
           <!-- Section Custom Dropdown -->
           <div class="field">
-            <label id="label-form-sec">Section:</label>
-            <div class="nav-filter__item form-filter__item" data-filter="form-sec">
-              <button type="button" class="nav-filter__trigger form-filter__trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="label-form-sec form-sec-label">
+            <label>Section:</label>
+            <div class="nav-filter__item" data-field="sec">
+              <button type="button" class="nav-filter__trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-sec-label">Section</span>
                 <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
                   <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <div class="nav-filter__menu form-filter__menu" id="form-sec-menu" hidden role="listbox"></div>
+              <div class="nav-filter__menu" id="form-sec-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-section" name="section" required>
             </div>
           </div>
@@ -1199,15 +1156,15 @@
 
           <!-- Course Custom Dropdown -->
           <div class="field">
-            <label id="label-form-course">Course:</label>
-            <div class="nav-filter__item form-filter__item" data-filter="form-course">
-              <button type="button" class="nav-filter__trigger form-filter__trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="label-form-course form-course-label">
+            <label>Course:</label>
+            <div class="nav-filter__item" data-field="course">
+              <button type="button" class="nav-filter__trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-course-label">Course</span>
                 <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
                   <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <div class="nav-filter__menu form-filter__menu" id="form-course-menu" hidden role="listbox"></div>
+              <div class="nav-filter__menu" id="form-course-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-course" name="course" required>
             </div>
           </div>
@@ -1237,11 +1194,11 @@
 
     <!-- Modal: Report link -->
     <dialog class="dialog-modal bottom-sheet" id="report-modal">
-      <div class="bottom-sheet__handle-wrapper" id="report-drag-handle" title="Drag down to close">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
       <form id="report-link-form">
-        <div class="dialog-modal__header" id="report-header">
+        <div class="dialog-modal__header">
           <h3 class="dialog-modal__title">Report Broken Link</h3>
           <span class="dialog-modal__desc">Notify classmates about broken links</span>
         </div>
@@ -1301,11 +1258,7 @@
 
       const ui = {
         selectionBanner: document.getElementById("selection-banner"),
-
-        deptTrigger: document.getElementById("dept-trigger"),
-        secTrigger: document.getElementById("sec-trigger"),
-        courseTrigger: document.getElementById("course-trigger"),
-        topicTrigger: document.getElementById("topic-trigger"),
+        navFilters: document.getElementById("main-nav-filters"),
 
         deptMenu: document.getElementById("dept-menu"),
         secMenu: document.getElementById("sec-menu"),
@@ -1330,16 +1283,11 @@
         courseDatesList: document.getElementById("course-dates-list"),
 
         notesModal: document.getElementById("notes-modal"),
-        sheetDragHandle: document.getElementById("sheet-drag-handle"),
-        sheetHeader: document.getElementById("sheet-header"),
         modalDateLabel: document.getElementById("modal-date-label"),
         modalNotesTotal: document.getElementById("modal-notes-total"),
         modalNotesStack: document.getElementById("modal-notes-stack"),
 
         addModal: document.getElementById("add-modal"),
-        addDragHandle: document.getElementById("add-drag-handle"),
-        addHeader: document.getElementById("add-header"),
-        addModalBody: document.getElementById("add-modal-body"),
         addNoteBtn: document.getElementById("trigger-add-note"),
         addForm: document.getElementById("add-note-form"),
 
@@ -1352,10 +1300,6 @@
         formLink: document.getElementById("input-link"),
         btnSubmitNote: document.getElementById("btn-submit-note"),
 
-        formDeptTrigger: document.getElementById("form-dept-trigger"),
-        formSecTrigger: document.getElementById("form-sec-trigger"),
-        formCourseTrigger: document.getElementById("form-course-trigger"),
-
         formDeptMenu: document.getElementById("form-dept-menu"),
         formSecMenu: document.getElementById("form-sec-menu"),
         formCourseMenu: document.getElementById("form-course-menu"),
@@ -1365,8 +1309,6 @@
         formCourseLabel: document.getElementById("form-course-label"),
 
         reportModal: document.getElementById("report-modal"),
-        reportDragHandle: document.getElementById("report-drag-handle"),
-        reportHeader: document.getElementById("report-header"),
         reportForm: document.getElementById("report-link-form"),
         reportTitle: document.getElementById("report-note-title"),
         reportContext: document.getElementById("report-note-context"),
@@ -1508,18 +1450,8 @@
       }
 
       function closeAllMenus() {
-        [
-          ui.deptMenu, ui.secMenu, ui.courseMenu, ui.topicMenu,
-          ui.formDeptMenu, ui.formSecMenu, ui.formCourseMenu
-        ].filter(Boolean).forEach(menu => {
-          menu.hidden = true;
-        });
-        [
-          ui.deptTrigger, ui.secTrigger, ui.courseTrigger, ui.topicTrigger,
-          ui.formDeptTrigger, ui.formSecTrigger, ui.formCourseTrigger
-        ].filter(Boolean).forEach(btn => {
-          btn.setAttribute("aria-expanded", "false");
-        });
+        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => { m.hidden = true; });
+        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => { b.setAttribute("aria-expanded", "false"); });
       }
 
       function toggleMenu(menu, trigger) {
@@ -1596,42 +1528,43 @@
       function setModalDept(deptCode) {
         ui.formDept.value = deptCode;
         ui.formDeptLabel.textContent = deptCode || "Department";
-        const allDeptCodes = config.departments.map(d => d.code);
-        renderMenuOptions(ui.formDeptMenu, allDeptCodes, deptCode);
+        renderMenuOptions(ui.formDeptMenu, config.departments.map(d => d.code), deptCode);
         syncModalSubDropdowns();
       }
 
       function setModalSec(secCode) {
         ui.formSec.value = secCode;
         ui.formSecLabel.textContent = secCode ? `Sec ${secCode}` : "Section";
-        const currentDept = getDeptMeta(ui.formDept.value) || config.departments[0];
-        if (currentDept) {
-          renderMenuOptions(ui.formSecMenu, currentDept.sections, secCode, false, "", "Sec");
-        }
+        const dept = getDeptMeta(ui.formDept.value) || config.departments[0];
+        if (dept) renderMenuOptions(ui.formSecMenu, dept.sections, secCode, false, "", "Sec");
       }
 
       function setModalCourse(courseCode) {
         ui.formCourse.value = courseCode;
         ui.formCourseLabel.textContent = courseCode || "Course";
-        const currentDept = getDeptMeta(ui.formDept.value) || config.departments[0];
-        if (currentDept) {
-          renderMenuOptions(ui.formCourseMenu, currentDept.courses, courseCode);
-        }
+        const dept = getDeptMeta(ui.formDept.value) || config.departments[0];
+        if (dept) renderMenuOptions(ui.formCourseMenu, dept.courses, courseCode);
       }
 
       function syncModalSubDropdowns() {
-        const currentDept = getDeptMeta(ui.formDept.value) || config.departments[0];
-        if (currentDept) {
-          const validSec = (currentDept.sections.includes(ui.formSec.value) && ui.formSec.value)
-            ? ui.formSec.value
-            : (currentDept.sections[0] || "");
+        const dept = getDeptMeta(ui.formDept.value) || config.departments[0];
+        if (dept) {
+          const validSec = (dept.sections.includes(ui.formSec.value) && ui.formSec.value) || dept.sections[0] || "";
+          const validCourse = (dept.courses.includes(ui.formCourse.value) && ui.formCourse.value) || dept.courses[0] || "";
           setModalSec(validSec);
-
-          const validCourse = (currentDept.courses.includes(ui.formCourse.value) && ui.formCourse.value)
-            ? ui.formCourse.value
-            : (currentDept.courses[0] || "");
           setModalCourse(validCourse);
         }
+      }
+
+      function setModalField(field, val) {
+        if (field === "dept") {
+          setModalDept(val);
+        } else if (field === "sec") {
+          setModalSec(val);
+        } else if (field === "course") {
+          setModalCourse(val);
+        }
+        calculateDefaultTitle();
       }
 
       function calculateDefaultTitle() {
@@ -2061,80 +1994,48 @@
       }
 
       function bindEvents() {
+        // Global outside click to close menus
         document.addEventListener("click", (e) => {
           if (!e.target.closest(".nav-filter__item")) {
             closeAllMenus();
           }
         });
 
-        ui.deptTrigger.addEventListener("click", () => toggleMenu(ui.deptMenu, ui.deptTrigger));
-        ui.secTrigger.addEventListener("click", () => toggleMenu(ui.secMenu, ui.secTrigger));
-        ui.courseTrigger.addEventListener("click", () => toggleMenu(ui.courseMenu, ui.courseTrigger));
-        ui.topicTrigger.addEventListener("click", () => toggleMenu(ui.topicMenu, ui.topicTrigger));
-
-        ui.deptMenu.addEventListener("click", (e) => {
+        // Main filter bar delegated handling
+        ui.navFilters.addEventListener("click", (e) => {
+          const trigger = e.target.closest(".nav-filter__trigger");
+          if (trigger) {
+            const item = trigger.closest(".nav-filter__item");
+            const menu = item.querySelector(".nav-filter__menu");
+            toggleMenu(menu, trigger);
+            return;
+          }
           const opt = e.target.closest(".nav-filter__option");
-          if (opt) onFilterSelect("dept", opt.dataset.value);
-        });
-
-        ui.secMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (opt) onFilterSelect("sec", opt.dataset.value);
-        });
-
-        ui.courseMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (opt) onFilterSelect("course", opt.dataset.value);
-        });
-
-        ui.topicMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (opt) onFilterSelect("topic", opt.dataset.value);
-        });
-
-        // Form custom dropdown event listeners
-        ui.formDeptTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.formDeptMenu, ui.formDeptTrigger);
-        });
-
-        ui.formSecTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.formSecMenu, ui.formSecTrigger);
-        });
-
-        ui.formCourseTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.formCourseMenu, ui.formCourseTrigger);
-        });
-
-        ui.formDeptMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (opt && opt.dataset.value) {
-            setModalDept(opt.dataset.value);
-            closeAllMenus();
-            calculateDefaultTitle();
+          if (opt) {
+            const item = opt.closest(".nav-filter__item");
+            onFilterSelect(item.dataset.filter, opt.dataset.value);
           }
         });
 
-        ui.formSecMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
+        // Add note modal form dropdowns delegated handling
+        ui.addModal.addEventListener("click", (e) => {
+          const trigger = e.target.closest(".field .nav-filter__trigger");
+          if (trigger) {
+            e.stopPropagation();
+            const item = trigger.closest(".nav-filter__item");
+            const menu = item.querySelector(".nav-filter__menu");
+            toggleMenu(menu, trigger);
+            return;
+          }
+          const opt = e.target.closest(".field .nav-filter__option");
           if (opt && opt.dataset.value) {
-            setModalSec(opt.dataset.value);
+            const item = opt.closest(".nav-filter__item");
+            setModalField(item.dataset.field, opt.dataset.value);
             closeAllMenus();
-            calculateDefaultTitle();
           }
         });
 
-        ui.formCourseMenu.addEventListener("click", (e) => {
-          const opt = e.target.closest(".nav-filter__option");
-          if (opt && opt.dataset.value) {
-            setModalCourse(opt.dataset.value);
-            closeAllMenus();
-            calculateDefaultTitle();
-          }
-        });
-
+        // Dialog outside click / touch handlers
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           let touchStartOutside = false;
           let touchStartY = 0;
@@ -2276,8 +2177,7 @@
             closeSheetModal(ui.addModal);
             ui.addForm.reset();
             state.manualTitleEdited = false;
-            const defaultDept = state.dept || config.departments[0]?.code;
-            setModalDept(defaultDept);
+            setModalDept(state.dept || config.departments[0]?.code);
             showToast("Note submitted successfully for section review!");
           } catch (err) {
             showToast("Failed to submit note. Please retry.");
@@ -2329,38 +2229,17 @@
           }
         });
 
-        // Bottom Sheet Drag Gestures for notes modal
-        setupBottomSheetGestures(
-          ui.notesModal,
-          ui.sheetDragHandle,
-          ui.sheetHeader,
-          ui.modalNotesStack,
-          () => closeSheetModal(ui.notesModal)
-        );
-
-        // Bottom Sheet Drag Gestures for report modal
-        setupBottomSheetGestures(
-          ui.reportModal,
-          ui.reportDragHandle,
-          ui.reportHeader,
-          document.querySelector("#report-modal .modal-body-scroll"),
-          () => closeSheetModal(ui.reportModal)
-        );
-
-        // Bottom Sheet Drag Gestures for add note modal
-        setupBottomSheetGestures(
-          ui.addModal,
-          ui.addDragHandle,
-          ui.addHeader,
-          ui.addModalBody,
-          () => closeSheetModal(ui.addModal)
-        );
+        // Bottom Sheet Drag Gestures for all bottom sheets
+        document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
+          const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
+          const header = sheet.querySelector(".dialog-modal__header");
+          const content = sheet.querySelector(".notes-stack, .modal-body-scroll");
+          setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
+        });
       }
 
       function init() {
-        const initialDept = config.departments[0]?.code || "CSE";
-        setModalDept(initialDept);
-
+        setModalDept(config.departments[0]?.code || "CSE");
         syncDropdownStates();
         bindEvents();
         render();
@@ -2375,4 +2254,4 @@
     })();
   </script>
 </body>
-</html> 
+</html>
