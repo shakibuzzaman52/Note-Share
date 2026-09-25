@@ -77,7 +77,7 @@
       padding: 0 clamp(1rem, 4vw, 2.5rem);
     }
 
-    /* Core button primitives for modals/forms */
+    /* Core button primitives */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -160,7 +160,7 @@
       animation: spin 0.6s linear infinite;
     }
 
-    /* Header & Pure Text Navigation */
+    /* Header & Navigation */
     .site-header {
       width: 100%;
       display: flex;
@@ -189,11 +189,11 @@
       margin-left: 2px;
     }
 
-    /* Desktop Navigation List (No buttons, clean text links) */
+    /* Desktop Navigation List (Increased gap, clean text links + button) */
     .header-nav__list {
       display: flex;
       align-items: center;
-      gap: 1.75rem;
+      gap: 2.25rem;
       list-style: none;
     }
 
@@ -214,16 +214,7 @@
       color: var(--text-main);
     }
 
-    .nav-link--primary {
-      color: var(--brand-primary);
-      font-weight: 600;
-    }
-
-    .nav-link--primary:hover {
-      color: var(--brand-primary-hover);
-    }
-
-    /* Mobile Menu Toggle (Pure text, no button/box/arrow) */
+    /* Mobile Menu Toggle (Clean text, no button/box/arrow) */
     .header-menu-toggle {
       display: none;
       background: transparent;
@@ -962,7 +953,7 @@
         display: block;
       }
 
-      /* Mobile dropdown: overlay on top of hero content, same background, NO white card, pure links */
+      /* Mobile dropdown: overlay on top of hero content, same background, NO shadow */
       .site-header__nav {
         display: none;
         position: absolute;
@@ -972,9 +963,9 @@
         width: 100%;
         background-color: var(--bg-canvas);
         border-bottom: 1px solid var(--border-subtle);
-        padding: 0.75rem 1rem 1.5rem;
+        padding: 1.25rem 1rem 1.75rem;
         z-index: 250;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        box-shadow: none; /* No shadow */
       }
 
       .site-header__nav.is-open {
@@ -985,20 +976,31 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.85rem;
+        gap: 1.35rem; /* Increased gap */
+        width: 100%;
+      }
+
+      .header-nav__list li {
         width: 100%;
       }
 
       .nav-link {
-        font-size: 1.05rem;
-        padding: 0.4rem 0;
+        font-size: 1.1rem;
+        padding: 0.35rem 0;
         width: 100%;
         text-align: left;
         border-bottom: 1px solid rgba(228, 220, 208, 0.5);
       }
 
-      .nav-link:last-child {
-        border-bottom: 0;
+      .header-nav__list li:last-child {
+        padding-top: 0.35rem;
+      }
+
+      .header-nav__list .btn--primary {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
       }
 
       .hero { padding-top: 2rem; }
@@ -1061,13 +1063,13 @@
     <!-- Mobile Menu Text Toggle (No button pill, toggles Menu / Close) -->
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
 
-    <!-- Header Navigation (Clean text links, no buttons) -->
+    <!-- Header Navigation (Text links + Primary Add Note button with generous gap) -->
     <nav class="site-header__nav" id="header-nav">
       <ul class="header-nav__list">
         <li><button type="button" class="nav-link">Features</button></li>
         <li><button type="button" class="nav-link">How to Find</button></li>
         <li><button type="button" class="nav-link">How to Upload</button></li>
-        <li><button type="button" class="nav-link nav-link--primary" id="trigger-add-note">+ Add Note</button></li>
+        <li><button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button></li>
       </ul>
     </nav>
   </header>
@@ -2012,7 +2014,7 @@
                     <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                       <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="9" y1="13" x2="8" y2="13"></line>
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                       <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
