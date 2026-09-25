@@ -14,7 +14,6 @@
       --bg-subtle: #ECE5D7;
       --bg-hover: #E3DCCF;
       --bg-pill: #EBE4D5;
-
       --bg-class-notes-badge: #FFB4F9;
 
       --border-subtle: #E4DCD0;
@@ -77,7 +76,7 @@
       padding: 0 clamp(1rem, 4vw, 2.5rem);
     }
 
-    /* Core button primitives */
+    /* Core buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -106,7 +105,7 @@
       background-color: var(--brand-primary-hover);
     }
 
-    .btn__icon-plus {
+    .btn-plus {
       font-size: 1.25em;
       line-height: 1;
       margin-right: 0.25rem;
@@ -196,17 +195,13 @@
       margin-left: 2px;
     }
 
-    /* Desktop Navigation List */
-    .header-nav__list {
+    .header-nav {
       display: flex;
       align-items: center;
       gap: clamp(2.5rem, 4.5vw, 3.75rem);
-      list-style: none;
     }
 
     .nav-link {
-      background: transparent;
-      border: 0;
       padding: 0;
       font-size: 0.95rem;
       font-weight: 600;
@@ -214,24 +209,19 @@
       cursor: pointer;
       text-decoration: none;
       transition: color 0.15s ease;
-      font-family: inherit;
     }
 
     .nav-link:hover {
       color: var(--text-main);
     }
 
-    /* Mobile Menu Toggle */
     .header-menu-toggle {
       display: none;
-      background: transparent;
-      border: 0;
       padding: 0.25rem 0.5rem;
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--text-main);
       cursor: pointer;
-      font-family: inherit;
     }
 
     /* Badges */
@@ -281,7 +271,7 @@
       background-color: var(--bg-hover);
     }
 
-    /* Hero Section */
+    /* Hero */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       text-align: center;
@@ -339,7 +329,7 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar & Custom Dropdown Components */
+    /* Filters Bar */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -462,7 +452,7 @@
       font-size: 0.8125rem;
     }
 
-    /* Reused dropdown modifiers within form fields */
+    /* Modal Form dropdowns */
     .field .nav-filter__trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
@@ -479,12 +469,11 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
 
-    /* Content Area */
     .content-area {
       margin-top: 0.5rem;
     }
 
-    /* CALENDAR VIEW & COURSE VIEW */
+    /* Views */
     #calendar-view,
     .course-dates-view {
       padding: 0.5rem 0 1rem;
@@ -678,7 +667,7 @@
       display: none;
     }
 
-    /* Modals & Dialogs */
+    /* Modals */
     .dialog-modal {
       position: fixed;
       inset: 0;
@@ -955,13 +944,11 @@
         padding: 1.25rem 1rem;
       }
 
-      /* Mobile menu text trigger */
       .header-menu-toggle {
         display: block;
       }
 
-      /* Mobile dropdown: overlay on top of hero content, same background, NO shadow, NO border, NO line */
-      .site-header__nav {
+      .header-nav {
         display: none;
         position: absolute;
         top: 100%;
@@ -969,43 +956,26 @@
         right: 0;
         width: 100%;
         background-color: var(--bg-canvas);
-        border: none;
         padding: 1.5rem 1.25rem 2rem;
         z-index: 250;
-        box-shadow: none;
-      }
-
-      .site-header__nav.is-open {
-        display: block;
-      }
-
-      .header-nav__list {
-        display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: 1.85rem;
-        width: 100%;
       }
 
-      .header-nav__list li {
-        width: 100%;
+      .header-nav.is-open {
+        display: flex;
       }
 
       .nav-link {
         font-size: 1.15rem;
-        padding: 0;
         width: 100%;
         text-align: left;
-        border: none;
       }
 
-      .header-nav__list li:last-child {
-        padding-top: 0.5rem;
-      }
-
-      .header-nav__list .btn--primary {
+      .header-nav .btn--primary {
         width: 100%;
-        justify-content: center;
+        margin-top: 0.5rem;
         padding: 0.8rem 1.25rem;
         font-size: 0.95rem;
       }
@@ -1067,35 +1037,28 @@
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
 
-    <!-- Mobile Menu Text Toggle (No button pill, toggles Menu / Close) -->
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
 
-    <!-- Header Navigation (No border, generous gap, clean text links + Primary Add Note button) -->
-    <nav class="site-header__nav" id="header-nav">
-      <ul class="header-nav__list">
-        <li><button type="button" class="nav-link">Features</button></li>
-        <li><button type="button" class="nav-link">How to Find</button></li>
-        <li><button type="button" class="nav-link">How to Upload</button></li>
-        <li><button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn__icon-plus">+</span>Add Note</button></li>
-      </ul>
+    <nav class="header-nav" id="header-nav">
+      <button type="button" class="nav-link">Features</button>
+      <button type="button" class="nav-link">How to Find</button>
+      <button type="button" class="nav-link">How to Upload</button>
+      <button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn-plus">+</span>Add Note</button>
     </nav>
   </header>
 
   <div class="shell">
-    <!-- Hero Section -->
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
 
-      <!-- Selection Banner -->
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
       </div>
     </section>
 
-    <!-- 4-column filter bar -->
+    <!-- Filters Bar -->
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
-      <!-- 1. Department -->
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="dept-label">Department</span>
@@ -1106,7 +1069,6 @@
         <div class="nav-filter__menu" id="dept-menu" hidden role="listbox"></div>
       </div>
 
-      <!-- 2. Section -->
       <div class="nav-filter__item" data-filter="sec">
         <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="sec-label">Section</span>
@@ -1117,7 +1079,6 @@
         <div class="nav-filter__menu" id="sec-menu" hidden role="listbox"></div>
       </div>
 
-      <!-- 3. Course -->
       <div class="nav-filter__item" data-filter="course">
         <button type="button" class="nav-filter__trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="course-label">Course</span>
@@ -1128,7 +1089,6 @@
         <div class="nav-filter__menu" id="course-menu" hidden role="listbox"></div>
       </div>
 
-      <!-- 4. Topic -->
       <div class="nav-filter__item" data-filter="topic">
         <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="topic-label">Topic</span>
@@ -1141,7 +1101,6 @@
     </nav>
 
     <main class="content-area">
-      <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
@@ -1172,7 +1131,6 @@
         </table>
       </section>
 
-      <!-- Filtered Cards View -->
       <section class="course-dates-view" id="course-view" hidden>
         <div class="course-dates__header">
           <h3 class="course-dates__title" id="course-view-title"></h3>
@@ -1213,7 +1171,6 @@
         </div>
 
         <div class="modal-body-scroll">
-          <!-- Department Custom Dropdown -->
           <div class="field">
             <label>Department:</label>
             <div class="nav-filter__item" data-field="dept">
@@ -1228,7 +1185,6 @@
             </div>
           </div>
 
-          <!-- Section Custom Dropdown -->
           <div class="field">
             <label>Section:</label>
             <div class="nav-filter__item" data-field="sec">
@@ -1248,7 +1204,6 @@
             <input type="date" id="input-date" required>
           </div>
 
-          <!-- Course Custom Dropdown -->
           <div class="field">
             <label>Course:</label>
             <div class="nav-filter__item" data-field="course">
@@ -1711,9 +1666,6 @@
         document.body.classList.add("sheet-open");
         modalEl.style.transform = "";
         if (!modalEl.open) modalEl.showModal();
-        if (modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768) {
-          void modalEl.offsetHeight;
-        }
         modalEl.classList.add("is-open");
       }
 
@@ -1738,6 +1690,13 @@
           checkBodyScrollLock();
           if (onClosed) onClosed();
         }
+      }
+
+      function setMobileMenu(open) {
+        if (!ui.headerNav || !ui.mobileMenuToggle) return;
+        ui.headerNav.classList.toggle("is-open", open);
+        ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
+        ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
       }
 
       function openDateDetails(dateKey) {
@@ -2090,22 +2049,12 @@
       }
 
       function bindEvents() {
-        let setMobileMenu = null;
-
-        // Mobile menu toggle handling
         if (ui.mobileMenuToggle && ui.headerNav) {
-          setMobileMenu = function (open) {
-            ui.headerNav.classList.toggle("is-open", open);
-            ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
-            ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
-          };
-
           ui.mobileMenuToggle.addEventListener("click", (e) => {
             e.stopPropagation();
             setMobileMenu(!ui.headerNav.classList.contains("is-open"));
           });
 
-          // Close on clicking outside
           document.addEventListener("click", (e) => {
             if (!ui.headerNav.contains(e.target) && !ui.mobileMenuToggle.contains(e.target)) {
               if (ui.headerNav.classList.contains("is-open")) {
@@ -2114,7 +2063,6 @@
             }
           });
 
-          // Close on pressing Escape key
           document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && ui.headerNav.classList.contains("is-open")) {
               setMobileMenu(false);
@@ -2122,14 +2070,12 @@
           });
         }
 
-        // Global outside click to close dropdown menus
         document.addEventListener("click", (e) => {
           if (!e.target.closest(".nav-filter__item")) {
             closeAllMenus();
           }
         });
 
-        // Main filter bar delegated handling
         ui.navFilters.addEventListener("click", (e) => {
           const trigger = e.target.closest(".nav-filter__trigger");
           if (trigger) {
@@ -2145,7 +2091,6 @@
           }
         });
 
-        // Add note modal form dropdowns delegated handling
         ui.addModal.addEventListener("click", (e) => {
           const trigger = e.target.closest(".field .nav-filter__trigger");
           if (trigger) {
@@ -2162,7 +2107,6 @@
           }
         });
 
-        // Dialog outside click / touch handlers
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           let touchStartOutside = false;
           let touchStartY = 0;
@@ -2252,11 +2196,8 @@
           }
         });
 
-        // Trigger Add Note (Closes mobile menu if open)
         ui.addNoteBtn.addEventListener("click", () => {
-          if (setMobileMenu) {
-            setMobileMenu(false);
-          }
+          setMobileMenu(false);
 
           state.manualTitleEdited = false;
           ui.addForm.reset();
@@ -2360,7 +2301,6 @@
           }
         });
 
-        // Bottom Sheet Drag Gestures for all bottom sheets
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
           const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
           const header = sheet.querySelector(".dialog-modal__header");
