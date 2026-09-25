@@ -861,8 +861,11 @@
         max-height: 85vh;
         overflow-y: auto;
         overscroll-behavior: contain;
-        animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         touch-action: pan-y;
+      }
+
+      .dialog-modal.sheet-animating {
+        animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .dialog-modal::before {
@@ -1419,6 +1422,7 @@
 
       function openModal(modal) {
         if (!modal.open) {
+          modal.classList.add("sheet-animating");
           modal.showModal();
         }
         document.body.classList.add("modal-open");
@@ -1708,6 +1712,10 @@
           let isDragging = false;
           let canDrag = false;
 
+          modal.addEventListener("animationend", () => {
+            modal.classList.remove("sheet-animating");
+          });
+
           // Instant dismiss when touching backdrop outside the sheet
           modal.addEventListener("touchstart", (e) => {
             const rect = modal.getBoundingClientRect();
@@ -1743,17 +1751,17 @@
             currentY = touch.clientY;
             const diffY = currentY - startY;
 
-            if (diffY > 0) {
+            if (isDragging || diffY > 5) {
               const scrollable = modal.querySelector(".notes-stack") || modal;
-              if (scrollable && scrollable.scrollTop > 0) return;
+              if (!isDragging && scrollable.scrollTop > 0) return;
 
               isDragging = true;
               if (e.cancelable) e.preventDefault();
-              modal.style.animation = "none";
+
+              modal.classList.remove("sheet-animating");
               modal.style.transition = "none";
-              modal.style.transform = `translateY(${diffY}px)`;
-            } else if (isDragging) {
-              modal.style.transform = "translateY(0)";
+              const translateY = Math.max(0, diffY);
+              modal.style.transform = `translateY(${translateY}px)`;
             }
           }, { passive: false });
 
@@ -1776,17 +1784,17 @@
               modal.style.transform = "translateY(100%)";
               setTimeout(() => {
                 modal.close();
-                modal.style.animation = "";
                 modal.style.transition = "";
                 modal.style.transform = "";
+                modal.classList.remove("sheet-animating");
               }, 220);
             } else {
               modal.style.transition = "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
               modal.style.transform = "translateY(0)";
               setTimeout(() => {
-                modal.style.animation = "";
                 modal.style.transition = "";
                 modal.style.transform = "";
+                modal.classList.remove("sheet-animating");
               }, 200);
             }
           });
@@ -1796,9 +1804,9 @@
               modal.style.transition = "transform 0.2s ease-out";
               modal.style.transform = "translateY(0)";
               setTimeout(() => {
-                modal.style.animation = "";
                 modal.style.transition = "";
                 modal.style.transform = "";
+                modal.classList.remove("sheet-animating");
               }, 200);
             }
             isDragging = false;
@@ -1821,9 +1829,9 @@
           });
 
           modal.addEventListener("close", () => {
-            modal.style.animation = "";
             modal.style.transition = "";
             modal.style.transform = "";
+            modal.classList.remove("sheet-animating");
           });
         });
 
