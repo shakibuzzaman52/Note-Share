@@ -65,6 +65,11 @@
       padding-bottom: 4rem;
     }
 
+    body.modal-open {
+      overflow: hidden;
+      touch-action: none;
+    }
+
     .shell {
       max-width: 1200px;
       width: 100%;
@@ -622,8 +627,8 @@
     }
 
     .dialog-modal::backdrop {
-      background: rgba(24, 23, 22, 0.45);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(2px);
       cursor: pointer;
     }
 
@@ -820,6 +825,15 @@
       to { transform: rotate(360deg); }
     }
 
+    @keyframes sheetSlideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding-top: 2rem; }
@@ -836,7 +850,35 @@
         max-width: calc(100vw - 1.5rem);
       }
 
-      .dialog-modal { padding: 1.5rem 1.25rem; }
+      .dialog-modal {
+        position: fixed;
+        inset: auto 0 0 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+        border-bottom: 0;
+        padding: 0.75rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+        max-height: 85vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .dialog-modal::before {
+        content: '';
+        display: block;
+        width: 38px;
+        height: 4px;
+        border-radius: var(--radius-full);
+        background: #D4CDC0;
+        margin: 0.25rem auto 1rem;
+      }
+
+      .notes-stack {
+        max-height: 50vh;
+      }
+
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
@@ -1375,6 +1417,13 @@
         );
       }
 
+      function openModal(modal) {
+        if (!modal.open) {
+          modal.showModal();
+        }
+        document.body.classList.add("modal-open");
+      }
+
       function openDateDetails(dateKey) {
         if (!state.dept || !state.sec) {
           showToast("Select Department & Section first");
@@ -1382,9 +1431,7 @@
         }
         state.activeDate = dateKey;
         renderModalNotes();
-        if (!ui.notesModal.open) {
-          ui.notesModal.showModal();
-        }
+        openModal(ui.notesModal);
       }
 
       function renderCalendarGrid() {
@@ -1674,6 +1721,14 @@
           btn.addEventListener("click", () => btn.closest("dialog")?.close());
         });
 
+        const allModals = document.querySelectorAll(".dialog-modal");
+        allModals.forEach(modal => {
+          modal.addEventListener("close", () => {
+            const hasOpen = Array.from(allModals).some(m => m.open);
+            document.body.classList.toggle("modal-open", hasOpen);
+          });
+        });
+
         ui.notesModal.addEventListener("close", () => {
           state.activeDate = null;
         });
@@ -1728,7 +1783,7 @@
           }
 
           calculateDefaultTitle();
-          ui.addModal.showModal();
+          openModal(ui.addModal);
         });
 
         ui.formDept.addEventListener("change", () => {
@@ -1782,7 +1837,7 @@
           ui.reportTitle.textContent = btn.dataset.title;
           ui.reportContext.textContent = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
           ui.reportForm.dataset.targetRow = btn.dataset.row;
-          ui.reportModal.showModal();
+          openModal(ui.reportModal);
         });
 
         ui.reportForm.addEventListener("submit", async (e) => {
