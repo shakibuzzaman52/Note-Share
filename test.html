@@ -189,19 +189,20 @@
       margin-left: 2px;
     }
 
-    /* Desktop Navigation List (Increased gap, clean text links + button) */
+    /* Desktop Navigation List (No border, even larger gap) */
     .header-nav__list {
       display: flex;
       align-items: center;
-      gap: 2.25rem;
+      gap: clamp(2.5rem, 4.5vw, 3.75rem);
       list-style: none;
     }
 
     .nav-link {
       background: transparent;
       border: 0;
+      outline: 0;
       padding: 0;
-      font-size: 0.9375rem;
+      font-size: 0.95rem;
       font-weight: 500;
       color: var(--text-muted);
       cursor: pointer;
@@ -953,7 +954,7 @@
         display: block;
       }
 
-      /* Mobile dropdown: overlay on top of hero content, same background, NO shadow */
+      /* Mobile dropdown: overlay on top of hero content, same background, NO shadow, NO border, NO line */
       .site-header__nav {
         display: none;
         position: absolute;
@@ -962,10 +963,10 @@
         right: 0;
         width: 100%;
         background-color: var(--bg-canvas);
-        border-bottom: 1px solid var(--border-subtle);
-        padding: 1.25rem 1rem 1.75rem;
+        border: none;
+        padding: 1.5rem 1.25rem 2rem;
         z-index: 250;
-        box-shadow: none; /* No shadow */
+        box-shadow: none;
       }
 
       .site-header__nav.is-open {
@@ -976,7 +977,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 1.35rem; /* Increased gap */
+        gap: 1.85rem; /* Much larger gap */
         width: 100%;
       }
 
@@ -985,21 +986,21 @@
       }
 
       .nav-link {
-        font-size: 1.1rem;
-        padding: 0.35rem 0;
+        font-size: 1.15rem;
+        padding: 0;
         width: 100%;
         text-align: left;
-        border-bottom: 1px solid rgba(228, 220, 208, 0.5);
+        border: none; /* No line or divider */
       }
 
       .header-nav__list li:last-child {
-        padding-top: 0.35rem;
+        padding-top: 0.5rem;
       }
 
       .header-nav__list .btn--primary {
         width: 100%;
         justify-content: center;
-        padding: 0.75rem 1.25rem;
+        padding: 0.8rem 1.25rem;
         font-size: 0.95rem;
       }
 
@@ -1063,7 +1064,7 @@
     <!-- Mobile Menu Text Toggle (No button pill, toggles Menu / Close) -->
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
 
-    <!-- Header Navigation (Text links + Primary Add Note button with generous gap) -->
+    <!-- Header Navigation (No border, generous gap, clean text links + Add Note button) -->
     <nav class="site-header__nav" id="header-nav">
       <ul class="header-nav__list">
         <li><button type="button" class="nav-link">Features</button></li>
@@ -2014,7 +2015,7 @@
                     <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                       <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="9" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                       <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
