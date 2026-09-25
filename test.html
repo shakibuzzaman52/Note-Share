@@ -65,11 +65,6 @@
       padding-bottom: 4rem;
     }
 
-    body.modal-open {
-      overflow: hidden;
-      touch-action: none;
-    }
-
     .shell {
       max-width: 1200px;
       width: 100%;
@@ -627,7 +622,8 @@
     }
 
     .dialog-modal::backdrop {
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(24, 23, 22, 0.45);
+      backdrop-filter: blur(6px);
       cursor: pointer;
     }
 
@@ -824,15 +820,6 @@
       to { transform: rotate(360deg); }
     }
 
-    @keyframes sheetSlideUp {
-      from {
-        transform: translateY(100%);
-      }
-      to {
-        transform: translateY(0);
-      }
-    }
-
     @media (max-width: 768px) {
       .site-header { padding: 1.25rem 1rem; }
       .hero { padding-top: 2rem; }
@@ -849,59 +836,7 @@
         max-width: calc(100vw - 1.5rem);
       }
 
-      .dialog-modal {
-        position: fixed;
-        inset: auto 0 0 0;
-        margin: 0;
-        width: 100%;
-        max-width: 100%;
-        border-radius: 20px 20px 0 0;
-        border-bottom: 0;
-        padding: 0.75rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
-        max-height: 72vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        touch-action: pan-y;
-      }
-
-      .dialog-modal.sheet-animating {
-        animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .dialog-modal::before {
-        content: '';
-        display: block;
-        width: 38px;
-        height: 4px;
-        border-radius: var(--radius-full);
-        background: #D4CDC0;
-        margin: 0.25rem auto 0.85rem;
-        flex-shrink: 0;
-      }
-
-      .dialog-modal__header {
-        flex-shrink: 0;
-      }
-
-      .dialog-modal__actions {
-        flex-shrink: 0;
-        margin-top: 0.85rem;
-      }
-
-      .notes-stack {
-        flex: 1 1 auto;
-        max-height: none;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-      }
-
-      #add-modal,
-      #report-modal {
-        overflow-y: auto;
-      }
-
+      .dialog-modal { padding: 1.5rem 1.25rem; }
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
@@ -1440,14 +1375,6 @@
         );
       }
 
-      function openModal(modal) {
-        if (!modal.open) {
-          modal.classList.add("sheet-animating");
-          modal.showModal();
-        }
-        document.body.classList.add("modal-open");
-      }
-
       function openDateDetails(dateKey) {
         if (!state.dept || !state.sec) {
           showToast("Select Department & Section first");
@@ -1455,7 +1382,9 @@
         }
         state.activeDate = dateKey;
         renderModalNotes();
-        openModal(ui.notesModal);
+        if (!ui.notesModal.open) {
+          ui.notesModal.showModal();
+        }
       }
 
       function renderCalendarGrid() {
@@ -1726,107 +1655,6 @@
         });
 
         document.querySelectorAll(".dialog-modal").forEach(modal => {
-          let startY = 0;
-          let currentY = 0;
-          let startTime = 0;
-          let isDragging = false;
-          let isHeader = false;
-
-          modal.addEventListener("animationend", () => {
-            modal.classList.remove("sheet-animating");
-          });
-
-          // Instant dismiss when touching backdrop outside the sheet
-          modal.addEventListener("touchstart", (e) => {
-            const rect = modal.getBoundingClientRect();
-            const touch = e.touches[0];
-            const isOutside = (
-              touch.clientY < rect.top ||
-              touch.clientY > rect.bottom ||
-              touch.clientX < rect.left ||
-              touch.clientX > rect.right
-            );
-
-            if (isOutside) {
-              if (e.cancelable) e.preventDefault();
-              modal.close();
-              return;
-            }
-
-            startY = touch.clientY;
-            currentY = startY;
-            startTime = Date.now();
-            isDragging = false;
-            isHeader = Boolean(e.target.closest(".dialog-modal__header") || e.target === modal);
-          }, { passive: false });
-
-          modal.addEventListener("touchmove", (e) => {
-            const touch = e.touches[0];
-            currentY = touch.clientY;
-            const diffY = currentY - startY;
-
-            const scrollable = modal.querySelector(".notes-stack") || modal;
-            const isAtTop = scrollable ? scrollable.scrollTop <= 2 : true;
-
-            if (!isDragging) {
-              const shouldDrag = isHeader ? (diffY > 5) : (isAtTop && diffY > 8);
-              if (shouldDrag) {
-                isDragging = true;
-                modal.classList.remove("sheet-animating");
-                modal.style.transition = "none";
-              }
-            }
-
-            if (isDragging) {
-              if (e.cancelable) e.preventDefault();
-              const translateY = Math.max(0, diffY);
-              modal.style.transform = `translateY(${translateY}px)`;
-            }
-          }, { passive: false });
-
-          modal.addEventListener("touchend", () => {
-            if (!isDragging) return;
-            isDragging = false;
-
-            const diffY = currentY - startY;
-            const elapsed = Math.max(Date.now() - startTime, 1);
-            const velocity = diffY / elapsed;
-            const shouldDismiss = diffY > 80 || (diffY > 40 && velocity > 0.35);
-
-            if (shouldDismiss) {
-              modal.style.transition = "transform 0.22s ease-out";
-              modal.style.transform = "translateY(100%)";
-              setTimeout(() => {
-                modal.close();
-                modal.style.transition = "";
-                modal.style.transform = "";
-                modal.classList.remove("sheet-animating");
-              }, 220);
-            } else {
-              modal.style.transition = "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
-              modal.style.transform = "translateY(0)";
-              setTimeout(() => {
-                modal.style.transition = "";
-                modal.style.transform = "";
-                modal.classList.remove("sheet-animating");
-              }, 200);
-            }
-          });
-
-          modal.addEventListener("touchcancel", () => {
-            if (isDragging) {
-              modal.style.transition = "transform 0.2s ease-out";
-              modal.style.transform = "translateY(0)";
-              setTimeout(() => {
-                modal.style.transition = "";
-                modal.style.transform = "";
-                modal.classList.remove("sheet-animating");
-              }, 200);
-            }
-            isDragging = false;
-          });
-
-          // Desktop click outside backdrop to close
           modal.addEventListener("click", (e) => {
             if (e.target !== modal) return;
             const rect = modal.getBoundingClientRect();
@@ -1840,24 +1668,10 @@
               modal.close();
             }
           });
-
-          modal.addEventListener("close", () => {
-            modal.style.transition = "";
-            modal.style.transform = "";
-            modal.classList.remove("sheet-animating");
-          });
         });
 
         document.querySelectorAll("[data-close-modal]").forEach(btn => {
           btn.addEventListener("click", () => btn.closest("dialog")?.close());
-        });
-
-        const allModals = document.querySelectorAll(".dialog-modal");
-        allModals.forEach(modal => {
-          modal.addEventListener("close", () => {
-            const hasOpen = Array.from(allModals).some(m => m.open);
-            document.body.classList.toggle("modal-open", hasOpen);
-          });
         });
 
         ui.notesModal.addEventListener("close", () => {
@@ -1914,7 +1728,7 @@
           }
 
           calculateDefaultTitle();
-          openModal(ui.addModal);
+          ui.addModal.showModal();
         });
 
         ui.formDept.addEventListener("change", () => {
@@ -1968,7 +1782,7 @@
           ui.reportTitle.textContent = btn.dataset.title;
           ui.reportContext.textContent = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
           ui.reportForm.dataset.targetRow = btn.dataset.row;
-          openModal(ui.reportModal);
+          ui.reportModal.showModal();
         });
 
         ui.reportForm.addEventListener("submit", async (e) => {
