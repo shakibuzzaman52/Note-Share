@@ -611,7 +611,7 @@
       white-space: nowrap;
     }
 
-    /* CRITICAL FIX: Closed dialogs MUST NEVER display */
+    /* CRITICAL: Closed dialogs MUST NEVER display */
     dialog:not([open]) {
       display: none !important;
     }
@@ -1975,8 +1975,13 @@
           render();
         });
 
-        // Close on clicking backdrop (Desktop & Mobile)
+        // TAPPING or SWIPING outside modal (YouTube-style: swipe on page closes modal)
         document.querySelectorAll(".dialog-modal").forEach(modal => {
+          let touchStartOutside = false;
+          let touchStartY = 0;
+          let touchStartX = 0;
+
+          // Detect tap on backdrop
           modal.addEventListener("click", (e) => {
             if (e.target !== modal) return;
             const rect = modal.getBoundingClientRect();
@@ -1990,7 +1995,65 @@
               closeSheetModal(modal);
             }
           });
+
+          // Detect swipe/touchmove on backdrop (trying to scroll page while modal is open)
+          modal.addEventListener("touchstart", (e) => {
+            const touch = e.touches[0];
+            const rect = modal.getBoundingClientRect();
+            touchStartOutside = !(
+              touch.clientX >= rect.left &&
+              touch.clientX <= rect.right &&
+              touch.clientY >= rect.top &&
+              touch.clientY <= rect.bottom
+            );
+            if (touchStartOutside) {
+              touchStartY = touch.clientY;
+              touchStartX = touch.clientX;
+            }
+          }, { passive: true });
+
+          modal.addEventListener("touchmove", (e) => {
+            if (!touchStartOutside) return;
+            const touch = e.touches[0];
+            const dy = Math.abs(touch.clientY - touchStartY);
+            const dx = Math.abs(touch.clientX - touchStartX);
+            // If user attempts to swipe/scroll on the page outside the popup:
+            if (dy > 6 || dx > 6) {
+              touchStartOutside = false;
+              closeSheetModal(modal);
+            }
+          }, { passive: true });
+
+          // Mouse wheel scroll outside modal closes it immediately (on desktop)
+          modal.addEventListener("wheel", (e) => {
+            const rect = modal.getBoundingClientRect();
+            const isInside = (
+              e.clientX >= rect.left &&
+              e.clientX <= rect.right &&
+              e.clientY >= rect.top &&
+              e.clientY <= rect.bottom
+            );
+            if (!isInside) {
+              closeSheetModal(modal);
+            }
+          }, { passive: true });
         });
+
+        // Global wheel handler for scrolling outside modal on desktop
+        window.addEventListener("wheel", (e) => {
+          const activeModal = [ui.notesModal, ui.reportModal, ui.addModal].find(m => m && m.open);
+          if (!activeModal) return;
+          const rect = activeModal.getBoundingClientRect();
+          const isInside = (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+          );
+          if (!isInside) {
+            closeSheetModal(activeModal);
+          }
+        }, { passive: true });
 
         // Escape Key smoothly closes modal
         ui.notesModal.addEventListener("cancel", (e) => {
@@ -2090,6 +2153,10 @@
           calculateDefaultTitle();
           document.body.classList.add("sheet-open");
           ui.addModal.showModal();
+        });
+
+        ui.addModal.addEventListener("close", () => {
+          checkBodyScrollLock();
         });
 
         ui.formDept.addEventListener("change", () => {
