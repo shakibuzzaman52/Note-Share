@@ -65,6 +65,12 @@
       padding-bottom: 4rem;
     }
 
+    /* Background Lock when Bottom Sheet is open */
+    body.sheet-open {
+      overflow: hidden !important;
+      touch-action: none;
+    }
+
     .shell {
       max-width: 1200px;
       width: 100%;
@@ -497,13 +503,11 @@
       border-color: #D6CEC0;
     }
 
-    /* Today: normal black border */
     .calendar-cell--today .calendar-cell__btn {
       border: 2px solid var(--text-main);
       font-weight: 700;
     }
 
-    /* Dates containing notes: clean blue border only */
     .calendar-cell.has-notes .calendar-cell__btn {
       border: 2px solid var(--brand-primary);
       color: var(--brand-primary);
@@ -607,7 +611,7 @@
       white-space: nowrap;
     }
 
-    /* Modals */
+    /* Standard Modals */
     .dialog-modal {
       position: fixed;
       inset: 0;
@@ -621,10 +625,92 @@
       color: var(--text-main);
     }
 
+    /* YouTube style dark shadow/dim backdrop: NO BLUR */
     .dialog-modal::backdrop {
-      background: rgba(24, 23, 22, 0.45);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.55);
       cursor: pointer;
+    }
+
+    /* YouTube-style Bottom Sheet for Lecture Notes */
+    .dialog-modal.bottom-sheet {
+      inset: auto 0 0 0;
+      margin: 0 auto;
+      max-width: 620px;
+      width: 100%;
+      height: auto;
+      max-height: 84vh;
+      border-radius: 20px 20px 0 0;
+      border: 1px solid var(--border-subtle);
+      border-bottom: 0;
+      padding: 0.5rem 1.5rem 1.5rem;
+      background: var(--bg-surface);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.28);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      overscroll-behavior: contain;
+      will-change: transform;
+    }
+
+    .dialog-modal.bottom-sheet.is-open {
+      transform: translateY(0);
+    }
+
+    .dialog-modal.bottom-sheet.is-dragging {
+      transition: none !important;
+    }
+
+    /* Top Drag Handle (like YouTube) */
+    .bottom-sheet__handle-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 0 0.85rem;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .bottom-sheet__handle-wrapper:active {
+      cursor: grabbing;
+    }
+
+    .bottom-sheet__handle {
+      width: 42px;
+      height: 4.5px;
+      background-color: #D2CBC0;
+      border-radius: var(--radius-full);
+      transition: background-color 0.15s ease;
+    }
+
+    .bottom-sheet__handle-wrapper:hover .bottom-sheet__handle,
+    .bottom-sheet__handle-wrapper:active .bottom-sheet__handle {
+      background-color: #A69E90;
+    }
+
+    .bottom-sheet .dialog-modal__header {
+      flex-shrink: 0;
+      user-select: none;
+      padding-bottom: 0.75rem;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .bottom-sheet .notes-stack {
+      flex: 1 1 auto;
+      max-height: none;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      margin-top: 0.85rem;
+    }
+
+    .bottom-sheet .dialog-modal__actions {
+      flex-shrink: 0;
+      margin-top: 1rem;
     }
 
     .dialog-modal__header {
@@ -837,6 +923,14 @@
       }
 
       .dialog-modal { padding: 1.5rem 1.25rem; }
+      
+      .dialog-modal.bottom-sheet {
+        max-width: 100%;
+        border-radius: 18px 18px 0 0;
+        padding: 0.5rem 1.15rem 1.25rem;
+        max-height: 86vh;
+      }
+
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
@@ -947,18 +1041,22 @@
       </section>
     </main>
 
-    <!-- Modal: View notes -->
-    <dialog class="dialog-modal" id="notes-modal">
-      <div class="dialog-modal__header">
+    <!-- Modal: View notes (YouTube-style Bottom Sheet) -->
+    <dialog class="dialog-modal bottom-sheet" id="notes-modal">
+      <div class="bottom-sheet__handle-wrapper" id="sheet-drag-handle" title="Drag down to close">
+        <div class="bottom-sheet__handle"></div>
+      </div>
+
+      <div class="dialog-modal__header" id="sheet-header">
         <h3 class="dialog-modal__title" id="modal-date-label"></h3>
         <span class="dialog-modal__desc" id="modal-notes-total"></span>
       </div>
 
       <div class="notes-stack" id="modal-notes-stack"></div>
 
-      <form method="dialog" class="dialog-modal__actions">
-        <button type="submit" class="btn btn--ghost">Close</button>
-      </form>
+      <div class="dialog-modal__actions">
+        <button type="button" class="btn btn--ghost" id="btn-close-notes">Close</button>
+      </div>
     </dialog>
 
     <!-- Modal: Add note -->
@@ -1095,9 +1193,12 @@
         courseDatesList: document.getElementById("course-dates-list"),
 
         notesModal: document.getElementById("notes-modal"),
+        sheetDragHandle: document.getElementById("sheet-drag-handle"),
+        sheetHeader: document.getElementById("sheet-header"),
         modalDateLabel: document.getElementById("modal-date-label"),
         modalNotesTotal: document.getElementById("modal-notes-total"),
         modalNotesStack: document.getElementById("modal-notes-stack"),
+        btnCloseNotes: document.getElementById("btn-close-notes"),
 
         addModal: document.getElementById("add-modal"),
         addNoteBtn: document.getElementById("trigger-add-note"),
@@ -1375,6 +1476,9 @@
         );
       }
 
+      /* YouTube-style Bottom Sheet open & close controls */
+      let isSheetClosing = false;
+
       function openDateDetails(dateKey) {
         if (!state.dept || !state.sec) {
           showToast("Select Department & Section first");
@@ -1382,9 +1486,167 @@
         }
         state.activeDate = dateKey;
         renderModalNotes();
+
+        // Lock background scroll and interactions
+        document.body.classList.add("sheet-open");
+
+        ui.notesModal.style.transform = "translateY(100%)";
         if (!ui.notesModal.open) {
           ui.notesModal.showModal();
         }
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            ui.notesModal.classList.add("is-open");
+            ui.notesModal.style.transform = "";
+          });
+        });
+      }
+
+      function closeNotesSheet() {
+        if (!ui.notesModal.open || isSheetClosing) return;
+        isSheetClosing = true;
+
+        ui.notesModal.classList.remove("is-open");
+        ui.notesModal.style.transform = "translateY(100%)";
+        document.body.classList.remove("sheet-open");
+
+        setTimeout(() => {
+          if (ui.notesModal.open) {
+            ui.notesModal.close();
+            ui.notesModal.style.transform = "";
+          }
+          state.activeDate = null;
+          isSheetClosing = false;
+        }, 280);
+      }
+
+      /* Interactive Drag & Swipe-to-Dismiss Handler */
+      function setupBottomSheetGestures() {
+        const sheet = ui.notesModal;
+        const handle = ui.sheetDragHandle;
+        const header = ui.sheetHeader;
+        const stack = ui.modalNotesStack;
+
+        let startY = 0;
+        let currentTranslate = 0;
+        let isDragging = false;
+        let startTime = 0;
+        let isStartedOnContent = false;
+
+        function onTouchStart(e) {
+          if (isSheetClosing) return;
+          const touch = e.touches ? e.touches[0] : e;
+          startY = touch.clientY;
+          currentTranslate = 0;
+          startTime = Date.now();
+
+          isStartedOnContent = stack.contains(e.target);
+          if (isStartedOnContent && stack.scrollTop > 0) {
+            isDragging = false;
+            return;
+          }
+
+          isDragging = true;
+          sheet.classList.add("is-dragging");
+        }
+
+        function onTouchMove(e) {
+          if (!isDragging) {
+            if (isStartedOnContent && stack.scrollTop <= 0) {
+              const touch = e.touches ? e.touches[0] : e;
+              const delta = touch.clientY - startY;
+              if (delta > 0) {
+                isDragging = true;
+                startY = touch.clientY;
+                sheet.classList.add("is-dragging");
+              }
+            }
+            return;
+          }
+
+          const touch = e.touches ? e.touches[0] : e;
+          const deltaY = touch.clientY - startY;
+
+          if (deltaY > 0) {
+            currentTranslate = deltaY;
+            sheet.style.transform = `translateY(${deltaY}px)`;
+            if (e.cancelable) e.preventDefault();
+          } else {
+            if (isStartedOnContent && stack.scrollTop > 0) {
+              isDragging = false;
+              sheet.classList.remove("is-dragging");
+              sheet.style.transform = "";
+              return;
+            }
+            currentTranslate = deltaY * 0.15;
+            sheet.style.transform = `translateY(${currentTranslate}px)`;
+            if (e.cancelable) e.preventDefault();
+          }
+        }
+
+        function onTouchEnd() {
+          if (!isDragging) return;
+          isDragging = false;
+          sheet.classList.remove("is-dragging");
+
+          const elapsed = Date.now() - startTime;
+          const velocity = currentTranslate / (elapsed || 1);
+
+          if (currentTranslate > 85 || (currentTranslate > 40 && velocity > 0.45)) {
+            closeNotesSheet();
+          } else {
+            sheet.style.transform = "";
+          }
+        }
+
+        // Touch Listeners
+        [handle, header, stack].forEach(el => {
+          el.addEventListener("touchstart", onTouchStart, { passive: true });
+        });
+        window.addEventListener("touchmove", onTouchMove, { passive: false });
+        window.addEventListener("touchend", onTouchEnd, { passive: true });
+        window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+        // Mouse Drag on Handle (Desktop support)
+        handle.addEventListener("mousedown", (e) => {
+          startY = e.clientY;
+          currentTranslate = 0;
+          startTime = Date.now();
+          isDragging = true;
+          isStartedOnContent = false;
+          sheet.classList.add("is-dragging");
+
+          function onMouseMove(moveEvent) {
+            if (!isDragging) return;
+            const deltaY = moveEvent.clientY - startY;
+            if (deltaY > 0) {
+              currentTranslate = deltaY;
+              sheet.style.transform = `translateY(${deltaY}px)`;
+            } else {
+              currentTranslate = deltaY * 0.15;
+              sheet.style.transform = `translateY(${currentTranslate}px)`;
+            }
+          }
+
+          function onMouseUp() {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+            onTouchEnd();
+          }
+
+          window.addEventListener("mousemove", onMouseMove);
+          window.addEventListener("mouseup", onMouseUp);
+        });
+
+        // Mouse Wheel downward on handle or header dismisses sheet
+        [handle, header].forEach(el => {
+          el.addEventListener("wheel", (e) => {
+            if (e.deltaY > 30) {
+              closeNotesSheet();
+            }
+          }, { passive: true });
+        });
       }
 
       function renderCalendarGrid() {
@@ -1654,6 +1916,7 @@
           render();
         });
 
+        // Close on clicking backdrop
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
             if (e.target !== modal) return;
@@ -1665,16 +1928,29 @@
               e.clientY <= rect.bottom
             );
             if (!isClickInside) {
-              modal.close();
+              if (modal === ui.notesModal) {
+                closeNotesSheet();
+              } else {
+                modal.close();
+              }
             }
           });
         });
+
+        // Escape Key smoothly slides down bottom sheet
+        ui.notesModal.addEventListener("cancel", (e) => {
+          e.preventDefault();
+          closeNotesSheet();
+        });
+
+        ui.btnCloseNotes.addEventListener("click", closeNotesSheet);
 
         document.querySelectorAll("[data-close-modal]").forEach(btn => {
           btn.addEventListener("click", () => btn.closest("dialog")?.close());
         });
 
         ui.notesModal.addEventListener("close", () => {
+          document.body.classList.remove("sheet-open");
           state.activeDate = null;
         });
 
@@ -1810,6 +2086,9 @@
             setButtonLoading(ui.btnSubmitReport, false);
           }
         });
+
+        // Initialize swipe & drag gestures
+        setupBottomSheetGestures();
       }
 
       function init() {
