@@ -857,10 +857,11 @@
         max-width: 100%;
         border-radius: 20px 20px 0 0;
         border-bottom: 0;
-        padding: 0.75rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
-        max-height: 85vh;
-        overflow-y: auto;
-        overscroll-behavior: contain;
+        padding: 0.75rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+        max-height: 72vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
         touch-action: pan-y;
       }
 
@@ -875,11 +876,30 @@
         height: 4px;
         border-radius: var(--radius-full);
         background: #D4CDC0;
-        margin: 0.25rem auto 1rem;
+        margin: 0.25rem auto 0.85rem;
+        flex-shrink: 0;
+      }
+
+      .dialog-modal__header {
+        flex-shrink: 0;
+      }
+
+      .dialog-modal__actions {
+        flex-shrink: 0;
+        margin-top: 0.85rem;
       }
 
       .notes-stack {
-        max-height: 50vh;
+        flex: 1 1 auto;
+        max-height: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+      }
+
+      #add-modal,
+      #report-modal {
+        overflow-y: auto;
       }
 
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
@@ -1710,7 +1730,7 @@
           let currentY = 0;
           let startTime = 0;
           let isDragging = false;
-          let canDrag = false;
+          let isHeader = false;
 
           modal.addEventListener("animationend", () => {
             modal.classList.remove("sheet-animating");
@@ -1737,42 +1757,36 @@
             currentY = startY;
             startTime = Date.now();
             isDragging = false;
-
-            const isHeader = Boolean(e.target.closest(".dialog-modal__header") || e.target === modal);
-            const scrollable = modal.querySelector(".notes-stack") || modal;
-            const isAtTop = scrollable.scrollTop <= 0;
-
-            canDrag = isHeader || isAtTop;
+            isHeader = Boolean(e.target.closest(".dialog-modal__header") || e.target === modal);
           }, { passive: false });
 
           modal.addEventListener("touchmove", (e) => {
-            if (!canDrag) return;
             const touch = e.touches[0];
             currentY = touch.clientY;
             const diffY = currentY - startY;
 
-            if (isDragging || diffY > 5) {
-              const scrollable = modal.querySelector(".notes-stack") || modal;
-              if (!isDragging && scrollable.scrollTop > 0) return;
+            const scrollable = modal.querySelector(".notes-stack") || modal;
+            const isAtTop = scrollable ? scrollable.scrollTop <= 2 : true;
 
-              isDragging = true;
+            if (!isDragging) {
+              const shouldDrag = isHeader ? (diffY > 5) : (isAtTop && diffY > 8);
+              if (shouldDrag) {
+                isDragging = true;
+                modal.classList.remove("sheet-animating");
+                modal.style.transition = "none";
+              }
+            }
+
+            if (isDragging) {
               if (e.cancelable) e.preventDefault();
-
-              modal.classList.remove("sheet-animating");
-              modal.style.transition = "none";
               const translateY = Math.max(0, diffY);
               modal.style.transform = `translateY(${translateY}px)`;
             }
           }, { passive: false });
 
           modal.addEventListener("touchend", () => {
-            if (!isDragging) {
-              canDrag = false;
-              return;
-            }
-
+            if (!isDragging) return;
             isDragging = false;
-            canDrag = false;
 
             const diffY = currentY - startY;
             const elapsed = Math.max(Date.now() - startTime, 1);
@@ -1810,7 +1824,6 @@
               }, 200);
             }
             isDragging = false;
-            canDrag = false;
           });
 
           // Desktop click outside backdrop to close
