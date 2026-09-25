@@ -77,6 +77,7 @@
       padding: 0 clamp(1rem, 4vw, 2.5rem);
     }
 
+    /* Core button primitives */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -162,6 +163,7 @@
       animation: spin 0.6s linear infinite;
     }
 
+    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -177,6 +179,7 @@
       background-color: var(--bg-class-notes-badge);
     }
 
+    /* Form controls */
     .field {
       margin-bottom: 1rem;
       position: relative;
@@ -207,6 +210,7 @@
       background-color: var(--bg-hover);
     }
 
+    /* Header */
     .site-header {
       width: 100%;
       display: flex;
@@ -234,6 +238,7 @@
       margin-left: 2px;
     }
 
+    /* Hero Section */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       text-align: center;
@@ -262,6 +267,7 @@
       margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
+    /* Selection Banner */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -290,6 +296,7 @@
       font-size: 0.95em;
     }
 
+    /* Filters Bar & Custom Dropdown Components */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -412,6 +419,7 @@
       font-size: 0.8125rem;
     }
 
+    /* Reused dropdown modifiers within form fields */
     .field .nav-filter__trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
@@ -428,10 +436,12 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
 
+    /* Content Area */
     .content-area {
       margin-top: 0.5rem;
     }
 
+    /* CALENDAR VIEW & COURSE VIEW */
     #calendar-view,
     .course-dates-view {
       padding: 0.5rem 0 1rem;
@@ -625,6 +635,7 @@
       display: none;
     }
 
+    /* Modals & Dialogs */
     .dialog-modal {
       position: fixed;
       inset: 0;
@@ -868,6 +879,7 @@
       color: var(--brand-danger);
     }
 
+    /* Toast Notification */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
@@ -956,16 +968,20 @@
     <button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button>
   </header>
   <div class="shell">
+    <!-- Hero Section -->
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
 
+      <!-- Selection Banner -->
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
       </div>
     </section>
 
+    <!-- 4-column filter bar -->
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
+      <!-- 1. Department -->
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="dept-label">Department</span>
@@ -976,6 +992,7 @@
         <div class="nav-filter__menu" id="dept-menu" hidden role="listbox"></div>
       </div>
 
+      <!-- 2. Section -->
       <div class="nav-filter__item" data-filter="sec">
         <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="sec-label">Section</span>
@@ -986,6 +1003,7 @@
         <div class="nav-filter__menu" id="sec-menu" hidden role="listbox"></div>
       </div>
 
+      <!-- 3. Course -->
       <div class="nav-filter__item" data-filter="course">
         <button type="button" class="nav-filter__trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="course-label">Course</span>
@@ -996,6 +1014,7 @@
         <div class="nav-filter__menu" id="course-menu" hidden role="listbox"></div>
       </div>
 
+      <!-- 4. Topic -->
       <div class="nav-filter__item" data-filter="topic">
         <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="topic-label">Topic</span>
@@ -1008,6 +1027,7 @@
     </nav>
 
     <main class="content-area">
+      <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
@@ -1038,6 +1058,7 @@
         </table>
       </section>
 
+      <!-- Filtered Cards View -->
       <section class="course-dates-view" id="course-view" hidden>
         <div class="course-dates__header">
           <h3 class="course-dates__title" id="course-view-title"></h3>
@@ -1047,6 +1068,7 @@
       </section>
     </main>
 
+    <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
       <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
@@ -1060,10 +1082,11 @@
       <div class="notes-stack" id="modal-notes-stack"></div>
 
       <div class="dialog-modal__actions">
-        <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
+        <button type="button" class="btn btn--ghost" id="btn-close-notes" data-close-modal>Close</button>
       </div>
     </dialog>
 
+    <!-- Modal: Add note -->
     <dialog class="dialog-modal bottom-sheet" id="add-modal">
       <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
@@ -1076,6 +1099,7 @@
         </div>
 
         <div class="modal-body-scroll">
+          <!-- Department Custom Dropdown -->
           <div class="field">
             <label>Department:</label>
             <div class="nav-filter__item" data-field="dept">
@@ -1090,6 +1114,7 @@
             </div>
           </div>
 
+          <!-- Section Custom Dropdown -->
           <div class="field">
             <label>Section:</label>
             <div class="nav-filter__item" data-field="sec">
@@ -1109,6 +1134,7 @@
             <input type="date" id="input-date" required>
           </div>
 
+          <!-- Course Custom Dropdown -->
           <div class="field">
             <label>Course:</label>
             <div class="nav-filter__item" data-field="course">
@@ -1146,6 +1172,7 @@
       </form>
     </dialog>
 
+    <!-- Modal: Report link -->
     <dialog class="dialog-modal bottom-sheet" id="report-modal">
       <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
@@ -1166,7 +1193,7 @@
         </div>
 
         <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
+          <button type="button" class="btn btn--ghost" id="btn-cancel-report" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
         </div>
       </form>
@@ -1946,12 +1973,14 @@
       }
 
       function bindEvents() {
+        // Global outside click to close menus
         document.addEventListener("click", (e) => {
           if (!e.target.closest(".nav-filter__item")) {
             closeAllMenus();
           }
         });
 
+        // Main filter bar delegated handling
         ui.navFilters.addEventListener("click", (e) => {
           const trigger = e.target.closest(".nav-filter__trigger");
           if (trigger) {
@@ -1967,6 +1996,7 @@
           }
         });
 
+        // Add note modal form dropdowns delegated handling
         ui.addModal.addEventListener("click", (e) => {
           const trigger = e.target.closest(".field .nav-filter__trigger");
           if (trigger) {
@@ -1983,6 +2013,7 @@
           }
         });
 
+        // Dialog outside click / touch handlers
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           let touchStartOutside = false;
           let touchStartY = 0;
@@ -2175,6 +2206,7 @@
           }
         });
 
+        // Bottom Sheet Drag Gestures for all bottom sheets
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
           const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
           const header = sheet.querySelector(".dialog-modal__header");
