@@ -9,14 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Main Background & Harmonized Canvas Shades */
       --bg-canvas: #f6f0e2;
       --bg-surface: #FFFFFF;
       --bg-subtle: #ECE5D7;
       --bg-hover: #E3DCCF;
       --bg-pill: #EBE4D5;
 
-      /* Class Notes Specific Pink Accent */
       --bg-class-notes-badge: #FFB4F9;
 
       --border-subtle: #E4DCD0;
@@ -26,7 +24,6 @@
       --text-subtle: #8A847A;
       --text-disabled: #B8B0A5;
 
-      /* Brand Primary (Blue) */
       --brand-primary: #0A37F5;
       --brand-primary-hover: #072CC4;
       --brand-dark: #181716;
@@ -128,8 +125,6 @@
       border: 1px solid var(--border-subtle);
       padding: 0.5rem 1rem;
       font-size: 0.8125rem;
-      display: inline-flex;
-      align-items: center;
       gap: 0.4rem;
     }
     .btn--subtle:hover:not(:disabled) {
@@ -177,7 +172,6 @@
 
     .hero__title .badge {
       background-color: var(--bg-class-notes-badge);
-      color: var(--text-main);
     }
 
     /* Form controls */
@@ -250,7 +244,6 @@
     /* Hero Section */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
-      padding-bottom: 0;
       text-align: center;
       max-width: 840px;
       margin: 0 auto;
@@ -303,11 +296,7 @@
     .selection-banner .badge {
       background-color: var(--brand-primary);
       color: #FFFFFF;
-      font-family: var(--font-display);
-      font-style: italic;
       font-size: 0.95em;
-      padding: 0.15rem 0.85rem;
-      border-radius: var(--radius-full);
     }
 
     /* Filters Bar */
@@ -415,13 +404,20 @@
       color: var(--brand-primary);
     }
 
+    .nav-filter__empty {
+      padding: 0.75rem 1rem;
+      color: var(--text-subtle);
+      font-size: 0.8125rem;
+    }
+
     /* Content Area */
     .content-area {
       margin-top: 0.5rem;
     }
 
-    /* CALENDAR VIEW */
-    #calendar-view {
+    /* CALENDAR VIEW & COURSE VIEW */
+    #calendar-view,
+    .course-dates-view {
       padding: 0.5rem 0 1rem;
     }
 
@@ -507,16 +503,14 @@
       font-weight: 700;
     }
 
-    /* Dates containing notes: clean blue border only (overrides black border if today has notes) */
+    /* Dates containing notes: clean blue border only */
     .calendar-cell.has-notes .calendar-cell__btn {
       border: 2px solid var(--brand-primary);
       color: var(--brand-primary);
       font-weight: 700;
-      background-color: var(--bg-pill);
     }
 
     .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      background-color: var(--bg-hover);
       border-color: var(--brand-primary-hover);
     }
 
@@ -530,11 +524,6 @@
       color: var(--text-disabled);
       opacity: 0.4;
       cursor: default;
-    }
-
-    /* Course & Topic View */
-    .course-dates-view {
-      padding: 0.5rem 0 1rem;
     }
 
     .course-dates__header {
@@ -655,6 +644,11 @@
       font-size: 0.8125rem;
       color: var(--text-subtle);
       font-weight: 600;
+    }
+
+    .dialog-modal__text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
     }
 
     .dialog-modal__actions {
@@ -820,7 +814,6 @@
       font-weight: 500;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
       transition: opacity 0.25s ease;
-      border: none;
     }
 
     @keyframes spin {
@@ -837,7 +830,7 @@
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
-      
+
       .nav-filter__menu {
         min-width: 170px;
         max-width: calc(100vw - 1.5rem);
@@ -858,7 +851,7 @@
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
       <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
-      
+
       <!-- Selection Banner -->
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
@@ -1009,7 +1002,7 @@
         </div>
 
         <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" onclick="document.getElementById('add-modal').close()">Cancel</button>
+          <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--primary" id="btn-submit-note">Submit Note</button>
         </div>
       </form>
@@ -1023,12 +1016,12 @@
           <strong>Resource:</strong> <span id="report-note-title"></span><br>
           <small id="report-note-context" class="dialog-modal__desc"></small>
         </p>
-        <p class="field" style="font-size: 0.875rem; color: var(--text-muted);">
+        <p class="field dialog-modal__text">
           Flagging this note notifies section classmates that the link is expired or inaccessible.
         </p>
 
         <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" onclick="document.getElementById('report-modal').close()">Cancel</button>
+          <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
         </div>
       </form>
@@ -1070,9 +1063,6 @@
         notes: [],
         manualTitleEdited: false
       };
-
-      let hasSelectedDept = false;
-      let hasSelectedSec = false;
 
       const ui = {
         selectionBanner: document.getElementById("selection-banner"),
@@ -1141,9 +1131,7 @@
         set(key, val) {
           try {
             localStorage.setItem(key, val);
-          } catch {
-            // Ignore quota errors
-          }
+          } catch {}
         }
       };
 
@@ -1179,12 +1167,9 @@
 
       function normalizeUrl(input) {
         if (!input) return "";
-        let trimmed = String(input).trim();
+        const trimmed = String(input).trim();
         if (!trimmed) return "";
-        if (!/^[a-zA-Z][a-zA-d+\-.]*?:/i.test(trimmed)) {
-          trimmed = "https://" + trimmed;
-        }
-        return trimmed;
+        return /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
       }
 
       function sanitizeUrl(rawUrl) {
@@ -1193,13 +1178,29 @@
         return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
       }
 
+      function setButtonLoading(btn, isLoading) {
+        btn.disabled = isLoading;
+        btn.classList.toggle("is-loading", isLoading);
+      }
+
+      function renderEmptyState(message) {
+        return `
+          <div class="empty-state">
+            <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="9" y1="13" x2="15" y2="13"></line>
+            </svg>
+            <p class="empty-state__text">${escapeHtml(message)}</p>
+          </div>
+        `;
+      }
+
       function showToast(message) {
         ui.toastTray.innerHTML = "";
-
         const toast = document.createElement("div");
         toast.className = "toast";
         toast.textContent = message;
-
         ui.toastTray.appendChild(toast);
 
         setTimeout(() => {
@@ -1262,10 +1263,10 @@
 
       function closeAllMenus() {
         [ui.deptMenu, ui.secMenu, ui.courseMenu, ui.topicMenu].forEach(menu => {
-          if (menu) menu.hidden = true;
+          menu.hidden = true;
         });
         [ui.deptTrigger, ui.secTrigger, ui.courseTrigger, ui.topicTrigger].forEach(btn => {
-          if (btn) btn.setAttribute("aria-expanded", "false");
+          btn.setAttribute("aria-expanded", "false");
         });
       }
 
@@ -1279,45 +1280,31 @@
       }
 
       function updateFilterLabels() {
-        if (ui.deptLabel) {
-          ui.deptLabel.textContent = hasSelectedDept && state.dept ? state.dept : "Department";
-        }
-        if (ui.secLabel) {
-          ui.secLabel.textContent = hasSelectedSec && state.sec ? `Sec ${state.sec}` : "Section";
-        }
-        if (ui.courseLabel) {
-          ui.courseLabel.textContent = (state.course === "ALL" || !state.course) ? "Course" : state.course;
-        }
-        if (ui.topicLabel) {
-          ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
-        }
+        ui.deptLabel.textContent = state.dept || "Department";
+        ui.secLabel.textContent = state.sec ? `Sec ${state.sec}` : "Section";
+        ui.courseLabel.textContent = (state.course === "ALL" || !state.course) ? "Course" : state.course;
+        ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
       }
 
       function updateSelectionBanner() {
         if (!ui.selectionBanner) return;
 
-        if (!hasSelectedDept) {
-          ui.selectionBanner.innerHTML = `
-            Select your <span class="badge">department</span>
-          `;
+        if (!state.dept) {
+          ui.selectionBanner.innerHTML = 'Select your <span class="badge">department</span>';
           return;
         }
 
-        if (!hasSelectedSec) {
-          ui.selectionBanner.innerHTML = `
-            <span class="badge">${escapeHtml(state.dept)}</span> &mdash; select <span class="badge">section</span>
-          `;
+        if (!state.sec) {
+          ui.selectionBanner.innerHTML = `<span class="badge">${escapeHtml(state.dept)}</span> &mdash; select <span class="badge">section</span>`;
           return;
         }
 
-        ui.selectionBanner.innerHTML = `
-          Viewing notes for <span class="badge">${escapeHtml(state.dept)} &mdash; Sec ${escapeHtml(state.sec)}</span>
-        `;
+        ui.selectionBanner.innerHTML = `Viewing notes for <span class="badge">${escapeHtml(state.dept)} &mdash; Sec ${escapeHtml(state.sec)}</span>`;
       }
 
       function syncTopicMenu() {
-        if (!hasSelectedDept || !hasSelectedSec) {
-          ui.topicMenu.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--text-subtle); font-size: 0.8125rem;">Select Department & Section first</div>`;
+        if (!state.dept || !state.sec) {
+          ui.topicMenu.innerHTML = `<div class="nav-filter__empty">Select Department & Section first</div>`;
           return;
         }
 
@@ -1334,34 +1321,24 @@
           state.topic = "ALL";
         }
         renderMenuOptions(ui.topicMenu, uniqueTopics, state.topic, true, "All Topics");
-        updateFilterLabels();
       }
 
       function syncDropdownStates() {
         const allDeptCodes = config.departments.map(d => d.code);
-
-        const selectedDeptVal = hasSelectedDept ? state.dept : null;
-        renderMenuOptions(ui.deptMenu, allDeptCodes, selectedDeptVal);
+        renderMenuOptions(ui.deptMenu, allDeptCodes, state.dept || null);
 
         const activeDept = getDeptMeta(state.dept);
 
-        if (activeDept && hasSelectedDept) {
-          const selectedSecVal = hasSelectedSec ? state.sec : null;
-          renderMenuOptions(ui.secMenu, activeDept.sections, selectedSecVal, false, "", "Sec");
-
-          const selectedCourseVal = (hasSelectedDept && hasSelectedSec) ? state.course : "ALL";
-          renderMenuOptions(ui.courseMenu, activeDept.courses, selectedCourseVal, true, "All Courses");
-
-          renderFormOptions(ui.formSec, activeDept.sections, "Sec");
-          renderFormOptions(ui.formCourse, activeDept.courses);
+        if (activeDept && state.dept) {
+          renderMenuOptions(ui.secMenu, activeDept.sections, state.sec || null, false, "", "Sec");
+          const selectedCourse = state.sec ? state.course : "ALL";
+          renderMenuOptions(ui.courseMenu, activeDept.courses, selectedCourse, true, "All Courses");
         } else {
-          ui.secMenu.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--text-subtle); font-size: 0.8125rem;">Please select Department first</div>`;
-          ui.courseMenu.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--text-subtle); font-size: 0.8125rem;">Please select Department first</div>`;
+          ui.secMenu.innerHTML = `<div class="nav-filter__empty">Please select Department first</div>`;
+          ui.courseMenu.innerHTML = `<div class="nav-filter__empty">Please select Department first</div>`;
         }
 
         syncTopicMenu();
-        updateFilterLabels();
-        updateSelectionBanner();
       }
 
       function syncFormDropdowns() {
@@ -1387,17 +1364,19 @@
       }
 
       function filterActiveNotes() {
-        if (!hasSelectedDept || !hasSelectedSec) return [];
+        if (!state.dept || !state.sec) return [];
 
         return state.notes.filter(note =>
           note.department === state.dept &&
           note.section === state.sec &&
-          String(note.status || "").toLowerCase() === "approved"
+          String(note.status || "").toLowerCase() === "approved" &&
+          (state.course === "ALL" || note.course === state.course) &&
+          (state.topic === "ALL" || note.topic === state.topic)
         );
       }
 
       function openDateDetails(dateKey) {
-        if (!hasSelectedDept || !hasSelectedSec) {
+        if (!state.dept || !state.sec) {
           showToast("Select Department & Section first");
           return;
         }
@@ -1448,12 +1427,12 @@
 
           const classes = [
             "calendar-cell",
-            isToday ? "calendar-cell--today" : "",
-            isFuture ? "calendar-cell--disabled" : "",
-            hasNotes ? "has-notes" : ""
+            isToday && "calendar-cell--today",
+            isFuture && "calendar-cell--disabled",
+            hasNotes && "has-notes"
           ].filter(Boolean).join(" ");
 
-          const noteTooltip = hasNotes ? `title="${noteCount} ${noteCount === 1 ? 'note' : 'notes'}"` : "";
+          const noteTooltip = hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : "";
 
           markup += `
             <td class="${classes}" data-date="${dateKey}">
@@ -1475,18 +1454,10 @@
       }
 
       function renderCourseDates() {
-        let filteredNotes = filterActiveNotes();
-
-        if (state.course !== "ALL") {
-          filteredNotes = filteredNotes.filter(n => n.course === state.course);
-        }
-        if (state.topic !== "ALL") {
-          filteredNotes = filteredNotes.filter(n => n.topic === state.topic);
-        }
-
+        const filteredNotes = filterActiveNotes();
         const uniqueDates = [...new Set(filteredNotes.map(n => n.date))].sort();
 
-        let titleParts = [];
+        const titleParts = [];
         if (state.course !== "ALL") {
           titleParts.push(state.course);
         }
@@ -1501,21 +1472,13 @@
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
 
         if (!uniqueDates.length) {
-          ui.courseDatesList.style.display = "block";
-          ui.courseDatesList.innerHTML = `
-            <div class="empty-state">
-              <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="9" y1="13" x2="15" y2="13"></line>
-              </svg>
-              <p class="empty-state__text">${(!hasSelectedDept || !hasSelectedSec) ? "Please select department and section to view notes." : "No notes found matching your selected filters."}</p>
-            </div>
-          `;
+          const emptyMsg = (!state.dept || !state.sec)
+            ? "Please select department and section to view notes."
+            : "No notes found matching your selected filters.";
+          ui.courseDatesList.innerHTML = renderEmptyState(emptyMsg);
           return;
         }
 
-        ui.courseDatesList.style.display = "";
         ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
           const dateObj = parseLocalDate(dateStr);
           const noteCount = filteredNotes.filter(n => n.date === dateStr).length;
@@ -1537,28 +1500,14 @@
         if (!state.activeDate) return;
         ui.modalDateLabel.textContent = `Date: ${formatReadableDate(state.activeDate)}`;
 
-        let notes = filterActiveNotes().filter(n => n.date === state.activeDate);
-
-        if (state.course !== "ALL") {
-          notes = notes.filter(n => n.course === state.course);
-        }
-        if (state.topic !== "ALL") {
-          notes = notes.filter(n => n.topic === state.topic);
-        }
-
+        const notes = filterActiveNotes().filter(n => n.date === state.activeDate);
         ui.modalNotesTotal.textContent = `Total: ${pluralize(notes.length, 'note', 'notes')}`;
 
         if (!notes.length) {
-          ui.modalNotesStack.innerHTML = `
-            <div class="empty-state">
-              <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="9" y1="13" x2="15" y2="13"></line>
-              </svg>
-              <p class="empty-state__text">${(!hasSelectedDept || !hasSelectedSec) ? "Please select department and section first." : "No lecture material attached to this date for the selected criteria."}</p>
-            </div>
-          `;
+          const emptyMsg = (!state.dept || !state.sec)
+            ? "Please select department and section first."
+            : "No lecture material attached to this date for the selected criteria.";
+          ui.modalNotesStack.innerHTML = renderEmptyState(emptyMsg);
           return;
         }
 
@@ -1587,7 +1536,8 @@
 
             groups[course][topic].forEach((item) => {
               const isReported = Number(item.reportCount || 0) >= 3;
-              const title = escapeHtml(item.title || "View Note");
+              const rawTitle = item.title || "View Note";
+              const title = escapeHtml(rawTitle);
               const link = sanitizeUrl(item.link);
               const hasLink = Boolean(link && link !== "#");
 
@@ -1635,7 +1585,6 @@
         updateFilterLabels();
 
         const showCalendar = (state.course === "ALL" && state.topic === "ALL");
-
         ui.calendarView.hidden = !showCalendar;
         ui.courseView.hidden = showCalendar;
 
@@ -1653,34 +1602,16 @@
           }
         });
 
-        ui.deptTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.deptMenu, ui.deptTrigger);
-        });
-
-        ui.secTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.secMenu, ui.secTrigger);
-        });
-
-        ui.courseTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.courseMenu, ui.courseTrigger);
-        });
-
-        ui.topicTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu(ui.topicMenu, ui.topicTrigger);
-        });
+        ui.deptTrigger.addEventListener("click", () => toggleMenu(ui.deptMenu, ui.deptTrigger));
+        ui.secTrigger.addEventListener("click", () => toggleMenu(ui.secMenu, ui.secTrigger));
+        ui.courseTrigger.addEventListener("click", () => toggleMenu(ui.courseMenu, ui.courseTrigger));
+        ui.topicTrigger.addEventListener("click", () => toggleMenu(ui.topicMenu, ui.topicTrigger));
 
         ui.deptMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
 
-          hasSelectedDept = true;
           state.dept = opt.dataset.value;
-
-          hasSelectedSec = false;
           state.sec = "";
           state.course = "ALL";
           state.topic = "ALL";
@@ -1694,7 +1625,6 @@
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
 
-          hasSelectedSec = true;
           state.sec = opt.dataset.value;
           state.course = "ALL";
           state.topic = "ALL";
@@ -1707,6 +1637,7 @@
         ui.courseMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
+
           state.course = opt.dataset.value;
           closeAllMenus();
           syncDropdownStates();
@@ -1716,6 +1647,7 @@
         ui.topicMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
           if (!opt) return;
+
           state.topic = opt.dataset.value;
           closeAllMenus();
           syncDropdownStates();
@@ -1724,6 +1656,7 @@
 
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           modal.addEventListener("click", (e) => {
+            if (e.target !== modal) return;
             const rect = modal.getBoundingClientRect();
             const isClickInside = (
               e.clientX >= rect.left &&
@@ -1735,6 +1668,10 @@
               modal.close();
             }
           });
+        });
+
+        document.querySelectorAll("[data-close-modal]").forEach(btn => {
+          btn.addEventListener("click", () => btn.closest("dialog")?.close());
         });
 
         ui.notesModal.addEventListener("close", () => {
@@ -1766,7 +1703,7 @@
 
         ui.courseDatesList.addEventListener("click", (e) => {
           const card = e.target.closest("[data-date]");
-          if (card && card.dataset.date) {
+          if (card?.dataset.date) {
             openDateDetails(card.dataset.date);
           }
         });
@@ -1810,11 +1747,9 @@
         ui.addForm.addEventListener("submit", async (e) => {
           e.preventDefault();
 
-          ui.btnSubmitNote.disabled = true;
-          ui.btnSubmitNote.classList.add("is-loading");
+          setButtonLoading(ui.btnSubmitNote, true);
 
           const formattedUrl = normalizeUrl(ui.formLink.value);
-
           const payload = {
             department: ui.formDept.value,
             section: ui.formSec.value,
@@ -1835,8 +1770,7 @@
           } catch (err) {
             showToast("Failed to submit note. Please retry.");
           } finally {
-            ui.btnSubmitNote.disabled = false;
-            ui.btnSubmitNote.classList.remove("is-loading");
+            setButtonLoading(ui.btnSubmitNote, false);
           }
         });
 
@@ -1844,13 +1778,10 @@
           const btn = e.target.closest(".btn-report");
           if (!btn) return;
 
-          ui.btnSubmitReport.disabled = false;
-          ui.btnSubmitReport.classList.remove("is-loading");
-
+          setButtonLoading(ui.btnSubmitReport, false);
           ui.reportTitle.textContent = btn.dataset.title;
           ui.reportContext.textContent = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
           ui.reportForm.dataset.targetRow = btn.dataset.row;
-
           ui.reportModal.showModal();
         });
 
@@ -1866,8 +1797,7 @@
             return;
           }
 
-          ui.btnSubmitReport.disabled = true;
-          ui.btnSubmitReport.classList.add("is-loading");
+          setButtonLoading(ui.btnSubmitReport, true);
 
           try {
             await syncData({ type: "report", row });
@@ -1877,8 +1807,7 @@
           } catch (err) {
             showToast("Could not submit report. Check internet.");
           } finally {
-            ui.btnSubmitReport.disabled = false;
-            ui.btnSubmitReport.classList.remove("is-loading");
+            setButtonLoading(ui.btnSubmitReport, false);
           }
         });
       }
@@ -1887,12 +1816,8 @@
         const codes = config.departments.map(d => d.code);
         renderFormOptions(ui.formDept, codes);
 
-        ui.formDate.max = formatDateKey(new Date());
-
         syncDropdownStates();
         bindEvents();
-        updateFilterLabels();
-        updateSelectionBanner();
         render();
         loadNotes();
       }
