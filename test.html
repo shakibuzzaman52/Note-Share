@@ -611,7 +611,7 @@
       white-space: nowrap;
     }
 
-    /* Standard Modals */
+    /* Standard Modals (Clean, NO outer box-shadow) */
     .dialog-modal {
       position: fixed;
       inset: 0;
@@ -623,6 +623,7 @@
       border-radius: var(--radius-lg);
       padding: 2rem;
       color: var(--text-main);
+      box-shadow: none; /* No outer shadow */
     }
 
     /* YouTube style dark shadow/dim backdrop: NO BLUR */
@@ -631,7 +632,7 @@
       cursor: pointer;
     }
 
-    /* YouTube-style Bottom Sheet for Lecture Notes */
+    /* YouTube-style Bottom Sheet (Clean, Fixed natural height, NO outer shadow) */
     .dialog-modal.bottom-sheet {
       inset: auto 0 0 0;
       margin: 0 auto;
@@ -644,7 +645,7 @@
       border-bottom: 0;
       padding: 0.5rem 1.5rem 1.5rem;
       background: var(--bg-surface);
-      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.28);
+      box-shadow: none; /* Removed outer popup shadow */
       display: flex;
       flex-direction: column;
       transform: translateY(100%);
@@ -1521,7 +1522,7 @@
         }, 280);
       }
 
-      /* Interactive Drag & Swipe-to-Dismiss Handler */
+      /* Interactive Drag & Dominant Snap physics */
       function setupBottomSheetGestures() {
         const sheet = ui.notesModal;
         const handle = ui.sheetDragHandle;
@@ -1569,19 +1570,14 @@
           const deltaY = touch.clientY - startY;
 
           if (deltaY > 0) {
+            // Dragging downward
             currentTranslate = deltaY;
             sheet.style.transform = `translateY(${deltaY}px)`;
             if (e.cancelable) e.preventDefault();
           } else {
-            if (isStartedOnContent && stack.scrollTop > 0) {
-              isDragging = false;
-              sheet.classList.remove("is-dragging");
-              sheet.style.transform = "";
-              return;
-            }
-            currentTranslate = deltaY * 0.15;
-            sheet.style.transform = `translateY(${currentTranslate}px)`;
-            if (e.cancelable) e.preventDefault();
+            // Dragging upward: NO STRETCHING, clamped strictly at 0
+            currentTranslate = 0;
+            sheet.style.transform = "translateY(0px)";
           }
         }
 
@@ -1592,10 +1588,14 @@
 
           const elapsed = Date.now() - startTime;
           const velocity = currentTranslate / (elapsed || 1);
+          const sheetHeight = sheet.offsetHeight || 380;
 
-          if (currentTranslate > 85 || (currentTranslate > 40 && velocity > 0.45)) {
-            closeNotesSheet();
+          // Dominant part rule:
+          // If pulled down past the dominant midpoint (45% of height) or fast swipe down:
+          if (currentTranslate > sheetHeight * 0.45 || (currentTranslate > 50 && velocity > 0.45)) {
+            closeNotesSheet(); // Closes
           } else {
+            // Dominant part is at the top -> Snaps back and stays OPEN!
             sheet.style.transform = "";
           }
         }
@@ -1608,7 +1608,7 @@
         window.addEventListener("touchend", onTouchEnd, { passive: true });
         window.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
-        // Mouse Drag on Handle (Desktop support)
+        // Mouse Drag on Handle (Desktop support with strict clamping)
         handle.addEventListener("mousedown", (e) => {
           startY = e.clientY;
           currentTranslate = 0;
@@ -1624,8 +1624,8 @@
               currentTranslate = deltaY;
               sheet.style.transform = `translateY(${deltaY}px)`;
             } else {
-              currentTranslate = deltaY * 0.15;
-              sheet.style.transform = `translateY(${currentTranslate}px)`;
+              currentTranslate = 0;
+              sheet.style.transform = "translateY(0px)";
             }
           }
 
