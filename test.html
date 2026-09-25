@@ -106,6 +106,13 @@
       background-color: var(--brand-primary-hover);
     }
 
+    .btn__icon-plus {
+      font-size: 1.25em;
+      line-height: 1;
+      margin-right: 0.25rem;
+      display: inline-block;
+    }
+
     .btn--dark {
       background-color: var(--brand-dark);
       color: #FFFFFF;
@@ -189,7 +196,7 @@
       margin-left: 2px;
     }
 
-    /* Desktop Navigation List (No border, even larger gap) */
+    /* Desktop Navigation List */
     .header-nav__list {
       display: flex;
       align-items: center;
@@ -200,10 +207,9 @@
     .nav-link {
       background: transparent;
       border: 0;
-      outline: 0;
       padding: 0;
       font-size: 0.95rem;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
       text-decoration: none;
@@ -215,7 +221,7 @@
       color: var(--text-main);
     }
 
-    /* Mobile Menu Toggle (Clean text, no button/box/arrow) */
+    /* Mobile Menu Toggle */
     .header-menu-toggle {
       display: none;
       background: transparent;
@@ -977,7 +983,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 1.85rem; /* Much larger gap */
+        gap: 1.85rem;
         width: 100%;
       }
 
@@ -990,7 +996,7 @@
         padding: 0;
         width: 100%;
         text-align: left;
-        border: none; /* No line or divider */
+        border: none;
       }
 
       .header-nav__list li:last-child {
@@ -1064,13 +1070,13 @@
     <!-- Mobile Menu Text Toggle (No button pill, toggles Menu / Close) -->
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
 
-    <!-- Header Navigation (No border, generous gap, clean text links + Add Note button) -->
+    <!-- Header Navigation (No border, generous gap, clean text links + Primary Add Note button) -->
     <nav class="site-header__nav" id="header-nav">
       <ul class="header-nav__list">
         <li><button type="button" class="nav-link">Features</button></li>
         <li><button type="button" class="nav-link">How to Find</button></li>
         <li><button type="button" class="nav-link">How to Upload</button></li>
-        <li><button type="button" class="btn btn--primary" id="trigger-add-note">+ Add Note</button></li>
+        <li><button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn__icon-plus">+</span>Add Note</button></li>
       </ul>
     </nav>
   </header>
@@ -2084,18 +2090,19 @@
       }
 
       function bindEvents() {
-        // Mobile menu toggle handling (Pure text Menu <-> Close)
+        let setMobileMenu = null;
+
+        // Mobile menu toggle handling
         if (ui.mobileMenuToggle && ui.headerNav) {
-          function setMobileMenu(open) {
+          setMobileMenu = function (open) {
             ui.headerNav.classList.toggle("is-open", open);
             ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
             ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
-          }
+          };
 
           ui.mobileMenuToggle.addEventListener("click", (e) => {
             e.stopPropagation();
-            const isOpen = ui.headerNav.classList.contains("is-open");
-            setMobileMenu(!isOpen);
+            setMobileMenu(!ui.headerNav.classList.contains("is-open"));
           });
 
           // Close on clicking outside
@@ -2247,12 +2254,8 @@
 
         // Trigger Add Note (Closes mobile menu if open)
         ui.addNoteBtn.addEventListener("click", () => {
-          if (ui.headerNav && ui.headerNav.classList.contains("is-open")) {
-            ui.headerNav.classList.remove("is-open");
-            if (ui.mobileMenuToggle) {
-              ui.mobileMenuToggle.setAttribute("aria-expanded", "false");
-              ui.mobileMenuToggle.textContent = "Menu";
-            }
+          if (setMobileMenu) {
+            setMobileMenu(false);
           }
 
           state.manualTitleEdited = false;
