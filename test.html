@@ -65,9 +65,8 @@
       padding-bottom: 4rem;
     }
 
-    /* Background Lock when any Modal/Sheet is open */
     body.sheet-open {
-      overflow: hidden !important;
+      overflow: hidden;
       touch-action: none;
     }
 
@@ -611,24 +610,23 @@
       white-space: nowrap;
     }
 
-    /* CRITICAL: Closed dialogs MUST NEVER display */
     dialog:not([open]) {
-      display: none !important;
+      display: none;
     }
 
-    /* Base Modal Defaults */
+    /* Modals & Dialogs */
     .dialog-modal {
       position: fixed;
       inset: 0;
       margin: auto;
       max-width: 520px;
       width: calc(100% - 2rem);
+      max-height: 80vh;
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: 2rem;
       color: var(--text-main);
-      box-shadow: none; /* No outer shadow */
     }
 
     .dialog-modal[open] {
@@ -636,81 +634,14 @@
       flex-direction: column;
     }
 
-    /* YouTube style dark shadow/dim backdrop: NO BLUR */
     .dialog-modal::backdrop {
       background: rgba(0, 0, 0, 0.55);
       cursor: pointer;
     }
 
-    /* DESKTOP VIEW (> 768px): Both Modals are Clean Centered Dialogs */
-    @media (min-width: 769px) {
-      .dialog-modal.bottom-sheet {
-        position: fixed;
-        inset: 0;
-        margin: auto;
-        max-width: 520px;
-        width: calc(100% - 2rem);
-        max-height: 80vh;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-subtle);
-        padding: 2rem;
-        transform: none !important;
-        box-shadow: none;
-      }
-
-      .dialog-modal.bottom-sheet[open] {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .bottom-sheet__handle-wrapper {
-        display: none !important; /* Hide drag handle on desktop */
-      }
-    }
-
-    /* MOBILE VIEW (<= 768px): YouTube-style Compact Bottom Sheet */
-    @media (max-width: 768px) {
-      .dialog-modal.bottom-sheet {
-        position: fixed;
-        inset: auto 0 0 0;
-        margin: 0 auto;
-        max-width: 100%;
-        width: 100%;
-        max-height: 68vh; /* Compact height */
-        border-radius: 20px 20px 0 0;
-        border: 1px solid var(--border-subtle);
-        border-bottom: 0;
-        padding: 0.5rem 1.25rem 1.25rem;
-        background: var(--bg-surface);
-        box-shadow: none; /* No outer shadow */
-        transform: translateY(100%);
-        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        overscroll-behavior: contain;
-        will-change: transform;
-      }
-
-      .dialog-modal.bottom-sheet[open] {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .dialog-modal.bottom-sheet.is-open {
-        transform: translateY(0);
-      }
-
-      .dialog-modal.bottom-sheet.is-dragging {
-        transition: none !important;
-      }
-
-      .bottom-sheet__handle-wrapper {
-        display: flex;
-      }
-    }
-
-    /* Top Drag Handle (like YouTube) */
     .bottom-sheet__handle-wrapper {
+      display: none;
       width: 100%;
-      display: flex;
       justify-content: center;
       align-items: center;
       padding: 0.5rem 0 0.85rem;
@@ -741,12 +672,6 @@
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
       flex-shrink: 0;
-    }
-
-    .dialog-modal.bottom-sheet .dialog-modal__header {
-      cursor: grab;
-      user-select: none;
-      touch-action: none;
     }
 
     .dialog-modal__title {
@@ -967,6 +892,40 @@
       }
 
       .dialog-modal { padding: 1.5rem 1.25rem; }
+
+      .dialog-modal.bottom-sheet {
+        inset: auto 0 0 0;
+        margin: 0 auto;
+        max-width: 100%;
+        width: 100%;
+        max-height: 68vh;
+        border-radius: 20px 20px 0 0;
+        border-bottom: 0;
+        padding: 0.5rem 1.25rem 1.25rem;
+        transform: translateY(100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        overscroll-behavior: contain;
+        will-change: transform;
+      }
+
+      .dialog-modal.bottom-sheet.is-open {
+        transform: translateY(0);
+      }
+
+      .dialog-modal.bottom-sheet.is-dragging {
+        transition: none;
+      }
+
+      .dialog-modal.bottom-sheet .dialog-modal__header {
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+      }
+
+      .bottom-sheet__handle-wrapper {
+        display: flex;
+      }
+
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
@@ -1077,7 +1036,7 @@
       </section>
     </main>
 
-    <!-- Modal: View notes (YouTube-style Bottom Sheet on mobile, centered dialog on desktop) -->
+    <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
       <div class="bottom-sheet__handle-wrapper" id="sheet-drag-handle" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
@@ -1091,7 +1050,7 @@
       <div class="notes-stack" id="modal-notes-stack"></div>
 
       <div class="dialog-modal__actions">
-        <button type="button" class="btn btn--ghost" id="btn-close-notes">Close</button>
+        <button type="button" class="btn btn--ghost" id="btn-close-notes" data-close-modal>Close</button>
       </div>
     </dialog>
 
@@ -1142,7 +1101,7 @@
       </form>
     </dialog>
 
-    <!-- Modal: Report link (YouTube-style Bottom Sheet on mobile, centered dialog on desktop) -->
+    <!-- Modal: Report link -->
     <dialog class="dialog-modal bottom-sheet" id="report-modal">
       <div class="bottom-sheet__handle-wrapper" id="report-drag-handle" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
@@ -1163,7 +1122,7 @@
         </div>
 
         <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" id="btn-cancel-report">Cancel</button>
+          <button type="button" class="btn btn--ghost" id="btn-cancel-report" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
         </div>
       </form>
@@ -1242,7 +1201,6 @@
         modalDateLabel: document.getElementById("modal-date-label"),
         modalNotesTotal: document.getElementById("modal-notes-total"),
         modalNotesStack: document.getElementById("modal-notes-stack"),
-        btnCloseNotes: document.getElementById("btn-close-notes"),
 
         addModal: document.getElementById("add-modal"),
         addNoteBtn: document.getElementById("trigger-add-note"),
@@ -1262,7 +1220,6 @@
         reportForm: document.getElementById("report-link-form"),
         reportTitle: document.getElementById("report-note-title"),
         reportContext: document.getElementById("report-note-context"),
-        btnCancelReport: document.getElementById("btn-cancel-report"),
         btnSubmitReport: document.getElementById("btn-submit-report"),
 
         toastTray: document.getElementById("toast-tray")
@@ -1289,8 +1246,8 @@
 
       function parseLocalDate(dateKey) {
         if (!dateKey) return new Date();
-        const parts = dateKey.split("-").map(Number);
-        return new Date(parts[0], parts[1] - 1, parts[2]);
+        const [year, month, day] = dateKey.split("-").map(Number);
+        return new Date(year, month - 1, day);
       }
 
       function formatReadableDate(dateKey) {
@@ -1314,15 +1271,13 @@
       }
 
       function normalizeUrl(input) {
-        if (!input) return "";
-        const trimmed = String(input).trim();
+        const trimmed = String(input || "").trim();
         if (!trimmed) return "";
         return /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
       }
 
       function sanitizeUrl(rawUrl) {
-        if (!rawUrl) return "";
-        const clean = String(rawUrl).trim();
+        const clean = String(rawUrl || "").trim();
         return /^(https?:|\/\/)/i.test(clean) ? clean : "#";
       }
 
@@ -1523,13 +1478,28 @@
         );
       }
 
-      /* Unified Responsive Modal Manager (Bottom Sheet on mobile, Centered on desktop) */
+      function checkBodyScrollLock() {
+        if (!document.querySelector(".dialog-modal[open]")) {
+          document.body.classList.remove("sheet-open");
+        }
+      }
+
+      function isEventOutside(modal, e) {
+        const rect = modal.getBoundingClientRect();
+        return (
+          e.clientX < rect.left ||
+          e.clientX > rect.right ||
+          e.clientY < rect.top ||
+          e.clientY > rect.bottom
+        );
+      }
+
       function openSheetModal(modalEl) {
         if (!modalEl) return;
         document.body.classList.add("sheet-open");
-        const isMobile = window.innerWidth <= 768;
+        const isMobileSheet = modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768;
 
-        if (isMobile) {
+        if (isMobileSheet) {
           modalEl.style.transform = "translateY(100%)";
           if (!modalEl.open) modalEl.showModal();
           requestAnimationFrame(() => {
@@ -1551,10 +1521,10 @@
           return;
         }
 
-        const isMobile = window.innerWidth <= 768;
+        const isMobileSheet = modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768;
         modalEl.classList.remove("is-open");
 
-        if (isMobile) {
+        if (isMobileSheet) {
           modalEl.style.transform = "translateY(100%)";
           setTimeout(() => {
             if (modalEl.open) modalEl.close();
@@ -1570,13 +1540,6 @@
         }
       }
 
-      function checkBodyScrollLock() {
-        const anyOpen = ui.notesModal.open || ui.reportModal.open || ui.addModal.open;
-        if (!anyOpen) {
-          document.body.classList.remove("sheet-open");
-        }
-      }
-
       function openDateDetails(dateKey) {
         if (!state.dept || !state.sec) {
           showToast("Select Department & Section first");
@@ -1587,7 +1550,6 @@
         openSheetModal(ui.notesModal);
       }
 
-      /* Interactive Drag & Dominant Snap physics (Active ONLY on Mobile) */
       function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
         if (!sheet || !handle) return;
 
@@ -1597,60 +1559,57 @@
         let startTime = 0;
         let isStartedOnContent = false;
 
-        function onTouchStart(e) {
-          if (window.innerWidth > 768) return; // Desktop is standard modal
-          const touch = e.touches ? e.touches[0] : e;
-          startY = touch.clientY;
+        function start(clientY, target) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          startY = clientY;
           currentTranslate = 0;
           startTime = Date.now();
-
-          isStartedOnContent = scrollableContent && scrollableContent.contains(e.target);
+          isStartedOnContent = Boolean(scrollableContent && scrollableContent.contains(target));
           if (isStartedOnContent && scrollableContent.scrollTop > 0) {
             isDragging = false;
             return;
           }
-
           isDragging = true;
           sheet.classList.add("is-dragging");
         }
 
-        function onTouchMove(e) {
-          if (window.innerWidth > 768 || !isDragging) {
-            if (window.innerWidth <= 768 && isStartedOnContent && scrollableContent && scrollableContent.scrollTop <= 0) {
-              const touch = e.touches ? e.touches[0] : e;
-              const delta = touch.clientY - startY;
+        function move(clientY, cancelable, preventDefault) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          if (!isDragging) {
+            if (isStartedOnContent && scrollableContent && scrollableContent.scrollTop <= 0) {
+              const delta = clientY - startY;
               if (delta > 0) {
                 isDragging = true;
-                startY = touch.clientY;
+                startY = clientY;
                 sheet.classList.add("is-dragging");
               }
             }
             return;
           }
-
-          const touch = e.touches ? e.touches[0] : e;
-          const deltaY = touch.clientY - startY;
-
+          const deltaY = clientY - startY;
           if (deltaY > 0) {
             currentTranslate = deltaY;
             sheet.style.transform = `translateY(${deltaY}px)`;
-            if (e.cancelable) e.preventDefault();
+            if (cancelable && preventDefault) preventDefault();
           } else {
             currentTranslate = 0;
             sheet.style.transform = "translateY(0px)";
           }
         }
 
-        function onTouchEnd() {
-          if (window.innerWidth > 768 || !isDragging) return;
+        function end() {
+          if (!isDragging) {
+            isStartedOnContent = false;
+            return;
+          }
           isDragging = false;
+          isStartedOnContent = false;
           sheet.classList.remove("is-dragging");
 
           const elapsed = Date.now() - startTime;
           const velocity = currentTranslate / (elapsed || 1);
           const sheetHeight = sheet.offsetHeight || 340;
 
-          // Dominant part rule:
           if (currentTranslate > sheetHeight * 0.45 || (currentTranslate > 50 && velocity > 0.45)) {
             closeCallback();
           } else {
@@ -1658,50 +1617,32 @@
           }
         }
 
-        const targets = [handle, header, scrollableContent].filter(Boolean);
-        targets.forEach(el => {
-          el.addEventListener("touchstart", onTouchStart, { passive: true });
+        [handle, header, scrollableContent].filter(Boolean).forEach(el => {
+          el.addEventListener("touchstart", (e) => start(e.touches[0].clientY, e.target), { passive: true });
         });
-        window.addEventListener("touchmove", onTouchMove, { passive: false });
-        window.addEventListener("touchend", onTouchEnd, { passive: true });
-        window.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
-        // Mouse Drag on Handle (only when mobile viewport emulated)
+        window.addEventListener("touchmove", (e) => {
+          if (isDragging) move(e.touches[0].clientY, e.cancelable, () => e.preventDefault());
+        }, { passive: false });
+
+        window.addEventListener("touchend", end, { passive: true });
+        window.addEventListener("touchcancel", end, { passive: true });
+
         handle.addEventListener("mousedown", (e) => {
-          if (window.innerWidth > 768) return;
-          startY = e.clientY;
-          currentTranslate = 0;
-          startTime = Date.now();
-          isDragging = true;
-          isStartedOnContent = false;
-          sheet.classList.add("is-dragging");
-
-          function onMouseMove(moveEvent) {
-            if (!isDragging) return;
-            const deltaY = moveEvent.clientY - startY;
-            if (deltaY > 0) {
-              currentTranslate = deltaY;
-              sheet.style.transform = `translateY(${deltaY}px)`;
-            } else {
-              currentTranslate = 0;
-              sheet.style.transform = "translateY(0px)";
-            }
-          }
-
+          start(e.clientY, e.target);
+          function onMouseMove(me) { move(me.clientY); }
           function onMouseUp() {
             window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("mouseup", onMouseUp);
-            onTouchEnd();
+            end();
           }
-
           window.addEventListener("mousemove", onMouseMove);
           window.addEventListener("mouseup", onMouseUp);
         });
 
-        // Mouse Wheel downward on mobile dismisses
         [handle, header].filter(Boolean).forEach(el => {
           el.addEventListener("wheel", (e) => {
-            if (window.innerWidth <= 768 && e.deltaY > 30) {
+            if (window.innerWidth <= 768 && sheet.open && e.deltaY > 30) {
               closeCallback();
             }
           }, { passive: true });
@@ -1916,6 +1857,26 @@
         }
       }
 
+      function onFilterSelect(key, val) {
+        if (key === "dept") {
+          state.dept = val;
+          state.sec = "";
+          state.course = "ALL";
+          state.topic = "ALL";
+        } else if (key === "sec") {
+          state.sec = val;
+          state.course = "ALL";
+          state.topic = "ALL";
+        } else if (key === "course") {
+          state.course = val;
+        } else if (key === "topic") {
+          state.topic = val;
+        }
+        closeAllMenus();
+        syncDropdownStates();
+        render();
+      }
+
       function bindEvents() {
         document.addEventListener("click", (e) => {
           if (!e.target.closest(".nav-filter__item")) {
@@ -1930,161 +1891,69 @@
 
         ui.deptMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-
-          state.dept = opt.dataset.value;
-          state.sec = "";
-          state.course = "ALL";
-          state.topic = "ALL";
-
-          closeAllMenus();
-          syncDropdownStates();
-          render();
+          if (opt) onFilterSelect("dept", opt.dataset.value);
         });
 
         ui.secMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-
-          state.sec = opt.dataset.value;
-          state.course = "ALL";
-          state.topic = "ALL";
-
-          closeAllMenus();
-          syncDropdownStates();
-          render();
+          if (opt) onFilterSelect("sec", opt.dataset.value);
         });
 
         ui.courseMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-
-          state.course = opt.dataset.value;
-          closeAllMenus();
-          syncDropdownStates();
-          render();
+          if (opt) onFilterSelect("course", opt.dataset.value);
         });
 
         ui.topicMenu.addEventListener("click", (e) => {
           const opt = e.target.closest(".nav-filter__option");
-          if (!opt) return;
-
-          state.topic = opt.dataset.value;
-          closeAllMenus();
-          syncDropdownStates();
-          render();
+          if (opt) onFilterSelect("topic", opt.dataset.value);
         });
 
-        // TAPPING or SWIPING outside modal (YouTube-style: swipe on page closes modal)
         document.querySelectorAll(".dialog-modal").forEach(modal => {
           let touchStartOutside = false;
           let touchStartY = 0;
           let touchStartX = 0;
 
-          // Detect tap on backdrop
           modal.addEventListener("click", (e) => {
-            if (e.target !== modal) return;
-            const rect = modal.getBoundingClientRect();
-            const isClickInside = (
-              e.clientX >= rect.left &&
-              e.clientX <= rect.right &&
-              e.clientY >= rect.top &&
-              e.clientY <= rect.bottom
-            );
-            if (!isClickInside) {
+            if (e.target === modal && isEventOutside(modal, e)) {
               closeSheetModal(modal);
             }
           });
 
-          // Detect swipe/touchmove on backdrop (trying to scroll page while modal is open)
           modal.addEventListener("touchstart", (e) => {
-            const touch = e.touches[0];
-            const rect = modal.getBoundingClientRect();
-            touchStartOutside = !(
-              touch.clientX >= rect.left &&
-              touch.clientX <= rect.right &&
-              touch.clientY >= rect.top &&
-              touch.clientY <= rect.bottom
-            );
+            touchStartOutside = isEventOutside(modal, e.touches[0]);
             if (touchStartOutside) {
-              touchStartY = touch.clientY;
-              touchStartX = touch.clientX;
+              touchStartY = e.touches[0].clientY;
+              touchStartX = e.touches[0].clientX;
             }
           }, { passive: true });
 
           modal.addEventListener("touchmove", (e) => {
             if (!touchStartOutside) return;
-            const touch = e.touches[0];
-            const dy = Math.abs(touch.clientY - touchStartY);
-            const dx = Math.abs(touch.clientX - touchStartX);
-            // If user attempts to swipe/scroll on the page outside the popup:
+            const dy = Math.abs(e.touches[0].clientY - touchStartY);
+            const dx = Math.abs(e.touches[0].clientX - touchStartX);
             if (dy > 6 || dx > 6) {
               touchStartOutside = false;
               closeSheetModal(modal);
             }
           }, { passive: true });
 
-          // Mouse wheel scroll outside modal closes it immediately (on desktop)
           modal.addEventListener("wheel", (e) => {
-            const rect = modal.getBoundingClientRect();
-            const isInside = (
-              e.clientX >= rect.left &&
-              e.clientX <= rect.right &&
-              e.clientY >= rect.top &&
-              e.clientY <= rect.bottom
-            );
-            if (!isInside) {
+            if (isEventOutside(modal, e)) {
               closeSheetModal(modal);
             }
           }, { passive: true });
-        });
 
-        // Global wheel handler for scrolling outside modal on desktop
-        window.addEventListener("wheel", (e) => {
-          const activeModal = [ui.notesModal, ui.reportModal, ui.addModal].find(m => m && m.open);
-          if (!activeModal) return;
-          const rect = activeModal.getBoundingClientRect();
-          const isInside = (
-            e.clientX >= rect.left &&
-            e.clientX <= rect.right &&
-            e.clientY >= rect.top &&
-            e.clientY <= rect.bottom
-          );
-          if (!isInside) {
-            closeSheetModal(activeModal);
-          }
-        }, { passive: true });
-
-        // Escape Key smoothly closes modal
-        ui.notesModal.addEventListener("cancel", (e) => {
-          e.preventDefault();
-          closeSheetModal(ui.notesModal);
-        });
-
-        ui.reportModal.addEventListener("cancel", (e) => {
-          e.preventDefault();
-          closeSheetModal(ui.reportModal);
-        });
-
-        ui.addModal.addEventListener("cancel", (e) => {
-          e.preventDefault();
-          closeSheetModal(ui.addModal);
-        });
-
-        ui.btnCloseNotes.addEventListener("click", () => {
-          closeSheetModal(ui.notesModal);
-        });
-
-        ui.btnCancelReport.addEventListener("click", () => {
-          closeSheetModal(ui.reportModal);
+          modal.addEventListener("cancel", (e) => {
+            e.preventDefault();
+            closeSheetModal(modal);
+          });
         });
 
         document.querySelectorAll("[data-close-modal]").forEach(btn => {
           btn.addEventListener("click", () => {
             const modal = btn.closest("dialog");
-            if (modal) {
-              closeSheetModal(modal);
-            }
+            if (modal) closeSheetModal(modal);
           });
         });
 
@@ -2093,13 +1962,8 @@
           checkBodyScrollLock();
         });
 
-        ui.reportModal.addEventListener("close", () => {
-          checkBodyScrollLock();
-        });
-
-        ui.addModal.addEventListener("close", () => {
-          checkBodyScrollLock();
-        });
+        ui.reportModal.addEventListener("close", checkBodyScrollLock);
+        ui.addModal.addEventListener("close", checkBodyScrollLock);
 
         ui.prevMonthBtn.addEventListener("click", () => {
           state.viewDate.setMonth(state.viewDate.getMonth() - 1);
@@ -2151,12 +2015,7 @@
           }
 
           calculateDefaultTitle();
-          document.body.classList.add("sheet-open");
-          ui.addModal.showModal();
-        });
-
-        ui.addModal.addEventListener("close", () => {
-          checkBodyScrollLock();
+          openSheetModal(ui.addModal);
         });
 
         ui.formDept.addEventListener("change", () => {
@@ -2202,7 +2061,6 @@
           }
         });
 
-        /* Click Report button inside notes modal: FIRST close notes modal, THEN open report modal */
         ui.modalNotesStack.addEventListener("click", (e) => {
           const btn = e.target.closest(".btn-report");
           if (!btn) return;
@@ -2212,9 +2070,7 @@
           const context = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
           const row = btn.dataset.row;
 
-          // 1. First close the Notes Sheet / Popup smoothly
           closeSheetModal(ui.notesModal, () => {
-            // 2. Once completely closed, populate and open the Report Modal!
             ui.reportTitle.textContent = title;
             ui.reportContext.textContent = context;
             ui.reportForm.dataset.targetRow = row;
@@ -2248,7 +2104,6 @@
           }
         });
 
-        // Initialize swipe & drag gestures for both modals on mobile
         setupBottomSheetGestures(
           ui.notesModal,
           ui.sheetDragHandle,
