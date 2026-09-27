@@ -748,6 +748,11 @@
       touch-action: none;
       user-select: none;
       flex-shrink: 0;
+      cursor: grab;
+    }
+
+    .bottom-sheet__handle-wrapper:active {
+      cursor: grabbing;
     }
 
     .bottom-sheet__handle {
@@ -1102,6 +1107,16 @@
         transform: translateY(0);
       }
 
+      .dialog-modal.bottom-sheet.is-dragging {
+        transition: none !important;
+      }
+
+      .dialog-modal.bottom-sheet .dialog-modal__header {
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+      }
+
       .bottom-sheet__handle-wrapper {
         display: flex;
       }
@@ -1225,7 +1240,7 @@
 
     <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
-      <div class="bottom-sheet__handle-wrapper">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
 
@@ -1243,7 +1258,7 @@
 
     <!-- Modal: Add note -->
     <dialog class="dialog-modal bottom-sheet" id="add-modal">
-      <div class="bottom-sheet__handle-wrapper">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
 
@@ -1326,7 +1341,7 @@
 
     <!-- Modal: Report link -->
     <dialog class="dialog-modal bottom-sheet" id="report-modal">
-      <div class="bottom-sheet__handle-wrapper">
+      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
       <form id="report-link-form">
@@ -1638,7 +1653,6 @@
         syncTopicMenu();
       }
 
-      /* Unified clean form cascading */
       function updateModalDropdowns(deptCode, secCode, courseCode) {
         const dept = getDeptMeta(deptCode) || config.departments[0];
         ui.formDept.value = dept.code;
@@ -1695,6 +1709,7 @@
       function openSheetModal(modalEl) {
         if (!modalEl) return;
         document.body.classList.add("sheet-open");
+        modalEl.style.transform = "";
         if (!modalEl.open) modalEl.showModal();
         modalEl.classList.add("is-open");
       }
@@ -1705,6 +1720,7 @@
           return;
         }
         modalEl.classList.remove("is-open");
+        modalEl.style.transform = "";
         const delay = (modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768) ? 280 : 0;
         setTimeout(() => {
           modalEl.close();
@@ -1731,24 +1747,112 @@
         openSheetModal(ui.notesModal);
       }
 
-      /* Lightweight mobile swipe-down detector (replaces 90 lines of heavy math) */
-      function setupBottomSheetSwipe(sheet) {
-        if (!sheet) return;
-        let startY = 0;
-        sheet.addEventListener("touchstart", (e) => {
-          startY = e.touches[0].clientY;
-        }, { passive: true });
+      /* পূর্ণাঙ্গ ইন্টারেক্টিভ ড্র্যাগ ও ভেলোসিটি ফিজিক্স (হাত/মাউস দিয়ে টানলে হুবহু নিচে নামবে) */
+      function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
+        if (!sheet || !handle) return;
 
-        sheet.addEventListener("touchend", (e) => {
-          if (window.innerWidth > 768) return;
-          const endY = e.changedTouches[0].clientY;
-          if (endY - startY > 65) {
-            const scrollArea = sheet.querySelector(".notes-stack, .modal-body-scroll");
-            if (!scrollArea || scrollArea.scrollTop <= 0) {
-              closeSheetModal(sheet);
-            }
+        let startY = 0;
+        let currentTranslate = 0;
+        let isDragging = false;
+        let startTime = 0;
+        let isStartedOnContent = false;
+
+        function start(clientY, target) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          if (target && target.closest(".nav-filter__menu")) return;
+          startY = clientY;
+          currentTranslate = 0;
+          startTime = Date.now();
+          isStartedOnContent = Boolean(scrollableContent && scrollableContent.contains(target));
+          if (isStartedOnContent && scrollableContent.scrollTop > 0) {
+            isDragging = false;
+            return;
           }
-        }, { passive: true });
+          isDragging = true;
+          sheet.classList.add("is-dragging");
+        }
+
+        function move(clientY, cancelable, preventDefault) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          if (!isDragging) {
+            if (isStartedOnContent && scrollableContent && scrollableContent.scrollTop <= 0) {
+              const delta = clientY - startY;
+              if (delta > 0) {
+                isDragging = true;
+                startY = clientY;
+                sheet.classList.add("is-dragging");
+              }
+            }
+            return;
+          }
+          const deltaY = clientY - startY;
+          if (deltaY > 0) {
+            currentTranslate = deltaY;
+            sheet.style.transform = `translateY(${deltaY}px)`;
+            if (cancelable && preventDefault) preventDefault();
+          } else {
+            currentTranslate = 0;
+            sheet.style.transform = "translateY(0px)";
+          }
+        }
+
+        function end() {
+          if (!isDragging) {
+            isStartedOnContent = false;
+            return;
+          }
+          isDragging = false;
+          isStartedOnContent = false;
+          sheet.classList.remove("is-dragging");
+
+          const elapsed = Date.now() - startTime;
+          const velocity = currentTranslate / (elapsed || 1);
+          const sheetHeight = sheet.offsetHeight || 340;
+
+          // ৪০% নামালে অথবা দ্রুত নিচের দিকে টান (Flick) দিলে বন্ধ হবে
+          if (currentTranslate > sheetHeight * 0.4 || (currentTranslate > 45 && velocity > 0.42)) {
+            closeCallback();
+          } else {
+            sheet.style.transform = "";
+          }
+        }
+
+        function onTouchMove(e) {
+          move(e.touches[0].clientY, e.cancelable, () => e.preventDefault());
+        }
+
+        function onTouchEnd() {
+          window.removeEventListener("touchmove", onTouchMove);
+          window.removeEventListener("touchend", onTouchEnd);
+          window.removeEventListener("touchcancel", onTouchEnd);
+          end();
+        }
+
+        function onTouchStart(e) {
+          start(e.touches[0].clientY, e.target);
+          window.addEventListener("touchmove", onTouchMove, { passive: false });
+          window.addEventListener("touchend", onTouchEnd, { passive: true });
+          window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+        }
+
+        [handle, header, scrollableContent].filter(Boolean).forEach(el => {
+          el.addEventListener("touchstart", onTouchStart, { passive: true });
+        });
+
+        // ব্রাউজার DevTools বা মাউস দিয়ে টেস্ট করার সুবিধার্থে মাউস ড্র্যাগ সাপোর্ট
+        [handle, header].filter(Boolean).forEach(el => {
+          el.addEventListener("mousedown", (e) => {
+            start(e.clientY, e.target);
+            function onMouseMove(me) { move(me.clientY); }
+            function onMouseUp() {
+              window.removeEventListener("mousemove", onMouseMove);
+              window.removeEventListener("mouseup", onMouseUp);
+              end();
+            }
+            window.addEventListener("mousemove", onMouseMove);
+            window.addEventListener("mouseup", onMouseUp);
+          });
+        });
       }
 
       function renderCalendarGrid() {
@@ -2088,8 +2192,12 @@
           }
         });
 
+        // ফিজিক্যাল ড্র্যাগ হ্যান্ডলার সক্রিয় করা
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
-          setupBottomSheetSwipe(sheet);
+          const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
+          const header = sheet.querySelector(".dialog-modal__header");
+          const content = sheet.querySelector(".notes-stack, .modal-body-scroll");
+          setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
         });
       }
 
