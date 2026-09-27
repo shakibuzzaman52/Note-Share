@@ -70,10 +70,10 @@
     }
 
     .shell {
-      max-width: 1200px;
+      max-width: 1240px;
       width: 100%;
       margin: 0 auto;
-      padding: 0 clamp(1rem, 4vw, 2.5rem);
+      padding: 0 clamp(1rem, 3.5vw, 2.5rem);
     }
 
     /* Core buttons */
@@ -329,21 +329,39 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar */
+    /* Filters Bar — Dynamic Proportional Width + Edge-to-Edge */
     .nav-filters {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: clamp(0.35rem, 1.5vw, 0.85rem);
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
       width: 100%;
       margin: 0 0 1rem;
       padding: 0.35rem 0 1rem;
       border-bottom: 1px solid var(--border-subtle);
       position: relative;
+      gap: clamp(0.35rem, 1.2vw, 0.75rem);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .nav-filters::-webkit-scrollbar {
+      display: none;
     }
 
     .nav-filter__item {
       position: relative;
       min-width: 0;
+      width: 100%;
+    }
+
+    /* Main filter bar buttons adapt proportionally & fill width without gaps */
+    .nav-filters .nav-filter__item {
+      flex: 1 1 auto;
+      min-width: 72px;
+      max-width: 35%;
+      width: auto;
     }
 
     .nav-filter__trigger {
@@ -353,7 +371,7 @@
       gap: clamp(0.2rem, 0.8vw, 0.45rem);
       background-color: var(--bg-subtle);
       border-radius: var(--radius-full);
-      padding: 0.55rem clamp(0.35rem, 1vw, 1rem);
+      padding: 0.6rem clamp(0.4rem, 1.2vw, 1.15rem);
       color: var(--text-main);
       font-size: clamp(0.75rem, 1.1vw, 0.875rem);
       font-weight: 600;
@@ -381,6 +399,7 @@
       white-space: nowrap;
       pointer-events: none;
       min-width: 0;
+      text-align: center;
     }
 
     .nav-filter__arrow {
@@ -398,8 +417,8 @@
       position: absolute;
       top: calc(100% + 5px);
       left: 0;
-      width: max-content;
-      min-width: 240px;
+      width: 100%;
+      min-width: 220px;
       max-width: min(420px, calc(100vw - 2rem));
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
@@ -415,8 +434,8 @@
       display: none;
     }
 
-    .nav-filter__item:nth-child(3) .nav-filter__menu,
-    .nav-filter__item:nth-child(4) .nav-filter__menu {
+    .nav-filters .nav-filter__item:nth-child(3) .nav-filter__menu,
+    .nav-filters .nav-filter__item:nth-child(4) .nav-filter__menu {
       left: auto;
       right: 0;
     }
@@ -453,6 +472,11 @@
     }
 
     /* Modal Form dropdowns */
+    .field .nav-filter__item {
+      width: 100%;
+      max-width: 100%;
+    }
+
     .field .nav-filter__trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
@@ -497,6 +521,10 @@
       letter-spacing: -0.02em;
       color: var(--text-main);
       line-height: 1;
+    }
+
+    .calendar-nav__title .month-short {
+      display: none;
     }
 
     .calendar-nav__actions {
@@ -763,23 +791,22 @@
       flex-shrink: 0;
     }
 
-    .notes-stack {
-      flex: 1 1 auto;
-      overflow-y: auto;
-      margin-top: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-    }
-
+    .notes-stack,
     .modal-body-scroll {
       flex: 1 1 auto;
       overflow-y: auto;
       margin-top: 1rem;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
+    }
+
+    .notes-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .modal-body-scroll {
       padding-bottom: 1.5rem;
     }
 
@@ -944,57 +971,117 @@
         padding: 1.25rem 1rem;
       }
 
+      .brand-mark,
       .header-menu-toggle {
-        display: block;
+        position: relative;
+        z-index: 320;
       }
 
+      .header-menu-toggle {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      /* Mobile Navigation: Full Screen Overlay */
       .header-nav {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        width: 100%;
+        display: flex;
+        position: fixed;
+        inset: 0;
+        height: 100dvh;
         background-color: var(--bg-canvas);
-        padding: 1.5rem 1.25rem 2rem;
-        z-index: 250;
+        padding: 5.5rem 1.75rem 2.5rem;
+        z-index: 310;
         flex-direction: column;
         align-items: flex-start;
-        gap: 1.85rem;
+        gap: 1.25rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.22s ease, visibility 0.22s ease;
       }
 
       .header-nav.is-open {
-        display: flex;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
       }
 
       .nav-link {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-main);
         width: 100%;
         text-align: left;
+        padding: 0.25rem 0;
       }
 
       .header-nav .btn--primary {
         width: 100%;
-        margin-top: 0.5rem;
-        padding: 0.8rem 1.25rem;
+        margin-top: 1rem;
+        padding: 0.85rem 1.25rem;
         font-size: 0.95rem;
+        font-weight: 600;
       }
 
       .hero { padding-top: 2rem; }
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
+
+      /* Filters: Flexible Full-Width + Scrollable on Overflow */
+      .nav-filters {
+        gap: 0.45rem;
+        padding: 0.35rem 0 0.85rem;
+      }
+
+      .nav-filters .nav-filter__item {
+        flex: 1 0 auto;
+        min-width: 72px;
+        max-width: 205px;
+        width: auto;
+      }
+
+      .nav-filters .nav-filter__trigger {
+        padding: 0.55rem 0.65rem;
+        font-size: 0.82rem;
+        gap: 0.3rem;
+      }
+
+      .nav-filters .nav-filter__arrow {
+        width: 10px;
+        height: 6px;
+      }
+
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
+
+      .calendar-nav__title .month-full {
+        display: none;
+      }
+      .calendar-nav__title .month-short {
+        display: inline;
+      }
+
+      #cal-prev span,
+      #cal-next span {
+        display: none;
+      }
+      #cal-prev,
+      #cal-next {
+        padding: 0.5rem 0.75rem;
+        gap: 0;
+      }
+
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
 
       .nav-filter__menu {
-        min-width: 170px;
+        min-width: 200px;
         max-width: calc(100vw - 1.5rem);
       }
-
-      .dialog-modal { padding: 1.5rem 1.25rem; }
 
       .dialog-modal.bottom-sheet {
         inset: auto 0 0 0;
@@ -1050,7 +1137,7 @@
   <div class="shell">
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp; <span class="badge">class notes</span></h2>
-      <p class="hero__desc">Browse lecture slides, handouts, and shared class resources organized by section date.</p>
+      <p class="hero__desc">Find class notes and academic resources organized by department, section, course and date.</p>
 
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
@@ -1124,7 +1211,13 @@
         <table class="calendar-grid">
           <thead>
             <tr>
-              <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+              <th scope="col">Sun</th>
+              <th scope="col">Mon</th>
+              <th scope="col">Tue</th>
+              <th scope="col">Wed</th>
+              <th scope="col">Thu</th>
+              <th scope="col">Fri</th>
+              <th scope="col">Sat</th>
             </tr>
           </thead>
           <tbody id="calendar-cells"></tbody>
@@ -1154,7 +1247,7 @@
       <div class="notes-stack" id="modal-notes-stack"></div>
 
       <div class="dialog-modal__actions">
-        <button type="button" class="btn btn--ghost" id="btn-close-notes" data-close-modal>Close</button>
+        <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
       </div>
     </dialog>
 
@@ -1172,7 +1265,7 @@
 
         <div class="modal-body-scroll">
           <div class="field">
-            <label>Department:</label>
+            <label for="form-dept-trigger">Department:</label>
             <div class="nav-filter__item" data-field="dept">
               <button type="button" class="nav-filter__trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-dept-label">Department</span>
@@ -1186,7 +1279,7 @@
           </div>
 
           <div class="field">
-            <label>Section:</label>
+            <label for="form-sec-trigger">Section:</label>
             <div class="nav-filter__item" data-field="sec">
               <button type="button" class="nav-filter__trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-sec-label">Section</span>
@@ -1205,7 +1298,7 @@
           </div>
 
           <div class="field">
-            <label>Course:</label>
+            <label for="form-course-trigger">Course:</label>
             <div class="nav-filter__item" data-field="course">
               <button type="button" class="nav-filter__trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-course-label">Course</span>
@@ -1262,7 +1355,7 @@
         </div>
 
         <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" id="btn-cancel-report" data-close-modal>Cancel</button>
+          <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
         </div>
       </form>
@@ -1426,6 +1519,7 @@
       }
 
       function setButtonLoading(btn, isLoading) {
+        if (!btn) return;
         btn.disabled = isLoading;
         btn.classList.toggle("is-loading", isLoading);
       }
@@ -1492,7 +1586,7 @@
           const isSel = selectedVal === "ALL";
           html += `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="ALL">${escapeHtml(allLabel)}</button>`;
         }
-        html += list.map(item => {
+        html += (list || []).map(item => {
           const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
           const display = prefix ? `${prefix} ${item}` : item;
           return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}">${escapeHtml(display)}</button>`;
@@ -1502,24 +1596,51 @@
       }
 
       function closeAllMenus() {
-        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => { m.hidden = true; });
-        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => { b.setAttribute("aria-expanded", "false"); });
+        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => {
+          m.hidden = true;
+          m.removeAttribute("style");
+        });
+        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => {
+          b.setAttribute("aria-expanded", "false");
+        });
       }
 
       function toggleMenu(menu, trigger) {
+        if (!menu || !trigger) return;
         const isClosed = menu.hidden;
         closeAllMenus();
         if (isClosed) {
           menu.hidden = false;
           trigger.setAttribute("aria-expanded", "true");
+
+          if (trigger.closest("#main-nav-filters")) {
+            const rect = trigger.getBoundingClientRect();
+            menu.style.position = "fixed";
+            menu.style.top = `${rect.bottom + 6}px`;
+
+            const menuWidth = Math.min(280, Math.max(210, rect.width));
+            let left = rect.left;
+            if (left + menuWidth > window.innerWidth - 16) {
+              left = window.innerWidth - 16 - menuWidth;
+            }
+            menu.style.left = `${Math.max(16, left)}px`;
+            menu.style.width = `${menuWidth}px`;
+          }
         }
       }
 
       function updateFilterLabels() {
-        ui.deptLabel.textContent = state.dept || "Department";
-        ui.secLabel.textContent = state.sec ? `Sec ${state.sec}` : "Section";
-        ui.courseLabel.textContent = (state.course === "ALL" || !state.course) ? "Course" : state.course;
-        ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
+        const deptText = state.dept || "Department";
+        ui.deptLabel.textContent = ui.deptLabel.title = deptText;
+
+        const secText = state.sec ? `Sec ${state.sec}` : "Section";
+        ui.secLabel.textContent = ui.secLabel.title = secText;
+
+        const courseText = state.sec ? (state.course === "ALL" ? "All Courses" : state.course) : "Course";
+        ui.courseLabel.textContent = ui.courseLabel.title = courseText;
+
+        const topicText = state.sec ? (state.topic === "ALL" ? "All Topics" : state.topic) : "Topic";
+        ui.topicLabel.textContent = ui.topicLabel.title = topicText;
       }
 
       function updateSelectionBanner() {
@@ -1540,7 +1661,7 @@
 
       function syncTopicMenu() {
         if (!state.dept || !state.sec) {
-          ui.topicMenu.innerHTML = `<div class="nav-filter__empty">Select Department & Section first</div>`;
+          ui.topicMenu.innerHTML = '<div class="nav-filter__empty">Select Department & Section first</div>';
           return;
         }
 
@@ -1570,8 +1691,8 @@
           const selectedCourse = state.sec ? state.course : "ALL";
           renderMenuOptions(ui.courseMenu, activeDept.courses, selectedCourse, true, "All Courses");
         } else {
-          ui.secMenu.innerHTML = `<div class="nav-filter__empty">Please select Department first</div>`;
-          ui.courseMenu.innerHTML = `<div class="nav-filter__empty">Please select Department first</div>`;
+          ui.secMenu.innerHTML = '<div class="nav-filter__empty">Please select Department first</div>';
+          ui.courseMenu.innerHTML = '<div class="nav-filter__empty">Please select Department first</div>';
         }
 
         syncTopicMenu();
@@ -1646,7 +1767,7 @@
       }
 
       function checkBodyScrollLock() {
-        if (!document.querySelector(".dialog-modal[open]")) {
+        if (!document.querySelector(".dialog-modal[open]") && !ui.headerNav?.classList.contains("is-open")) {
           document.body.classList.remove("sheet-open");
         }
       }
@@ -1697,6 +1818,7 @@
         ui.headerNav.classList.toggle("is-open", open);
         ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
         ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
+        document.body.classList.toggle("sheet-open", open);
       }
 
       function openDateDetails(dateKey) {
@@ -1823,7 +1945,10 @@
       function renderCalendarGrid() {
         const year = state.viewDate.getFullYear();
         const month = state.viewDate.getMonth();
-        ui.calendarTitle.textContent = `${MONTH_NAMES[month]} ${year}`;
+        const fullMonth = MONTH_NAMES[month];
+        const shortMonth = fullMonth.slice(0, 3);
+
+        ui.calendarTitle.innerHTML = `<span class="month-full">${fullMonth}</span><span class="month-short">${shortMonth}</span> ${year}`;
 
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1891,15 +2016,9 @@
         const uniqueDates = [...new Set(filteredNotes.map(n => n.date).filter(Boolean))].sort();
 
         const titleParts = [];
-        if (state.course !== "ALL") {
-          titleParts.push(state.course);
-        }
-        if (state.topic !== "ALL") {
-          titleParts.push(`Topic: ${state.topic}`);
-        }
-        if (titleParts.length === 0) {
-          titleParts.push("Filtered Classes");
-        }
+        if (state.course !== "ALL") titleParts.push(state.course);
+        if (state.topic !== "ALL") titleParts.push(`Topic: ${state.topic}`);
+        if (!titleParts.length) titleParts.push("Filtered Classes");
 
         ui.courseTitle.textContent = titleParts.join(" • ");
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
@@ -2040,6 +2159,7 @@
           state.topic = "ALL";
         } else if (key === "course") {
           state.course = val;
+          state.topic = "ALL";
         } else if (key === "topic") {
           state.topic = val;
         }
@@ -2053,6 +2173,10 @@
           ui.mobileMenuToggle.addEventListener("click", (e) => {
             e.stopPropagation();
             setMobileMenu(!ui.headerNav.classList.contains("is-open"));
+          });
+
+          ui.headerNav.querySelectorAll(".nav-link").forEach(link => {
+            link.addEventListener("click", () => setMobileMenu(false));
           });
 
           document.addEventListener("click", (e) => {
@@ -2076,12 +2200,16 @@
           }
         });
 
+        if (ui.navFilters) {
+          ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
+        }
+        window.addEventListener("scroll", closeAllMenus, { passive: true });
+
         ui.navFilters.addEventListener("click", (e) => {
           const trigger = e.target.closest(".nav-filter__trigger");
           if (trigger) {
             const item = trigger.closest(".nav-filter__item");
-            const menu = item.querySelector(".nav-filter__menu");
-            toggleMenu(menu, trigger);
+            toggleMenu(item.querySelector(".nav-filter__menu"), trigger);
             return;
           }
           const opt = e.target.closest(".nav-filter__option");
@@ -2095,8 +2223,7 @@
           const trigger = e.target.closest(".field .nav-filter__trigger");
           if (trigger) {
             const item = trigger.closest(".nav-filter__item");
-            const menu = item.querySelector(".nav-filter__menu");
-            toggleMenu(menu, trigger);
+            toggleMenu(item.querySelector(".nav-filter__menu"), trigger);
             return;
           }
           const opt = e.target.closest(".field .nav-filter__option");
@@ -2184,7 +2311,7 @@
 
         ui.calendarCells.addEventListener("click", (e) => {
           const cell = e.target.closest("td[data-date]");
-          if (cell) {
+          if (cell && !cell.classList.contains("calendar-cell--disabled")) {
             openDateDetails(cell.dataset.date);
           }
         });
@@ -2232,7 +2359,6 @@
 
           setButtonLoading(ui.btnSubmitNote, true);
 
-          const formattedUrl = normalizeUrl(ui.formLink.value);
           const payload = {
             department: ui.formDept.value,
             section: ui.formSec.value,
@@ -2240,7 +2366,7 @@
             course: ui.formCourse.value,
             topic: ui.formTopic.value,
             title: ui.formTitle.value,
-            link: formattedUrl,
+            link: normalizeUrl(ui.formLink.value),
             status: "Pending"
           };
 
@@ -2265,7 +2391,7 @@
           setButtonLoading(ui.btnSubmitReport, false);
           const title = btn.dataset.title;
           const context = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
-          const row = btn.dataset.row;
+          const row = btn.dataset.row || title;
 
           closeSheetModal(ui.notesModal, () => {
             ui.reportTitle.textContent = title;
