@@ -1743,67 +1743,114 @@
         openSheetModal(ui.notesModal);
       }
 
-      /* Responsive swipe & drag gestures for bottom sheets */
-      function setupBottomSheetGestures(sheet, closeCallback) {
-        if (!sheet) return;
+      /* High-fidelity interactive drag & velocity physics for bottom sheets */
+      function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
+        if (!sheet || !handle) return;
 
         let startY = 0;
-        let startX = 0;
-        let isTouching = false;
+        let currentTranslate = 0;
+        let isDragging = false;
+        let startTime = 0;
+        let isStartedOnContent = false;
 
-        sheet.addEventListener("touchstart", (e) => {
-          if (e.target.closest(".nav-filter__menu")) return;
-          startY = e.touches[0].clientY;
-          startX = e.touches[0].clientX;
-          isTouching = true;
-        }, { passive: true });
-
-        sheet.addEventListener("touchmove", (e) => {
-          if (!isTouching) return;
-          const deltaY = e.touches[0].clientY - startY;
-          const deltaX = Math.abs(e.touches[0].clientX - startX);
-          const scrollArea = sheet.querySelector(".notes-stack, .modal-body-scroll");
-
-          if (deltaY > 0 && deltaY > deltaX && (!scrollArea || scrollArea.scrollTop <= 0)) {
-            sheet.style.transform = `translateY(${deltaY}px)`;
+        function start(clientY, target) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          if (target && target.closest(".nav-filter__menu")) return;
+          startY = clientY;
+          currentTranslate = 0;
+          startTime = Date.now();
+          isStartedOnContent = Boolean(scrollableContent && scrollableContent.contains(target));
+          if (isStartedOnContent && scrollableContent.scrollTop > 0) {
+            isDragging = false;
+            return;
           }
-        }, { passive: true });
+          isDragging = true;
+          sheet.classList.add("is-dragging");
+        }
 
-        sheet.addEventListener("touchend", (e) => {
-          if (!isTouching) return;
-          isTouching = false;
-          const deltaY = e.changedTouches[0].clientY - startY;
-          const deltaX = Math.abs(e.changedTouches[0].clientX - startX);
-          const scrollArea = sheet.querySelector(".notes-stack, .modal-body-scroll");
+        function move(clientY, cancelable, preventDefault) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          if (!isDragging) {
+            if (isStartedOnContent && scrollableContent && scrollableContent.scrollTop <= 0) {
+              const delta = clientY - startY;
+              if (delta > 0) {
+                isDragging = true;
+                startY = clientY;
+                sheet.classList.add("is-dragging");
+              }
+            }
+            return;
+          }
+          const deltaY = clientY - startY;
+          if (deltaY > 0) {
+            currentTranslate = deltaY;
+            sheet.style.transform = `translateY(${deltaY}px)`;
+            if (cancelable && preventDefault) preventDefault();
+          } else {
+            currentTranslate = 0;
+            sheet.style.transform = "translateY(0px)";
+          }
+        }
 
-          if (deltaY > 35 && deltaY > deltaX && (!scrollArea || scrollArea.scrollTop <= 0)) {
+        function end() {
+          if (!isDragging) {
+            isStartedOnContent = false;
+            return;
+          }
+          isDragging = false;
+          isStartedOnContent = false;
+          sheet.classList.remove("is-dragging");
+
+          const elapsed = Date.now() - startTime;
+          const velocity = currentTranslate / (elapsed || 1);
+          const sheetHeight = sheet.offsetHeight || 340;
+
+          // Close if dragged over 40% of height or flicked downward with sufficient velocity
+          if (currentTranslate > sheetHeight * 0.4 || (currentTranslate > 45 && velocity > 0.42)) {
             closeCallback();
           } else {
             sheet.style.transform = "";
           }
-        }, { passive: true });
+        }
 
-        const handle = sheet.querySelector(".bottom-sheet__handle-wrapper, .dialog-modal__header");
-        if (handle) {
-          handle.addEventListener("mousedown", (e) => {
-            const startMouseY = e.clientY;
-            function onMouseMove(me) {
-              const delta = me.clientY - startMouseY;
-              if (delta > 0) sheet.style.transform = `translateY(${delta}px)`;
-            }
-            function onMouseUp(me) {
+        function onTouchMove(e) {
+          move(e.touches[0].clientY, e.cancelable, () => e.preventDefault());
+        }
+
+        function onTouchEnd() {
+          window.removeEventListener("touchmove", onTouchMove);
+          window.removeEventListener("touchend", onTouchEnd);
+          window.removeEventListener("touchcancel", onTouchEnd);
+          end();
+        }
+
+        function onTouchStart(e) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          start(e.touches[0].clientY, e.target);
+          window.addEventListener("touchmove", onTouchMove, { passive: false });
+          window.addEventListener("touchend", onTouchEnd, { passive: true });
+          window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+        }
+
+        [handle, header, scrollableContent].filter(Boolean).forEach(el => {
+          el.addEventListener("touchstart", onTouchStart, { passive: true });
+        });
+
+        // Mouse drag support for testing in desktop DevTools and tablet trackpads
+        [handle, header].filter(Boolean).forEach(el => {
+          el.addEventListener("mousedown", (e) => {
+            if (window.innerWidth > 768 || !sheet.open) return;
+            start(e.clientY, e.target);
+            function onMouseMove(me) { move(me.clientY); }
+            function onMouseUp() {
               window.removeEventListener("mousemove", onMouseMove);
               window.removeEventListener("mouseup", onMouseUp);
-              if (me.clientY - startMouseY > 35) {
-                closeCallback();
-              } else {
-                sheet.style.transform = "";
-              }
+              end();
             }
             window.addEventListener("mousemove", onMouseMove);
             window.addEventListener("mouseup", onMouseUp);
           });
-        }
+        });
       }
 
       function renderCalendarGrid() {
@@ -2144,7 +2191,10 @@
 
         // Initialize bottom sheet gesture handlers
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
-          setupBottomSheetGestures(sheet, () => closeSheetModal(sheet));
+          const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
+          const header = sheet.querySelector(".dialog-modal__header");
+          const content = sheet.querySelector(".notes-stack, .modal-body-scroll");
+          setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
         });
       }
 
