@@ -44,6 +44,27 @@
       padding: 0;
     }
 
+    /* Fix Page Layout Shift / Jumping */
+    html {
+      scrollbar-gutter: stable;
+      scrollbar-width: thin;
+      scrollbar-color: #D2CBC0 transparent;
+    }
+
+    html::-webkit-scrollbar {
+      width: 7px;
+    }
+    html::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    html::-webkit-scrollbar-thumb {
+      background-color: #D2CBC0;
+      border-radius: var(--radius-full);
+    }
+    html::-webkit-scrollbar-thumb:hover {
+      background-color: #B8B0A5;
+    }
+
     button, input {
       font-family: inherit;
       border: 0;
@@ -424,6 +445,11 @@
       max-height: 260px;
       overflow-y: auto;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      scrollbar-width: none; /* Hide scrollbar */
+    }
+
+    .nav-filter__menu::-webkit-scrollbar {
+      display: none;
     }
 
     .nav-filter__menu[hidden] {
@@ -766,6 +792,7 @@
       flex-shrink: 0;
     }
 
+    /* Modal Scroll Areas - Completely Hide Ugly Scrollbars */
     .notes-stack,
     .modal-body-scroll {
       flex: 1 1 auto;
@@ -773,6 +800,12 @@
       margin-top: 1rem;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    .notes-stack::-webkit-scrollbar,
+    .modal-body-scroll::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Edge */
     }
 
     .notes-stack {
