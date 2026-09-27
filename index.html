@@ -572,7 +572,8 @@
       padding: 0;
     }
 
-    .calendar-cell--empty {
+    .calendar-cell--empty,
+    .calendar-cell--disabled {
       pointer-events: none;
     }
 
@@ -611,10 +612,6 @@
 
     .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
       border-color: var(--brand-primary-hover);
-    }
-
-    .calendar-cell--disabled {
-      pointer-events: none;
     }
 
     .calendar-cell--disabled .calendar-cell__btn {
@@ -751,7 +748,7 @@
       cursor: grab;
     }
 
-    .bottom-sheet__handle-wrapper:active {
+    .bottom-sheet__handle:active {
       cursor: grabbing;
     }
 
@@ -993,7 +990,6 @@
       .header-menu-toggle {
         display: block;
         font-size: 0.9rem;
-        font-weight: 600;
       }
 
       .header-nav {
@@ -1049,7 +1045,6 @@
 
       .nav-filters .nav-filter__item {
         flex: 1 0 auto;
-        min-width: 72px;
         max-width: 205px;
       }
 
@@ -1108,7 +1103,7 @@
       }
 
       .dialog-modal.bottom-sheet.is-dragging {
-        transition: none !important;
+        transition: none;
       }
 
       .dialog-modal.bottom-sheet .dialog-modal__header {
@@ -1483,13 +1478,13 @@
       function formatReadableDate(dateKey) {
         if (!dateKey) return "";
         const [y, m, d] = dateKey.split("-");
-        return `${parseInt(d, 10)} ${MONTH_NAMES[parseInt(m, 10) - 1]} ${y}`;
+        return `${Number(d)} ${MONTH_NAMES[m - 1]} ${y}`;
       }
 
       const pluralize = (count, s, p) => `${count} ${count === 1 ? s : p}`;
 
       function escapeHtml(text) {
-        if (!text) return "";
+        if (!text && text !== 0) return "";
         return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
       }
 
@@ -1724,7 +1719,7 @@
         modalEl.style.transform = "";
         const delay = (modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768) ? 280 : 0;
         setTimeout(() => {
-          modalEl.close();
+          if (modalEl.open) modalEl.close();
           checkBodyScrollLock();
           onClosed?.();
         }, delay);
@@ -1830,6 +1825,7 @@
         }
 
         function onTouchStart(e) {
+          if (window.innerWidth > 768 || !sheet.open) return;
           start(e.touches[0].clientY, e.target);
           window.addEventListener("touchmove", onTouchMove, { passive: false });
           window.addEventListener("touchend", onTouchEnd, { passive: true });
@@ -1843,6 +1839,7 @@
         // Mouse drag support for testing in desktop DevTools and tablet trackpads
         [handle, header].filter(Boolean).forEach(el => {
           el.addEventListener("mousedown", (e) => {
+            if (window.innerWidth > 768 || !sheet.open) return;
             start(e.clientY, e.target);
             function onMouseMove(me) { move(me.clientY); }
             function onMouseUp() {
@@ -1987,7 +1984,7 @@
                     ${hasLink ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="note-row__link">${title}</a>` : `<span class="note-row__plain">${title}</span>`}
                     ${isReported ? '<span class="note-row__flag">[Issue Reported]</span>' : ""}
                   </div>
-                  ${hasLink ? `<button type="button" class="btn-report" data-row="${escapeHtml(item.row)}" data-title="${title}" data-course="${escapeHtml(course)}">Report</button>` : ""}
+                  ${hasLink ? `<button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}">Report</button>` : ""}
                 </li>
               `;
             });
@@ -2114,10 +2111,9 @@
           ui.addForm.reset();
           const today = formatDateKey(new Date());
           ui.formDate.max = today;
-          updateModalDropdowns(state.dept || config.departments[0]?.code, state.sec, state.course !== "ALL" ? state.course : "");
           ui.formDate.value = (state.activeDate && state.activeDate <= today) ? state.activeDate : today;
           ui.formTopic.value = (state.topic !== "ALL") ? state.topic : "";
-          calculateDefaultTitle();
+          updateModalDropdowns(state.dept || config.departments[0]?.code, state.sec, state.course !== "ALL" ? state.course : "");
           openSheetModal(ui.addModal);
         });
 
