@@ -329,7 +329,7 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar — Desktop Default Grid (100% Width) */
+    /* Filters Bar */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -603,7 +603,7 @@
       font-size: 2.25rem;
       font-weight: 400;
       color: var(--text-main);
-      line-1.1;
+      line-height: 1.1;
     }
 
     .course-dates__count {
@@ -1009,24 +1009,22 @@
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
 
-      /* Filters: Flexible Full-Width + Scrollable if content overflows */
+      /* Filters: Flexible Full-Width + Scrollable on Overflow */
       .nav-filters {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         gap: 0.45rem;
-        width: 100%;
         padding: 0.35rem 0 0.85rem;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
       }
 
       .nav-filters::-webkit-scrollbar {
-        display: none; /* Chrome, Safari */
+        display: none;
       }
 
-      /* বড় হলে পুরো প্রস্থ সমানভাবে ভাগ করে নেবে, ছোট হলে স্ক্রল হবে */
       .nav-filters .nav-filter__item {
         flex: 1 0 115px;
         min-width: 110px;
@@ -1034,22 +1032,12 @@
       }
 
       .nav-filters .nav-filter__trigger {
-        width: 100%;
-        max-width: 100%;
         padding: 0.55rem 0.65rem;
         font-size: 0.82rem;
         gap: 0.3rem;
       }
 
-      .nav-filters .nav-filter__text {
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
       .nav-filters .nav-filter__arrow {
-        flex-shrink: 0;
         width: 10px;
         height: 6px;
       }
@@ -1057,7 +1045,6 @@
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
 
-      /* Mobile Month Title */
       .calendar-nav__title .month-full {
         display: none;
       }
@@ -1065,7 +1052,6 @@
         display: inline;
       }
 
-      /* Mobile Prev/Next: Icon only */
       #cal-prev span,
       #cal-next span {
         display: none;
@@ -1614,7 +1600,6 @@
           menu.hidden = false;
           trigger.setAttribute("aria-expanded", "true");
 
-          // On mobile, position filter dropdown relative to viewport
           if (trigger.closest("#main-nav-filters") && window.innerWidth <= 768) {
             const rect = trigger.getBoundingClientRect();
             menu.style.position = "fixed";
@@ -2220,7 +2205,6 @@
           }
         });
 
-        // Close dropdown menu if user scrolls filter bar or screen
         if (ui.navFilters) {
           ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
         }
