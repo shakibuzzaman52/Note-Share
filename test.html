@@ -329,21 +329,39 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar */
+    /* Filters Bar — Dynamic Proportional Width + Edge-to-Edge */
     .nav-filters {
       display: flex;
-      gap: clamp(0.35rem, 1.5vw, 0.85rem);
+      flex-wrap: nowrap;
+      align-items: center;
       width: 100%;
       margin: 0 0 1rem;
       padding: 0.35rem 0 1rem;
       border-bottom: 1px solid var(--border-subtle);
       position: relative;
+      gap: clamp(0.35rem, 1.2vw, 0.75rem);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .nav-filters::-webkit-scrollbar {
+      display: none;
     }
 
     .nav-filter__item {
       position: relative;
       min-width: 0;
+      width: 100%;
+    }
+
+    /* Main filter bar buttons adapt proportionally & fill width without gaps */
+    .nav-filters .nav-filter__item {
       flex: 1 1 auto;
+      min-width: 72px;
+      max-width: 42%;
+      width: auto;
     }
 
     .nav-filter__trigger {
@@ -454,6 +472,11 @@
     }
 
     /* Modal Form dropdowns */
+    .field .nav-filter__item {
+      width: 100%;
+      max-width: 100%;
+    }
+
     .field .nav-filter__trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
@@ -1009,23 +1032,14 @@
 
       /* Filters: Flexible Full-Width + Scrollable on Overflow */
       .nav-filters {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         gap: 0.45rem;
         padding: 0.35rem 0 0.85rem;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      }
-
-      .nav-filters::-webkit-scrollbar {
-        display: none;
       }
 
       .nav-filters .nav-filter__item {
         flex: 1 0 auto;
-        min-width: 80px;
+        min-width: 72px;
+        max-width: 230px;
         width: auto;
       }
 
@@ -1599,12 +1613,12 @@
           menu.hidden = false;
           trigger.setAttribute("aria-expanded", "true");
 
-          if (trigger.closest("#main-nav-filters") && window.innerWidth <= 768) {
+          if (trigger.closest("#main-nav-filters")) {
             const rect = trigger.getBoundingClientRect();
             menu.style.position = "fixed";
             menu.style.top = `${rect.bottom + 6}px`;
 
-            const menuWidth = Math.min(260, window.innerWidth - 32);
+            const menuWidth = Math.min(280, Math.max(210, rect.width));
             let left = rect.left;
             if (left + menuWidth > window.innerWidth - 16) {
               left = window.innerWidth - 16 - menuWidth;
