@@ -1653,6 +1653,7 @@
         syncTopicMenu();
       }
 
+      /* Unified form cascading logic */
       function updateModalDropdowns(deptCode, secCode, courseCode) {
         const dept = getDeptMeta(deptCode) || config.departments[0];
         ui.formDept.value = dept.code;
@@ -1747,7 +1748,7 @@
         openSheetModal(ui.notesModal);
       }
 
-      /* পূর্ণাঙ্গ ইন্টারেক্টিভ ড্র্যাগ ও ভেলোসিটি ফিজিক্স (হাত/মাউস দিয়ে টানলে হুবহু নিচে নামবে) */
+      /* High-fidelity interactive drag & velocity physics for bottom sheets */
       function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
         if (!sheet || !handle) return;
 
@@ -1809,7 +1810,7 @@
           const velocity = currentTranslate / (elapsed || 1);
           const sheetHeight = sheet.offsetHeight || 340;
 
-          // ৪০% নামালে অথবা দ্রুত নিচের দিকে টান (Flick) দিলে বন্ধ হবে
+          // Close if dragged over 40% of height or flicked downward with sufficient velocity
           if (currentTranslate > sheetHeight * 0.4 || (currentTranslate > 45 && velocity > 0.42)) {
             closeCallback();
           } else {
@@ -1839,7 +1840,7 @@
           el.addEventListener("touchstart", onTouchStart, { passive: true });
         });
 
-        // ব্রাউজার DevTools বা মাউস দিয়ে টেস্ট করার সুবিধার্থে মাউস ড্র্যাগ সাপোর্ট
+        // Mouse drag support for testing in desktop DevTools and tablet trackpads
         [handle, header].filter(Boolean).forEach(el => {
           el.addEventListener("mousedown", (e) => {
             start(e.clientY, e.target);
@@ -2192,7 +2193,7 @@
           }
         });
 
-        // ফিজিক্যাল ড্র্যাগ হ্যান্ডলার সক্রিয় করা
+        // Initialize bottom sheet gesture handlers
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
           const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
           const header = sheet.querySelector(".dialog-modal__header");
