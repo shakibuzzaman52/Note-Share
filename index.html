@@ -343,7 +343,6 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      -ms-overflow-style: none;
     }
 
     .nav-filters::-webkit-scrollbar {
@@ -353,14 +352,12 @@
     .nav-filter__item {
       position: relative;
       min-width: 0;
-      width: 100%;
     }
 
     .nav-filters .nav-filter__item {
       flex: 1 1 auto;
       min-width: 72px;
       max-width: 35%;
-      width: auto;
     }
 
     .nav-filter__trigger {
@@ -433,12 +430,6 @@
       display: none;
     }
 
-    .nav-filters .nav-filter__item:nth-child(3) .nav-filter__menu,
-    .nav-filters .nav-filter__item:nth-child(4) .nav-filter__menu {
-      left: auto;
-      right: 0;
-    }
-
     .nav-filter__option {
       display: flex;
       align-items: center;
@@ -473,7 +464,6 @@
     /* Modal Form dropdowns */
     .field .nav-filter__item {
       width: 100%;
-      max-width: 100%;
     }
 
     .field .nav-filter__trigger {
@@ -688,10 +678,6 @@
       font-size: 0.75rem;
       font-weight: 600;
       white-space: nowrap;
-    }
-
-    dialog:not([open]) {
-      display: none;
     }
 
     /* Modals */
@@ -1027,7 +1013,6 @@
         flex: 1 0 auto;
         min-width: 72px;
         max-width: 205px;
-        width: auto;
       }
 
       .nav-filters .nav-filter__trigger {
@@ -1064,11 +1049,6 @@
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
-
-      .nav-filter__menu {
-        min-width: 200px;
-        max-width: calc(100vw - 1.5rem);
-      }
 
       .dialog-modal.bottom-sheet {
         inset: auto 0 0 0;
@@ -2370,7 +2350,6 @@
         loadNotes();
       }
 
-      // DOM loaded directly at the end of the page
       init();
     })();
   </script>
