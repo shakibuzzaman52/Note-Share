@@ -896,7 +896,7 @@
       justify-content: space-between;
       gap: 0.6rem;
       padding: 0.15rem 0;
-      flex-wrap: wrap;
+      width: 100%;
     }
 
     .note-row__left {
@@ -908,28 +908,29 @@
       flex: 1 1 auto;
     }
 
-    /* Note Title Pill / Button */
+    /* Note Title Pill / Button: NO border, permanent background, smart ellipsis */
     .note-title-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
       background-color: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
+      border: 0;
+      outline: 0;
       border-radius: var(--radius-full);
-      padding: 0.32rem 0.85rem;
+      padding: 0.38rem 0.85rem;
       font-size: 0.875rem;
       font-weight: 600;
       text-decoration: none;
       line-height: 1.35;
       color: var(--brand-primary);
-      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      transition: background-color 0.15s ease, color 0.15s ease;
       cursor: pointer;
+      min-width: 0;
       max-width: 100%;
     }
 
     .note-title-btn:hover {
       background-color: var(--bg-hover);
-      border-color: #D2CBC0;
       color: var(--brand-primary-hover);
       text-decoration: none;
     }
@@ -937,20 +938,26 @@
     .note-title-plain {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
       background-color: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
+      border: 0;
+      outline: 0;
       border-radius: var(--radius-full);
-      padding: 0.32rem 0.85rem;
+      padding: 0.38rem 0.85rem;
       font-size: 0.875rem;
       font-weight: 600;
       color: var(--text-main);
       line-height: 1.35;
       cursor: default;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .note-title-text {
-      word-break: break-word;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
     }
 
     .note-row__icon {
@@ -966,13 +973,14 @@
       font-size: 0.72rem;
       margin-left: 0.25rem;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    /* Actions: Permanent button style for Share and Report */
+    /* Actions: Icon-only buttons, NO border, permanent rounded background */
     .note-row__actions {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
       flex-shrink: 0;
     }
 
@@ -980,36 +988,40 @@
     .btn-report {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      font-size: 0.78rem;
-      font-weight: 600;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
       cursor: pointer;
-      padding: 0.32rem 0.75rem;
-      border-radius: var(--radius-full);
+      border-radius: 50%;
       background-color: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
+      border: 0;
+      outline: 0;
       color: var(--text-muted);
-      line-height: 1;
-      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      flex-shrink: 0;
+      padding: 0;
     }
 
     .btn-share svg,
     .btn-report svg {
-      width: 12px;
-      height: 12px;
+      width: 15px;
+      height: 15px;
       flex-shrink: 0;
     }
 
     .btn-share:hover {
       color: var(--brand-primary);
       background-color: var(--bg-hover);
-      border-color: #D2CBC0;
     }
 
     .btn-report:hover {
       color: var(--brand-danger);
       background-color: var(--bg-hover);
-      border-color: #FCA5A5;
+    }
+
+    .btn-share:active,
+    .btn-report:active {
+      transform: scale(0.94);
     }
 
     /* Toast Notification */
@@ -2071,7 +2083,7 @@
                 <li class="note-row">
                   <div class="note-row__left">
                     ${hasLink ? `
-                      <a href="${link}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="Open note link">
+                      <a href="${link}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">
                         <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                           <polyline points="14 2 14 8 20 8"></polyline>
@@ -2082,7 +2094,7 @@
                         <span class="note-title-text">${title}</span>
                       </a>
                     ` : `
-                      <span class="note-title-plain">
+                      <span class="note-title-plain" title="${title}">
                         <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                           <polyline points="14 2 14 8 20 8"></polyline>
@@ -2097,7 +2109,7 @@
                   </div>
                   ${hasLink ? `
                     <div class="note-row__actions">
-                      <button type="button" class="btn-share" data-title="${title}" data-link="${link}" data-course="${escapeHtml(course)}" title="Share note link">
+                      <button type="button" class="btn-share" data-title="${title}" data-link="${link}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                           <circle cx="18" cy="5" r="3"></circle>
                           <circle cx="6" cy="12" r="3"></circle>
@@ -2105,14 +2117,12 @@
                           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
                           <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                         </svg>
-                        <span>Share</span>
                       </button>
-                      <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" title="Report broken link">
+                      <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" aria-label="Report broken link" title="Report">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                           <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
                           <line x1="4" y1="22" x2="4" y2="15"></line>
                         </svg>
-                        <span>Report</span>
                       </button>
                     </div>
                   ` : ""}
@@ -2280,7 +2290,7 @@
           }
         });
 
-        // Combined handler for Share and Report
+        // Combined handler for Share and Report (Icon-only buttons)
         ui.modalNotesStack.addEventListener("click", async (e) => {
           const shareBtn = e.target.closest(".btn-share");
           if (shareBtn) {
