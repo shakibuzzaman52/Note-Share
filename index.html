@@ -329,7 +329,7 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar — Dynamic Proportional Width + Edge-to-Edge */
+    /* Filters Bar */
     .nav-filters {
       display: flex;
       flex-wrap: nowrap;
@@ -356,7 +356,6 @@
       width: 100%;
     }
 
-    /* Main filter bar buttons adapt proportionally & fill width without gaps */
     .nav-filters .nav-filter__item {
       flex: 1 1 auto;
       min-width: 72px;
@@ -734,14 +733,9 @@
       justify-content: center;
       align-items: center;
       padding: 0.5rem 0 0.85rem;
-      cursor: grab;
       touch-action: none;
       user-select: none;
       flex-shrink: 0;
-    }
-
-    .bottom-sheet__handle-wrapper:active {
-      cursor: grabbing;
     }
 
     .bottom-sheet__handle {
@@ -750,11 +744,6 @@
       background-color: #D2CBC0;
       border-radius: var(--radius-full);
       transition: background-color 0.15s ease;
-    }
-
-    .bottom-sheet__handle-wrapper:hover .bottom-sheet__handle,
-    .bottom-sheet__handle-wrapper:active .bottom-sheet__handle {
-      background-color: #A69E90;
     }
 
     .dialog-modal__header {
@@ -983,7 +972,6 @@
         font-weight: 600;
       }
 
-      /* Mobile Navigation: Full Screen Overlay */
       .header-nav {
         display: flex;
         position: fixed;
@@ -1030,7 +1018,6 @@
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
 
-      /* Filters: Flexible Full-Width + Scrollable on Overflow */
       .nav-filters {
         gap: 0.45rem;
         padding: 0.35rem 0 0.85rem;
@@ -1104,12 +1091,6 @@
 
       .dialog-modal.bottom-sheet.is-dragging {
         transition: none;
-      }
-
-      .dialog-modal.bottom-sheet .dialog-modal__header {
-        cursor: grab;
-        user-select: none;
-        touch-action: none;
       }
 
       .bottom-sheet__handle-wrapper {
@@ -1630,17 +1611,10 @@
       }
 
       function updateFilterLabels() {
-        const deptText = state.dept || "Department";
-        ui.deptLabel.textContent = ui.deptLabel.title = deptText;
-
-        const secText = state.sec ? `Sec ${state.sec}` : "Section";
-        ui.secLabel.textContent = ui.secLabel.title = secText;
-
-        const courseText = state.sec ? (state.course === "ALL" ? "All Courses" : state.course) : "Course";
-        ui.courseLabel.textContent = ui.courseLabel.title = courseText;
-
-        const topicText = state.sec ? (state.topic === "ALL" ? "All Topics" : state.topic) : "Topic";
-        ui.topicLabel.textContent = ui.topicLabel.title = topicText;
+        ui.deptLabel.textContent = state.dept || "Department";
+        ui.secLabel.textContent = state.sec ? `Sec ${state.sec}` : "Section";
+        ui.courseLabel.textContent = state.sec ? (state.course === "ALL" ? "All Courses" : state.course) : "Course";
+        ui.topicLabel.textContent = state.sec ? (state.topic === "ALL" ? "All Topics" : state.topic) : "Topic";
       }
 
       function updateSelectionBanner() {
@@ -1919,26 +1893,6 @@
 
         [handle, header, scrollableContent].filter(Boolean).forEach(el => {
           el.addEventListener("touchstart", onTouchStart, { passive: true });
-        });
-
-        handle.addEventListener("mousedown", (e) => {
-          start(e.clientY, e.target);
-          function onMouseMove(me) { move(me.clientY); }
-          function onMouseUp() {
-            window.removeEventListener("mousemove", onMouseMove);
-            window.removeEventListener("mouseup", onMouseUp);
-            end();
-          }
-          window.addEventListener("mousemove", onMouseMove);
-          window.addEventListener("mouseup", onMouseUp);
-        });
-
-        [handle, header].filter(Boolean).forEach(el => {
-          el.addEventListener("wheel", (e) => {
-            if (window.innerWidth <= 768 && sheet.open && e.deltaY > 30) {
-              closeCallback();
-            }
-          }, { passive: true });
         });
       }
 
@@ -2234,40 +2188,13 @@
           }
         });
 
+        // Dialog backdrop click handling
         document.querySelectorAll(".dialog-modal").forEach(modal => {
-          let touchStartOutside = false;
-          let touchStartY = 0;
-          let touchStartX = 0;
-
           modal.addEventListener("click", (e) => {
             if (e.target === modal && isEventOutside(modal, e)) {
               closeSheetModal(modal);
             }
           });
-
-          modal.addEventListener("touchstart", (e) => {
-            touchStartOutside = isEventOutside(modal, e.touches[0]);
-            if (touchStartOutside) {
-              touchStartY = e.touches[0].clientY;
-              touchStartX = e.touches[0].clientX;
-            }
-          }, { passive: true });
-
-          modal.addEventListener("touchmove", (e) => {
-            if (!touchStartOutside) return;
-            const dy = Math.abs(e.touches[0].clientY - touchStartY);
-            const dx = Math.abs(e.touches[0].clientX - touchStartX);
-            if (dy > 6 || dx > 6) {
-              touchStartOutside = false;
-              closeSheetModal(modal);
-            }
-          }, { passive: true });
-
-          modal.addEventListener("wheel", (e) => {
-            if (isEventOutside(modal, e)) {
-              closeSheetModal(modal);
-            }
-          }, { passive: true });
 
           modal.addEventListener("cancel", (e) => {
             e.preventDefault();
@@ -2443,11 +2370,8 @@
         loadNotes();
       }
 
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-      } else {
-        init();
-      }
+      // DOM loaded directly at the end of the page
+      init();
     })();
   </script>
 </body>
