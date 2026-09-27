@@ -949,43 +949,64 @@
 
     @media (max-width: 768px) {
       .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 300;
         padding: 1.25rem 1rem;
+      }
+
+      .brand-mark,
+      .header-menu-toggle {
+        position: relative;
+        z-index: 320;
       }
 
       .header-menu-toggle {
         display: block;
       }
 
+      /* Mobile Navigation: Full Screen Overlay */
       .header-nav {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        width: 100%;
+        display: flex;
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
         background-color: var(--bg-canvas);
-        padding: 1.5rem 1.25rem 2rem;
-        z-index: 250;
+        padding: 5.75rem 1.5rem 2.5rem;
+        z-index: 310;
         flex-direction: column;
         align-items: flex-start;
-        gap: 1.85rem;
+        gap: 1.25rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.22s ease, visibility 0.22s ease;
       }
 
       .header-nav.is-open {
-        display: flex;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
       }
 
       .nav-link {
-        font-size: 1.15rem;
+        font-size: 1.35rem;
+        font-weight: 600;
         width: 100%;
         text-align: left;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-subtle);
       }
 
       .header-nav .btn--primary {
         width: 100%;
-        margin-top: 0.5rem;
-        padding: 0.8rem 1.25rem;
-        font-size: 0.95rem;
+        margin-top: 1rem;
+        padding: 0.85rem 1.25rem;
+        font-size: 1rem;
       }
 
       .hero { padding-top: 2rem; }
@@ -993,8 +1014,8 @@
       .selection-banner { font-size: 1.2rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
-      
-      /* Mobile Month Title: show short version (e.g. Sep 2026) */
+
+      /* Mobile Month Title */
       .calendar-nav__title .month-full {
         display: none;
       }
@@ -1002,7 +1023,7 @@
         display: inline;
       }
 
-      /* Mobile Prev/Next: hide text, show only < and > icons */
+      /* Mobile Prev/Next: Only icon */
       #cal-prev span,
       #cal-next span {
         display: none;
@@ -1674,7 +1695,7 @@
       }
 
       function checkBodyScrollLock() {
-        if (!document.querySelector(".dialog-modal[open]")) {
+        if (!document.querySelector(".dialog-modal[open]") && !ui.headerNav?.classList.contains("is-open")) {
           document.body.classList.remove("sheet-open");
         }
       }
@@ -1725,6 +1746,7 @@
         ui.headerNav.classList.toggle("is-open", open);
         ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
         ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
+        document.body.classList.toggle("sheet-open", open);
       }
 
       function openDateDetails(dateKey) {
@@ -2085,6 +2107,11 @@
           ui.mobileMenuToggle.addEventListener("click", (e) => {
             e.stopPropagation();
             setMobileMenu(!ui.headerNav.classList.contains("is-open"));
+          });
+
+          // Close mobile menu when clicking any nav link
+          ui.headerNav.querySelectorAll(".nav-link").forEach(link => {
+            link.addEventListener("click", () => setMobileMenu(false));
           });
 
           document.addEventListener("click", (e) => {
