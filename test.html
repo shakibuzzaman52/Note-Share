@@ -329,7 +329,7 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar */
+    /* Filters Bar (Desktop Default) */
     .nav-filters {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1006,6 +1006,43 @@
       .hero { padding-top: 2rem; }
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
+
+      /* Horizontal Scrollable Filters on Mobile */
+      .nav-filters {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.5rem;
+        padding: 0.35rem 0 0.85rem;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+      }
+
+      .nav-filters::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+      }
+
+      .nav-filters .nav-filter__item {
+        flex: 0 0 auto;
+      }
+
+      .nav-filters .nav-filter__trigger {
+        width: auto;
+        max-width: 175px;        /* বাটন অতিরিক্ত চওড়া হবে না */
+        white-space: nowrap;
+        padding: 0.55rem 0.95rem;
+        font-size: 0.85rem;
+      }
+
+      .nav-filters .nav-filter__text {
+        max-width: 130px;         /* লম্বা লেখা হলে '...' দেখাবে */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+      }
+
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
 
@@ -1033,7 +1070,7 @@
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
 
       .nav-filter__menu {
-        min-width: 170px;
+        min-width: 200px;
         max-width: calc(100vw - 1.5rem);
       }
 
@@ -1100,7 +1137,7 @@
       </div>
     </section>
 
-    <!-- Filters Bar -->
+    <!-- Filters Bar (Horizontal Scroll on Mobile) -->
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
@@ -1545,8 +1582,18 @@
       }
 
       function closeAllMenus() {
-        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => { m.hidden = true; });
-        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => { b.setAttribute("aria-expanded", "false"); });
+        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => {
+          m.hidden = true;
+          if (m.closest("#main-nav-filters")) {
+            m.style.position = "";
+            m.style.top = "";
+            m.style.left = "";
+            m.style.width = "";
+          }
+        });
+        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => {
+          b.setAttribute("aria-expanded", "false");
+        });
       }
 
       function toggleMenu(menu, trigger) {
@@ -1555,14 +1602,42 @@
         if (isClosed) {
           menu.hidden = false;
           trigger.setAttribute("aria-expanded", "true");
+
+          // On mobile, position filter dropdown relative to viewport
+          if (trigger.closest("#main-nav-filters") && window.innerWidth <= 768) {
+            const rect = trigger.getBoundingClientRect();
+            menu.style.position = "fixed";
+            menu.style.top = `${rect.bottom + 6}px`;
+
+            const menuWidth = Math.min(260, window.innerWidth - 32);
+            let left = rect.left;
+            if (left + menuWidth > window.innerWidth - 16) {
+              left = window.innerWidth - 16 - menuWidth;
+            }
+            if (left < 16) left = 16;
+
+            menu.style.left = `${left}px`;
+            menu.style.width = `${menuWidth}px`;
+          }
         }
       }
 
       function updateFilterLabels() {
-        ui.deptLabel.textContent = state.dept || "Department";
-        ui.secLabel.textContent = state.sec ? `Sec ${state.sec}` : "Section";
-        ui.courseLabel.textContent = (state.course === "ALL" || !state.course) ? "Course" : state.course;
-        ui.topicLabel.textContent = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
+        const deptText = state.dept || "Department";
+        ui.deptLabel.textContent = deptText;
+        ui.deptLabel.title = deptText;
+
+        const secText = state.sec ? `Sec ${state.sec}` : "Section";
+        ui.secLabel.textContent = secText;
+        ui.secLabel.title = secText;
+
+        const courseText = (state.course === "ALL" || !state.course) ? "Course" : state.course;
+        ui.courseLabel.textContent = courseText;
+        ui.courseLabel.title = courseText;
+
+        const topicText = (state.topic === "ALL" || !state.topic) ? "Topic" : state.topic;
+        ui.topicLabel.textContent = topicText;
+        ui.topicLabel.title = topicText;
       }
 
       function updateSelectionBanner() {
@@ -1870,7 +1945,6 @@
         const fullMonth = MONTH_NAMES[month];
         const shortMonth = fullMonth.slice(0, 3);
         
-        // Full month on desktop, short month on mobile
         ui.calendarTitle.innerHTML = `<span class="month-full">${fullMonth}</span><span class="month-short">${shortMonth}</span> ${year}`;
 
         const firstDay = new Date(year, month, 1).getDay();
@@ -2127,6 +2201,12 @@
             closeAllMenus();
           }
         });
+
+        // Close dropdown menu if user scrolls filter bar or screen
+        if (ui.navFilters) {
+          ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
+        }
+        window.addEventListener("scroll", closeAllMenus, { passive: true });
 
         ui.navFilters.addEventListener("click", (e) => {
           const trigger = e.target.closest(".nav-filter__trigger");
