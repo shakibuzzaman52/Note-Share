@@ -884,18 +884,19 @@
 
     .note-cluster__list {
       list-style: none;
-      margin-left: 1.1rem;
+      margin-left: 0.25rem;
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.5rem;
     }
 
     .note-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
-      padding: 0.2rem 0;
+      gap: 0.6rem;
+      padding: 0.15rem 0;
+      flex-wrap: wrap;
     }
 
     .note-row__left {
@@ -904,6 +905,52 @@
       gap: 0.45rem;
       font-size: 0.9rem;
       min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    /* Note Title Pill / Button */
+    .note-title-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 0.32rem 0.85rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      line-height: 1.35;
+      color: var(--brand-primary);
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      cursor: pointer;
+      max-width: 100%;
+    }
+
+    .note-title-btn:hover {
+      background-color: var(--bg-hover);
+      border-color: #D2CBC0;
+      color: var(--brand-primary-hover);
+      text-decoration: none;
+    }
+
+    .note-title-plain {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 0.32rem 0.85rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.35;
+      cursor: default;
+    }
+
+    .note-title-text {
+      word-break: break-word;
     }
 
     .note-row__icon {
@@ -911,22 +958,6 @@
       height: 14px;
       color: var(--text-subtle);
       flex-shrink: 0;
-    }
-
-    .note-row__link {
-      color: var(--brand-primary);
-      text-decoration: none;
-      font-weight: 500;
-      word-break: break-word;
-    }
-
-    .note-row__link:hover {
-      text-decoration: underline;
-    }
-
-    .note-row__plain {
-      color: var(--text-main);
-      font-weight: 500;
     }
 
     .note-row__flag {
@@ -937,11 +968,11 @@
       white-space: nowrap;
     }
 
-    /* Note Row Actions (Share & Report with icons) */
+    /* Actions: Permanent button style for Share and Report */
     .note-row__actions {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
       flex-shrink: 0;
     }
 
@@ -949,17 +980,17 @@
     .btn-report {
       display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
-      font-size: 0.75rem;
-      font-weight: 500;
+      gap: 0.3rem;
+      font-size: 0.78rem;
+      font-weight: 600;
       cursor: pointer;
-      padding: 0.2rem 0.45rem;
-      border-radius: var(--radius-md);
-      transition: color 0.15s ease, background-color 0.15s ease;
-      background: transparent;
-      color: var(--text-subtle);
-      border: 1px solid transparent;
+      padding: 0.32rem 0.75rem;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
       line-height: 1;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
     .btn-share svg,
@@ -972,11 +1003,13 @@
     .btn-share:hover {
       color: var(--brand-primary);
       background-color: var(--bg-hover);
+      border-color: #D2CBC0;
     }
 
     .btn-report:hover {
       color: var(--brand-danger);
       background-color: var(--bg-hover);
+      border-color: #FCA5A5;
     }
 
     /* Toast Notification */
@@ -2037,14 +2070,29 @@
               output += `
                 <li class="note-row">
                   <div class="note-row__left">
-                    <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="13" x2="8" y2="13"></line>
-                      <line x1="16" y1="17" x2="8" y2="17"></line>
-                      <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    ${hasLink ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="note-row__link">${title}</a>` : `<span class="note-row__plain">${title}</span>`}
+                    ${hasLink ? `
+                      <a href="${link}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="Open note link">
+                        <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <line x1="16" y1="13" x2="8" y2="13"></line>
+                          <line x1="16" y1="17" x2="8" y2="17"></line>
+                          <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span class="note-title-text">${title}</span>
+                      </a>
+                    ` : `
+                      <span class="note-title-plain">
+                        <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <line x1="16" y1="13" x2="8" y2="13"></line>
+                          <line x1="16" y1="17" x2="8" y2="17"></line>
+                          <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span class="note-title-text">${title}</span>
+                      </span>
+                    `}
                     ${isReported ? '<span class="note-row__flag">[Issue Reported]</span>' : ""}
                   </div>
                   ${hasLink ? `
