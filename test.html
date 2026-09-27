@@ -329,30 +329,21 @@
       font-size: 0.95em;
     }
 
-    /* Filters Bar (Full Width Flex & Auto-stretch) */
+    /* Filters Bar (Desktop Default) */
     .nav-filters {
-      display: flex;
-      flex-wrap: nowrap;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(0.35rem, 1.5vw, 0.85rem);
       width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      gap: clamp(0.35rem, 1.2vw, 0.75rem);
       margin: 0 0 1rem;
       padding: 0.35rem 0 1rem;
       border-bottom: 1px solid var(--border-subtle);
       position: relative;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-
-    .nav-filters::-webkit-scrollbar {
-      display: none;
     }
 
     .nav-filter__item {
       position: relative;
-      flex: 1 0 130px;
-      min-width: 130px;
+      min-width: 0;
     }
 
     .nav-filter__trigger {
@@ -372,7 +363,6 @@
       -webkit-tap-highlight-color: transparent;
       transition: background-color 0.15s ease, border-color 0.15s ease;
       border: 1px solid transparent;
-      white-space: nowrap;
     }
 
     .nav-filter__trigger:hover,
@@ -463,11 +453,6 @@
     }
 
     /* Modal Form dropdowns */
-    .field .nav-filter__item {
-      flex: 1 1 auto;
-      min-width: 100%;
-    }
-
     .field .nav-filter__trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
@@ -1022,6 +1007,42 @@
       .hero__desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
 
+      /* Horizontal Scrollable Filters on Mobile */
+      .nav-filters {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.5rem;
+        padding: 0.35rem 0 0.85rem;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+      }
+
+      .nav-filters::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+      }
+
+      .nav-filters .nav-filter__item {
+        flex: 0 0 auto;
+      }
+
+      .nav-filters .nav-filter__trigger {
+        width: auto;
+        max-width: 175px;        /* বাটন অতিরিক্ত চওড়া হবে না */
+        white-space: nowrap;
+        padding: 0.55rem 0.95rem;
+        font-size: 0.85rem;
+      }
+
+      .nav-filters .nav-filter__text {
+        max-width: 130px;         /* লম্বা লেখা হলে '...' দেখাবে */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+      }
+
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
 
@@ -1116,7 +1137,7 @@
       </div>
     </section>
 
-    <!-- Filters Bar (Full Width & Horizontal Scrollable) -->
+    <!-- Filters Bar (Horizontal Scroll on Mobile) -->
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
@@ -1582,23 +1603,21 @@
           menu.hidden = false;
           trigger.setAttribute("aria-expanded", "true");
 
-          // When on mobile or when filters bar has horizontal overflow, position fixed to prevent clipping
-          if (trigger.closest("#main-nav-filters")) {
+          // On mobile, position filter dropdown relative to viewport
+          if (trigger.closest("#main-nav-filters") && window.innerWidth <= 768) {
             const rect = trigger.getBoundingClientRect();
-            if (window.innerWidth <= 768 || (ui.navFilters && ui.navFilters.scrollWidth > ui.navFilters.clientWidth)) {
-              menu.style.position = "fixed";
-              menu.style.top = `${rect.bottom + 6}px`;
+            menu.style.position = "fixed";
+            menu.style.top = `${rect.bottom + 6}px`;
 
-              const menuWidth = Math.min(260, window.innerWidth - 32);
-              let left = rect.left;
-              if (left + menuWidth > window.innerWidth - 16) {
-                left = window.innerWidth - 16 - menuWidth;
-              }
-              if (left < 16) left = 16;
-
-              menu.style.left = `${left}px`;
-              menu.style.width = `${menuWidth}px`;
+            const menuWidth = Math.min(260, window.innerWidth - 32);
+            let left = rect.left;
+            if (left + menuWidth > window.innerWidth - 16) {
+              left = window.innerWidth - 16 - menuWidth;
             }
+            if (left < 16) left = 16;
+
+            menu.style.left = `${left}px`;
+            menu.style.width = `${menuWidth}px`;
           }
         }
       }
