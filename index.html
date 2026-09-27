@@ -895,7 +895,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      padding: 0.15rem 0;
+      padding: 0.2rem 0;
     }
 
     .note-row__left {
@@ -903,6 +903,7 @@
       align-items: center;
       gap: 0.45rem;
       font-size: 0.9rem;
+      min-width: 0;
     }
 
     .note-row__icon {
@@ -916,6 +917,7 @@
       color: var(--brand-primary);
       text-decoration: none;
       font-weight: 500;
+      word-break: break-word;
     }
 
     .note-row__link:hover {
@@ -932,20 +934,49 @@
       font-weight: 600;
       font-size: 0.72rem;
       margin-left: 0.25rem;
+      white-space: nowrap;
     }
 
+    /* Note Row Actions (Share & Report with icons) */
+    .note-row__actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .btn-share,
     .btn-report {
-      color: var(--text-subtle);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
       font-size: 0.75rem;
       font-weight: 500;
       cursor: pointer;
-      text-decoration: underline;
-      padding: 0.1rem 0.25rem;
-      transition: color 0.15s ease;
+      padding: 0.2rem 0.45rem;
+      border-radius: var(--radius-md);
+      transition: color 0.15s ease, background-color 0.15s ease;
+      background: transparent;
+      color: var(--text-subtle);
+      border: 1px solid transparent;
+      line-height: 1;
+    }
+
+    .btn-share svg,
+    .btn-report svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
+    .btn-share:hover {
+      color: var(--brand-primary);
+      background-color: var(--bg-hover);
     }
 
     .btn-report:hover {
       color: var(--brand-danger);
+      background-color: var(--bg-hover);
     }
 
     /* Toast Notification */
@@ -1529,6 +1560,40 @@
         }, 2800);
       }
 
+      function copyToClipboard(text) {
+        if (!text) return;
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(() => {
+            showToast("Link copied to clipboard!");
+          }).catch(() => {
+            fallbackCopy(text);
+          });
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        try {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          const successful = document.execCommand("copy");
+          document.body.removeChild(textarea);
+          if (successful) {
+            showToast("Link copied to clipboard!");
+          } else {
+            showToast("Unable to copy link.");
+          }
+        } catch {
+          showToast("Unable to copy link.");
+        }
+      }
+
       async function syncData(payload) {
         if (!config.googleAppsScriptUrl) return;
         return fetch(config.googleAppsScriptUrl, {
@@ -1805,7 +1870,6 @@
           const velocity = currentTranslate / (elapsed || 1);
           const sheetHeight = sheet.offsetHeight || 340;
 
-          // Close if dragged over 40% of height or flicked downward with sufficient velocity
           if (currentTranslate > sheetHeight * 0.4 || (currentTranslate > 45 && velocity > 0.42)) {
             closeCallback();
           } else {
@@ -1836,7 +1900,6 @@
           el.addEventListener("touchstart", onTouchStart, { passive: true });
         });
 
-        // Mouse drag support for testing in desktop DevTools and tablet trackpads
         [handle, header].filter(Boolean).forEach(el => {
           el.addEventListener("mousedown", (e) => {
             if (window.innerWidth > 768 || !sheet.open) return;
@@ -1984,7 +2047,27 @@
                     ${hasLink ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="note-row__link">${title}</a>` : `<span class="note-row__plain">${title}</span>`}
                     ${isReported ? '<span class="note-row__flag">[Issue Reported]</span>' : ""}
                   </div>
-                  ${hasLink ? `<button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}">Report</button>` : ""}
+                  ${hasLink ? `
+                    <div class="note-row__actions">
+                      <button type="button" class="btn-share" data-title="${title}" data-link="${link}" data-course="${escapeHtml(course)}" title="Share note link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <circle cx="18" cy="5" r="3"></circle>
+                          <circle cx="6" cy="12" r="3"></circle>
+                          <circle cx="18" cy="19" r="3"></circle>
+                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        <span>Share</span>
+                      </button>
+                      <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" title="Report broken link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                          <line x1="4" y1="22" x2="4" y2="15"></line>
+                        </svg>
+                        <span>Report</span>
+                      </button>
+                    </div>
+                  ` : ""}
                 </li>
               `;
             });
@@ -2149,20 +2232,46 @@
           }
         });
 
-        ui.modalNotesStack.addEventListener("click", (e) => {
-          const btn = e.target.closest(".btn-report");
-          if (!btn) return;
-          setButtonLoading(ui.btnSubmitReport, false);
-          const title = btn.dataset.title;
-          const context = `${btn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
-          const row = btn.dataset.row || title;
+        // Combined handler for Share and Report
+        ui.modalNotesStack.addEventListener("click", async (e) => {
+          const shareBtn = e.target.closest(".btn-share");
+          if (shareBtn) {
+            const title = shareBtn.dataset.title || "Lecture Note";
+            const link = shareBtn.dataset.link || "";
+            const course = shareBtn.dataset.course || "";
 
-          closeSheetModal(ui.notesModal, () => {
-            ui.reportTitle.textContent = title;
-            ui.reportContext.textContent = context;
-            ui.reportForm.dataset.targetRow = row;
-            openSheetModal(ui.reportModal);
-          });
+            if (navigator.share) {
+              try {
+                await navigator.share({
+                  title: `${title} (${course})`,
+                  text: `ClassNotes: ${course} - ${title}`,
+                  url: link
+                });
+              } catch (err) {
+                if (err.name !== "AbortError") {
+                  copyToClipboard(link);
+                }
+              }
+            } else {
+              copyToClipboard(link);
+            }
+            return;
+          }
+
+          const reportBtn = e.target.closest(".btn-report");
+          if (reportBtn) {
+            setButtonLoading(ui.btnSubmitReport, false);
+            const title = reportBtn.dataset.title;
+            const context = `${reportBtn.dataset.course} • ${formatReadableDate(state.activeDate)}`;
+            const row = reportBtn.dataset.row || title;
+
+            closeSheetModal(ui.notesModal, () => {
+              ui.reportTitle.textContent = title;
+              ui.reportContext.textContent = context;
+              ui.reportForm.dataset.targetRow = row;
+              openSheetModal(ui.reportModal);
+            });
+          }
         });
 
         ui.reportForm.addEventListener("submit", async (e) => {
