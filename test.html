@@ -356,6 +356,7 @@
       width: 100%;
     }
 
+    /* Main filter bar buttons adapt proportionally & fill width without gaps */
     .nav-filters .nav-filter__item {
       flex: 1 1 auto;
       min-width: 72px;
@@ -471,6 +472,11 @@
     }
 
     /* Modal Form dropdowns */
+    .field .nav-filter__item {
+      width: 100%;
+      max-width: 100%;
+    }
+
     .field .nav-filter__trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
@@ -1492,7 +1498,7 @@
       }
 
       function escapeHtml(text) {
-        if (text == null) return "";
+        if (!text) return "";
         return String(text)
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
@@ -1680,7 +1686,7 @@
 
         const activeDept = getDeptMeta(state.dept);
 
-        if (activeDept) {
+        if (activeDept && state.dept) {
           renderMenuOptions(ui.secMenu, activeDept.sections, state.sec || null, false, "", "Sec");
           const selectedCourse = state.sec ? state.course : "ALL";
           renderMenuOptions(ui.courseMenu, activeDept.courses, selectedCourse, true, "All Courses");
@@ -1716,8 +1722,8 @@
       function syncModalSubDropdowns() {
         const dept = getDeptMeta(ui.formDept.value) || config.departments[0];
         if (dept) {
-          const validSec = dept.sections.includes(ui.formSec.value) ? ui.formSec.value : (dept.sections[0] || "");
-          const validCourse = dept.courses.includes(ui.formCourse.value) ? ui.formCourse.value : (dept.courses[0] || "");
+          const validSec = (dept.sections.includes(ui.formSec.value) && ui.formSec.value) || dept.sections[0] || "";
+          const validCourse = (dept.courses.includes(ui.formCourse.value) && ui.formCourse.value) || dept.courses[0] || "";
           setModalSec(validSec);
           setModalCourse(validCourse);
         }
@@ -1956,7 +1962,6 @@
         });
 
         const todayKey = formatDateKey(new Date());
-        const monthPrefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
 
         let markup = "<tr>";
         let col = 0;
@@ -1972,7 +1977,7 @@
             col = 0;
           }
 
-          const dateKey = `${monthPrefix}${String(d).padStart(2, "0")}`;
+          const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
           const isFuture = dateKey > todayKey;
           const isToday = dateKey === todayKey;
           const noteCount = notesCountMap[dateKey] || 0;
@@ -2008,13 +2013,7 @@
 
       function renderCourseDates() {
         const filteredNotes = filterActiveNotes();
-        const notesCountMap = {};
-        filteredNotes.forEach(n => {
-          if (n.date) {
-            notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1;
-          }
-        });
-        const uniqueDates = Object.keys(notesCountMap).sort();
+        const uniqueDates = [...new Set(filteredNotes.map(n => n.date).filter(Boolean))].sort();
 
         const titleParts = [];
         if (state.course !== "ALL") titleParts.push(state.course);
@@ -2034,7 +2033,7 @@
 
         ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
           const dateObj = parseLocalDate(dateStr);
-          const noteCount = notesCountMap[dateStr] || 0;
+          const noteCount = filteredNotes.filter(n => n.date === dateStr).length;
           const day = DAY_NAMES[dateObj.getDay()] || "";
 
           return `
@@ -2205,7 +2204,6 @@
           ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
         }
         window.addEventListener("scroll", closeAllMenus, { passive: true });
-        window.addEventListener("resize", closeAllMenus, { passive: true });
 
         ui.navFilters.addEventListener("click", (e) => {
           const trigger = e.target.closest(".nav-filter__trigger");
