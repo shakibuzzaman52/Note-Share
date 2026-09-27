@@ -499,6 +499,14 @@
       line-height: 1;
     }
 
+    /* Desktop title display */
+    .calendar-nav__title .month-short {
+      display: none;
+    }
+    .calendar-nav__title .month-full {
+      display: inline;
+    }
+
     .calendar-nav__actions {
       display: flex;
       align-items: center;
@@ -985,6 +993,26 @@
       .selection-banner { font-size: 1.2rem; }
       .calendar-nav__title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
+      
+      /* Mobile Month Title: show short version (e.g. Sep 2026) */
+      .calendar-nav__title .month-full {
+        display: none;
+      }
+      .calendar-nav__title .month-short {
+        display: inline;
+      }
+
+      /* Mobile Prev/Next: hide text, show only < and > icons */
+      #cal-prev span,
+      #cal-next span {
+        display: none;
+      }
+      #cal-prev,
+      #cal-next {
+        padding: 0.5rem 0.75rem;
+        gap: 0;
+      }
+
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
@@ -1823,7 +1851,11 @@
       function renderCalendarGrid() {
         const year = state.viewDate.getFullYear();
         const month = state.viewDate.getMonth();
-        ui.calendarTitle.textContent = `${MONTH_NAMES[month]} ${year}`;
+        const fullMonth = MONTH_NAMES[month];
+        const shortMonth = fullMonth.slice(0, 3);
+        
+        // Full month on desktop, abbreviated month on mobile
+        ui.calendarTitle.innerHTML = `<span class="month-full">${fullMonth}</span><span class="month-short">${shortMonth}</span> ${year}`;
 
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
