@@ -15,7 +15,6 @@
       --bg-hover: #E3DCCF;
       --bg-pill: #EBE4D5;
       --bg-class-notes-badge: #FFB4F9;
-
       --border-subtle: #E4DCD0;
 
       --text-main: #181716;
@@ -28,7 +27,6 @@
       --brand-dark: #181716;
       --brand-dark-hover: #2B2A28;
       --brand-danger: #DC2626;
-      --brand-danger-hover: #B91C1C;
 
       --radius-full: 9999px;
       --radius-lg: 16px;
@@ -44,34 +42,25 @@
       padding: 0;
     }
 
-    /* Prevent Page Layout Shift / Jumping */
     html {
       scrollbar-gutter: stable;
       scrollbar-width: thin;
       scrollbar-color: #D2CBC0 transparent;
+      scroll-behavior: smooth;
     }
 
     html::-webkit-scrollbar {
       width: 7px;
     }
-    html::-webkit-scrollbar-track {
-      background: transparent;
-    }
     html::-webkit-scrollbar-thumb {
       background-color: #D2CBC0;
       border-radius: var(--radius-full);
-    }
-    html::-webkit-scrollbar-thumb:hover {
-      background-color: #B8B0A5;
     }
 
     button, input {
       font-family: inherit;
       border: 0;
       outline: 0;
-    }
-
-    button {
       background: transparent;
     }
 
@@ -82,12 +71,11 @@
       font-size: 15px;
       line-height: 1.5;
       min-height: 100vh;
-      padding-bottom: 4rem;
+      overflow-x: hidden;
     }
 
     body.sheet-open {
       overflow: hidden;
-      touch-action: none;
     }
 
     .shell {
@@ -110,7 +98,7 @@
       cursor: pointer;
       text-decoration: none;
       white-space: nowrap;
-      transition: background-color 0.15s ease, opacity 0.15s ease;
+      transition: background-color 0.15s ease;
     }
 
     .btn:disabled {
@@ -130,7 +118,6 @@
       font-size: 1.25em;
       line-height: 1;
       margin-right: 0.25rem;
-      display: inline-block;
     }
 
     .btn--dark {
@@ -167,15 +154,11 @@
       background-color: var(--brand-danger);
       color: #FFFFFF;
     }
-    .btn--danger:hover:not(:disabled) {
-      background-color: var(--brand-danger-hover);
-    }
 
     .btn.is-loading {
       pointer-events: none;
       color: transparent;
     }
-
     .btn.is-loading::after {
       content: '';
       position: absolute;
@@ -187,7 +170,7 @@
       animation: spin 0.6s linear infinite;
     }
 
-    /* Header & Navigation */
+    /* Site Header */
     .site-header {
       width: 100%;
       display: flex;
@@ -195,7 +178,6 @@
       justify-content: space-between;
       padding: 1.75rem clamp(1rem, 4vw, 3.5rem);
       background: var(--bg-canvas);
-      position: relative;
     }
 
     .brand-mark {
@@ -206,7 +188,6 @@
       color: var(--text-main);
       line-height: 1;
     }
-
     .brand-mark sup {
       font-size: 0.75rem;
       font-family: var(--font-body);
@@ -219,26 +200,22 @@
     .header-nav {
       display: flex;
       align-items: center;
-      gap: clamp(2.5rem, 4.5vw, 3.75rem);
+      gap: clamp(2rem, 4vw, 3.5rem);
     }
 
     .nav-link {
-      padding: 0;
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
-      text-decoration: none;
       transition: color 0.15s ease;
     }
-
     .nav-link:hover {
       color: var(--text-main);
     }
 
     .header-menu-toggle {
       display: none;
-      padding: 0.25rem 0.5rem;
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--text-main);
@@ -256,17 +233,15 @@
       border-radius: var(--radius-full);
       padding: 0.15rem 0.85rem;
     }
-
     .hero__title .badge {
       background-color: var(--bg-class-notes-badge);
     }
 
-    /* Form controls */
+    /* Fields */
     .field {
       margin-bottom: 1rem;
       position: relative;
     }
-
     .field label {
       display: block;
       font-size: 0.75rem;
@@ -276,7 +251,6 @@
       color: var(--text-subtle);
       margin-bottom: 0.35rem;
     }
-
     .field input {
       width: 100%;
       background-color: var(--bg-subtle);
@@ -284,17 +258,16 @@
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
       color: var(--text-main);
-      transition: background-color 0.15s ease, border-color 0.15s ease;
       border: 1px solid transparent;
+      transition: background-color 0.15s ease;
     }
-
     .field input:focus {
       background-color: var(--bg-hover);
     }
 
     /* Hero */
     .hero {
-      padding-top: clamp(3.5rem, 6vw, 5.5rem);
+      padding-top: clamp(3rem, 5.5vw, 5rem);
       text-align: center;
       max-width: 840px;
       margin: 0 auto;
@@ -318,65 +291,44 @@
       color: var(--text-muted);
       max-width: 500px;
       line-height: 1.6;
-      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
-    }
-
-    /* Selection Banner */
-    .selection-banner-wrapper {
-      margin: 0 auto 0.85rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
+      margin: 0 auto clamp(1.8rem, 3.5vw, 2.5rem);
     }
 
     .selection-banner {
       font-family: var(--font-display);
       font-size: clamp(1.25rem, 2.3vw, 1.65rem);
       font-weight: 400;
-      letter-spacing: -0.015em;
       color: var(--text-main);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
       gap: 0.45rem;
-      line-height: 1.35;
     }
-
     .selection-banner .badge {
       background-color: var(--brand-primary);
       color: #FFFFFF;
-      font-size: 0.95em;
       font-style: normal;
     }
 
     /* Filters Bar */
     .nav-filters {
       display: flex;
-      flex-wrap: nowrap;
       align-items: center;
       width: 100%;
       margin: 0 0 1rem;
       padding: 0.35rem 0 1rem;
       border-bottom: 1px solid var(--border-subtle);
-      position: relative;
       gap: clamp(0.35rem, 1.2vw, 0.75rem);
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
-
     .nav-filters::-webkit-scrollbar {
       display: none;
     }
 
     .nav-filter__item {
       position: relative;
-      min-width: 0;
-    }
-
-    .nav-filters .nav-filter__item {
       flex: 1 1 auto;
       min-width: 72px;
       max-width: 35%;
@@ -386,7 +338,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: clamp(0.2rem, 0.8vw, 0.45rem);
+      gap: 0.4rem;
       background-color: var(--bg-subtle);
       border-radius: var(--radius-full);
       padding: 0.6rem clamp(0.4rem, 1.2vw, 1.15rem);
@@ -394,41 +346,23 @@
       font-size: clamp(0.75rem, 1.1vw, 0.875rem);
       font-weight: 600;
       cursor: pointer;
-      user-select: none;
       width: 100%;
-      -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      border: 1px solid transparent;
+      transition: background-color 0.15s ease;
     }
-
-    .nav-filter__trigger:hover,
-    .nav-filter__trigger:focus-visible {
+    .nav-filter__trigger:hover {
       background-color: var(--bg-hover);
     }
-
-    .nav-filter__trigger[aria-expanded="true"] {
-      background-color: var(--bg-hover);
-      border-color: var(--border-subtle);
+    .nav-filter__trigger[aria-expanded="true"] .nav-filter__arrow {
+      transform: rotate(180deg);
+    }
+    .nav-filter__arrow {
+      transition: transform 0.2s ease;
     }
 
     .nav-filter__text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      pointer-events: none;
-      min-width: 0;
-      text-align: center;
-    }
-
-    .nav-filter__arrow {
-      pointer-events: none;
-      flex-shrink: 0;
-      color: var(--text-muted);
-      transition: transform 0.2s ease;
-    }
-
-    .nav-filter__trigger[aria-expanded="true"] .nav-filter__arrow {
-      transform: rotate(180deg);
     }
 
     .nav-filter__menu {
@@ -437,7 +371,6 @@
       left: 0;
       width: 100%;
       min-width: 220px;
-      max-width: min(420px, calc(100vw - 2rem));
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
@@ -446,13 +379,7 @@
       max-height: 260px;
       overflow-y: auto;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      scrollbar-width: none;
     }
-
-    .nav-filter__menu::-webkit-scrollbar {
-      display: none;
-    }
-
     .nav-filter__menu[hidden] {
       display: none;
     }
@@ -467,21 +394,15 @@
       color: var(--text-main);
       text-align: left;
       cursor: pointer;
-      word-break: break-word;
-      line-height: 1.4;
-      transition: background-color 0.12s ease;
     }
-
     .nav-filter__option:hover {
       background-color: var(--bg-hover);
     }
-
     .nav-filter__option.is-selected {
       font-weight: 700;
       background-color: var(--bg-pill);
       color: var(--brand-primary);
     }
-
     .nav-filter__empty {
       padding: 0.75rem 1rem;
       color: var(--text-subtle);
@@ -489,36 +410,21 @@
     }
 
     /* Modal Form dropdowns */
-    .field .nav-filter__item {
-      width: 100%;
-    }
-
+    .field .nav-filter__item { width: 100%; }
     .field .nav-filter__trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
     }
-
     .field .nav-filter__menu {
       width: 100%;
       min-width: 100%;
-      max-width: 100%;
       top: calc(100% + 4px);
       z-index: 200;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
 
-    .content-area {
-      margin-top: 0.5rem;
-    }
-
-    /* Views */
-    #calendar-view,
-    .course-dates-view {
-      padding: 0.5rem 0 1rem;
-    }
-
+    /* Calendar Grid */
     .calendar-nav {
       display: flex;
       align-items: center;
@@ -534,19 +440,11 @@
       font-family: var(--font-display);
       font-size: 2.75rem;
       font-weight: 400;
-      letter-spacing: -0.02em;
       color: var(--text-main);
       line-height: 1;
     }
-
     .calendar-nav__title .month-short {
       display: none;
-    }
-
-    .calendar-nav__actions {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
     }
 
     .calendar-grid {
@@ -555,7 +453,6 @@
       border-spacing: 0 0.85rem;
       table-layout: fixed;
     }
-
     .calendar-grid th {
       font-size: 0.78rem;
       font-weight: 700;
@@ -572,9 +469,7 @@
       vertical-align: middle;
       padding: 0;
     }
-
-    .calendar-cell--empty,
-    .calendar-cell--disabled {
+    .calendar-cell--empty {
       pointer-events: none;
     }
 
@@ -592,29 +487,20 @@
       color: var(--text-main);
       border-radius: 50%;
       cursor: pointer;
-      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      transition: background-color 0.15s ease;
     }
-
     .calendar-cell__btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
-      border-color: #D6CEC0;
     }
-
     .calendar-cell--today .calendar-cell__btn {
       border: 2px solid var(--text-main);
       font-weight: 700;
     }
-
     .calendar-cell.has-notes .calendar-cell__btn {
       border: 2px solid var(--brand-primary);
       color: var(--brand-primary);
       font-weight: 700;
     }
-
-    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      border-color: var(--brand-primary-hover);
-    }
-
     .calendar-cell--disabled .calendar-cell__btn {
       background-color: transparent;
       border-color: transparent;
@@ -623,6 +509,7 @@
       cursor: default;
     }
 
+    /* Course Dates Grid */
     .course-dates__header {
       display: flex;
       align-items: baseline;
@@ -630,30 +517,19 @@
       margin-bottom: 1.25rem;
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
-      flex-wrap: wrap;
     }
-
     .course-dates__title {
       font-family: var(--font-display);
       font-size: 2.25rem;
       font-weight: 400;
       color: var(--text-main);
-      line-height: 1.1;
     }
-
-    .course-dates__count {
-      font-size: 0.875rem;
-      color: var(--text-subtle);
-      font-weight: 600;
-    }
-
     .course-dates__grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 0.85rem;
       width: 100%;
     }
-
     .course-card {
       background-color: var(--bg-pill);
       border: 1px solid var(--border-subtle);
@@ -663,37 +539,18 @@
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 0.75rem;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
       text-align: left;
     }
-
-    .course-card:hover {
-      background-color: var(--bg-hover);
-      border-color: #D6CEC0;
-    }
-
-    .course-card__info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
     .course-card__date {
       font-weight: 600;
       font-size: 0.95rem;
       color: var(--text-main);
-      line-height: 1.3;
     }
-
     .course-card__day {
       font-size: 0.8125rem;
       color: var(--text-subtle);
-      font-weight: 500;
     }
-
     .course-card__badge {
-      align-self: flex-start;
       background-color: var(--bg-subtle);
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
@@ -701,7 +558,189 @@
       border-radius: var(--radius-full);
       font-size: 0.75rem;
       font-weight: 600;
-      white-space: nowrap;
+    }
+
+    /* ========================================================
+       FEATURE SECTION: CLIP-PATH ELLIPSE CURVE (ACCURATELY FLAT AT TOP)
+       ======================================================== */
+    .curvedHero {
+      width: 100%;
+      position: relative;
+      margin: 80px 0 0 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: var(--bg-canvas);
+    }
+
+    .curvedHeroContentContainer {
+      background-color: #FFFFFF;
+      width: 100%;
+      padding: clamp(3.5rem, 6vw, 5.5rem) 0 clamp(4.5rem, 8vw, 8rem) 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      clip-path: ellipse(82% 100% at 50% 100%);
+      will-change: clip-path;
+    }
+
+    @media (max-width: 768px) {
+      .curvedHero {
+        margin: 50px 0 0 0;
+      }
+      .curvedHeroContentContainer {
+        padding: 3rem 0 5.5rem 0;
+        clip-path: ellipse(128% 100% at 50% 100%);
+      }
+    }
+
+    .problem-showcase__inner {
+      max-width: 680px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 3.5vw, 2rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Badge */
+    .problem-badge-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+    .problem-pill {
+      display: inline-flex;
+      align-items: center;
+      background-color: #EFE8DA;
+      color: #2D2A26;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 0.38rem 0.95rem;
+      border-radius: var(--radius-full);
+    }
+    .problem-icon-bubble {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--bg-class-notes-badge);
+      color: #181716;
+      flex-shrink: 0;
+    }
+    .problem-icon-bubble svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    /* Headings */
+    .problem-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5.2vw, 4.1rem);
+      font-weight: 400;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      color: var(--text-main);
+      max-width: 580px;
+      margin: 0 auto 1.15rem;
+    }
+    .problem-subheading {
+      font-size: clamp(1rem, 1.25vw, 1.125rem);
+      color: var(--text-muted);
+      max-width: 440px;
+      line-height: 1.55;
+      margin: 0 auto clamp(2.5rem, 4.5vw, 3.5rem);
+    }
+
+    /* Timeline & Cards */
+    .problem-timeline {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .problem-timeline__track {
+      position: absolute;
+      top: 14px;
+      bottom: -1.75rem;
+      left: 50%;
+      margin-left: -1px;
+      width: 0;
+      border-left: 2.5px dotted var(--brand-primary);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .problem-timeline__node {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background-color: var(--brand-primary);
+      border: 4px solid var(--bg-surface);
+      box-shadow: 0 0 0 2px var(--brand-primary);
+      z-index: 2;
+      margin-bottom: 2.75rem;
+    }
+
+    .problem-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      border-radius: 22px;
+      padding: clamp(1.85rem, 4vw, 2.5rem);
+      margin-bottom: 3.25rem;
+      text-align: left;
+      transform-origin: center center;
+    }
+
+    /* Card 01: White with distinct warm cream border, tilted right */
+    .problem-card:nth-of-type(1) {
+      background-color: #FFFFFF;
+      border: 2.5px solid #F0E6D2;
+      transform: rotate(1.2deg);
+    }
+
+    /* Card 02: Warm cream background, tilted left */
+    .problem-card:nth-of-type(2) {
+      background-color: #F4ECE0;
+      border: 2.5px solid #F4ECE0;
+      transform: rotate(-1.8deg);
+    }
+
+    /* Card 03: White with distinct warm cream border, tilted right */
+    .problem-card:nth-of-type(3) {
+      background-color: #FFFFFF;
+      border: 2.5px solid #F0E6D2;
+      transform: rotate(1.1deg);
+      margin-bottom: 0;
+    }
+
+    .problem-card__num {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 3.1rem;
+      font-weight: 400;
+      line-height: 1;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+    }
+
+    .problem-card__text {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--text-main);
+    }
+    .problem-card__text strong {
+      font-weight: 700;
     }
 
     /* Modals */
@@ -718,12 +757,10 @@
       padding: 2rem;
       color: var(--text-main);
     }
-
     .dialog-modal[open] {
       display: flex;
       flex-direction: column;
     }
-
     .dialog-modal > form {
       display: flex;
       flex-direction: column;
@@ -731,7 +768,6 @@
       min-height: 0;
       overflow: hidden;
     }
-
     .dialog-modal::backdrop {
       background: rgba(0, 0, 0, 0.55);
       cursor: pointer;
@@ -741,49 +777,30 @@
       display: none;
       width: 100%;
       justify-content: center;
-      align-items: center;
       padding: 0.5rem 0 0.85rem;
-      touch-action: none;
-      user-select: none;
-      flex-shrink: 0;
       cursor: grab;
     }
-
-    .bottom-sheet__handle:active {
-      cursor: grabbing;
-    }
-
     .bottom-sheet__handle {
       width: 42px;
       height: 4.5px;
       background-color: #D2CBC0;
       border-radius: var(--radius-full);
-      transition: background-color 0.15s ease;
     }
 
     .dialog-modal__header {
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
-      flex-shrink: 0;
     }
-
     .dialog-modal__title {
       font-family: var(--font-display);
       font-size: 1.75rem;
       font-weight: 400;
-      letter-spacing: -0.02em;
       margin-bottom: 0.2rem;
     }
-
     .dialog-modal__desc {
       font-size: 0.8125rem;
       color: var(--text-subtle);
       font-weight: 600;
-    }
-
-    .dialog-modal__text {
-      font-size: 0.875rem;
-      color: var(--text-muted);
     }
 
     .dialog-modal__actions {
@@ -792,20 +809,15 @@
       justify-content: flex-end;
       gap: 0.75rem;
       margin-top: 1rem;
-      flex-shrink: 0;
     }
 
-    /* Modal Scroll Areas - Completely Hide Scrollbars */
     .notes-stack,
     .modal-body-scroll {
       flex: 1 1 auto;
       overflow-y: auto;
       margin-top: 1rem;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
       scrollbar-width: none;
     }
-
     .notes-stack::-webkit-scrollbar,
     .modal-body-scroll::-webkit-scrollbar {
       display: none;
@@ -817,40 +829,14 @@
       gap: 0.85rem;
     }
 
-    .modal-body-scroll {
-      padding-bottom: 1.5rem;
-    }
-
-    .modal-body-scroll .field:last-child {
-      margin-bottom: 0;
-    }
-
     .empty-state {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
       padding: 3.5rem 1.5rem;
       gap: 0.85rem;
-      width: 100%;
-      grid-column: 1 / -1;
-      margin: 0 auto;
-    }
-
-    .empty-state__icon {
-      width: 44px;
-      height: 44px;
       color: var(--text-subtle);
-      opacity: 0.75;
-    }
-
-    .empty-state__text {
-      font-size: 0.9375rem;
-      color: var(--text-subtle);
-      font-weight: 500;
-      max-width: 420px;
-      line-height: 1.45;
     }
 
     .note-cluster {
@@ -858,58 +844,40 @@
       border-radius: var(--radius-md);
       padding: 0.95rem 1.15rem;
     }
-
     .note-cluster__course {
       font-size: 1rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 0.4rem;
     }
-
     .note-cluster__topic-group {
       margin-left: 1.1rem;
       margin-top: 0.45rem;
-      margin-bottom: 0.65rem;
     }
-
-    .note-cluster__topic-group:last-child {
-      margin-bottom: 0;
-    }
-
     .note-cluster__topic-header {
       font-size: 0.875rem;
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 0.35rem;
     }
-
     .note-cluster__list {
       list-style: none;
-      margin-left: 0.25rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
     }
-
     .note-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.6rem;
-      padding: 0.15rem 0;
-      width: 100%;
     }
-
     .note-row__left {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      font-size: 0.9rem;
       min-width: 0;
-      flex: 1 1 auto;
     }
-
-    /* Note Title Pill / Button */
     .note-title-btn,
     .note-title-plain {
       display: inline-flex;
@@ -920,57 +888,16 @@
       padding: 0.38rem 0.85rem;
       font-size: 0.875rem;
       font-weight: 600;
-      line-height: 1.35;
-      min-width: 0;
-      max-width: 100%;
-    }
-
-    .note-title-btn {
       color: var(--brand-primary);
       text-decoration: none;
-      cursor: pointer;
-      transition: background-color 0.15s ease, color 0.15s ease;
     }
-
-    .note-title-btn:hover {
-      background-color: var(--bg-hover);
-      color: var(--brand-primary-hover);
-    }
-
     .note-title-plain {
       color: var(--text-main);
-      cursor: default;
     }
-
     .note-title-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      min-width: 0;
-    }
-
-    .note-row__icon {
-      width: 14px;
-      height: 14px;
-      color: var(--text-subtle);
-      flex-shrink: 0;
-    }
-
-    .note-row__flag {
-      color: var(--brand-danger);
-      font-weight: 600;
-      font-size: 0.72rem;
-      margin-left: 0.25rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    /* Actions: Icon-only buttons */
-    .note-row__actions {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      flex-shrink: 0;
     }
 
     .btn-share,
@@ -984,32 +911,9 @@
       border-radius: 50%;
       background-color: var(--bg-subtle);
       color: var(--text-muted);
-      transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-      flex-shrink: 0;
-      padding: 0;
     }
-
-    .btn-share svg,
-    .btn-report svg {
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-    }
-
-    .btn-share:hover {
-      color: var(--brand-primary);
-      background-color: var(--bg-hover);
-    }
-
-    .btn-report:hover {
-      color: var(--brand-danger);
-      background-color: var(--bg-hover);
-    }
-
-    .btn-share:active,
-    .btn-report:active {
-      transform: scale(0.94);
-    }
+    .btn-share:hover { color: var(--brand-primary); }
+    .btn-report:hover { color: var(--brand-danger); }
 
     /* Toast Notification */
     .toast-tray {
@@ -1022,7 +926,6 @@
       gap: 0.5rem;
       pointer-events: none;
     }
-
     .toast {
       pointer-events: auto;
       background: var(--brand-dark);
@@ -1040,21 +943,8 @@
     }
 
     @media (max-width: 768px) {
-      .site-header {
-        padding: 1.25rem 1rem;
-      }
-
-      .brand-mark,
-      .header-menu-toggle {
-        position: relative;
-        z-index: 320;
-      }
-
-      .header-menu-toggle {
-        display: block;
-        font-size: 0.9rem;
-      }
-
+      .site-header { padding: 1.25rem 1rem; }
+      .header-menu-toggle { display: block; }
       .header-nav {
         display: flex;
         position: fixed;
@@ -1066,119 +956,35 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 1.25rem;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
         transition: opacity 0.22s ease, visibility 0.22s ease;
       }
-
       .header-nav.is-open {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
       }
-
-      .nav-link {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-main);
-        width: 100%;
-        text-align: left;
-        padding: 0.25rem 0;
-      }
-
-      .header-nav .btn--primary {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0.85rem 1.25rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-      }
-
-      .hero { padding-top: 2rem; }
-      .hero__desc { margin-bottom: 1.5rem; }
-      .selection-banner { font-size: 1.2rem; }
-
-      .nav-filters {
-        gap: 0.45rem;
-        padding: 0.35rem 0 0.85rem;
-      }
-
-      .nav-filters .nav-filter__item {
-        flex: 1 0 auto;
-        max-width: 205px;
-      }
-
-      .nav-filters .nav-filter__trigger {
-        padding: 0.55rem 0.65rem;
-        font-size: 0.82rem;
-        gap: 0.3rem;
-      }
-
-      .nav-filters .nav-filter__arrow {
-        width: 10px;
-        height: 6px;
-      }
-
       .calendar-nav__title { font-size: 2.15rem; }
-      .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
-
-      .calendar-nav__title .month-full {
-        display: none;
-      }
-      .calendar-nav__title .month-short {
-        display: inline;
-      }
-
-      #cal-prev span,
-      #cal-next span {
-        display: none;
-      }
-      #cal-prev,
-      #cal-next {
-        padding: 0.5rem 0.75rem;
-        gap: 0;
-      }
-
-      .calendar-grid { border-spacing: 0 0.4rem; }
+      .calendar-nav__title .month-full { display: none; }
+      .calendar-nav__title .month-short { display: inline; }
+      #cal-prev span, #cal-next span { display: none; }
       .calendar-cell { height: 46px; }
-      .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
+      .calendar-cell__btn { width: 38px; height: 38px; }
 
       .dialog-modal.bottom-sheet {
         inset: auto 0 0 0;
         margin: 0 auto;
-        max-width: 100%;
         width: 100%;
         max-height: 82vh;
         border-radius: 20px 20px 0 0;
-        border-bottom: 0;
         padding: 0.5rem 1.25rem 1.25rem;
         transform: translateY(100%);
-        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        overscroll-behavior: contain;
-        will-change: transform;
+        transition: transform 0.28s ease;
       }
-
-      .dialog-modal.bottom-sheet.is-open {
-        transform: translateY(0);
-      }
-
-      .dialog-modal.bottom-sheet.is-dragging {
-        transition: none;
-      }
-
-      .dialog-modal.bottom-sheet .dialog-modal__header {
-        cursor: grab;
-        user-select: none;
-        touch-action: none;
-      }
-
-      .bottom-sheet__handle-wrapper {
-        display: flex;
-      }
-
+      .dialog-modal.bottom-sheet.is-open { transform: translateY(0); }
+      .bottom-sheet__handle-wrapper { display: flex; }
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
@@ -1186,13 +992,12 @@
 <body>
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
-
-    <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
+    <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false">Menu</button>
 
     <nav class="header-nav" id="header-nav">
-      <button type="button" class="nav-link">Features</button>
-      <button type="button" class="nav-link">How to Find</button>
-      <button type="button" class="nav-link">How to Upload</button>
+      <button type="button" class="nav-link" id="nav-features">Features</button>
+      <button type="button" class="nav-link" id="nav-how-find">How to Find</button>
+      <button type="button" class="nav-link" id="nav-how-upload">How to Upload</button>
       <button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn-plus">+</span>Add Note</button>
     </nav>
   </header>
@@ -1208,45 +1013,37 @@
     </section>
 
     <!-- Filters Bar -->
-    <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
+    <nav class="nav-filters" id="main-nav-filters" aria-label="Filters">
       <div class="nav-filter__item" data-filter="dept">
-        <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-expanded="false">
           <span class="nav-filter__text" id="dept-label">Department</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="nav-filter__menu" id="dept-menu" hidden role="listbox"></div>
+        <div class="nav-filter__menu" id="dept-menu" hidden></div>
       </div>
 
       <div class="nav-filter__item" data-filter="sec">
-        <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-expanded="false">
           <span class="nav-filter__text" id="sec-label">Section</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="nav-filter__menu" id="sec-menu" hidden role="listbox"></div>
+        <div class="nav-filter__menu" id="sec-menu" hidden></div>
       </div>
 
       <div class="nav-filter__item" data-filter="course">
-        <button type="button" class="nav-filter__trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <button type="button" class="nav-filter__trigger" id="course-trigger" aria-expanded="false">
           <span class="nav-filter__text" id="course-label">Course</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="nav-filter__menu" id="course-menu" hidden role="listbox"></div>
+        <div class="nav-filter__menu" id="course-menu" hidden></div>
       </div>
 
       <div class="nav-filter__item" data-filter="topic">
-        <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-expanded="false">
           <span class="nav-filter__text" id="topic-label">Topic</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="nav-filter__menu" id="topic-menu" hidden role="listbox"></div>
+        <div class="nav-filter__menu" id="topic-menu" hidden></div>
       </div>
     </nav>
 
@@ -1256,17 +1053,13 @@
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
           <div class="calendar-nav__actions">
             <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13L5 8L10 3"/>
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13L5 8L10 3"/></svg>
               <span>Prev</span>
             </button>
             <button type="button" class="btn btn--dark" id="cal-today">Today</button>
             <button type="button" class="btn btn--subtle" id="cal-next" aria-label="Next Month">
               <span>Next</span>
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 3L11 8L6 13"/>
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3L11 8L6 13"/></svg>
             </button>
           </div>
         </div>
@@ -1274,13 +1067,7 @@
         <table class="calendar-grid">
           <thead>
             <tr>
-              <th scope="col">Sun</th>
-              <th scope="col">Mon</th>
-              <th scope="col">Tue</th>
-              <th scope="col">Wed</th>
-              <th scope="col">Thu</th>
-              <th scope="col">Fri</th>
-              <th scope="col">Sat</th>
+              <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
             </tr>
           </thead>
           <tbody id="calendar-cells"></tbody>
@@ -1295,137 +1082,171 @@
         <div class="course-dates__grid" id="course-dates-list"></div>
       </section>
     </main>
-
-    <!-- Modal: View notes -->
-    <dialog class="dialog-modal bottom-sheet" id="notes-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
-      </div>
-
-      <div class="dialog-modal__header">
-        <h3 class="dialog-modal__title" id="modal-date-label"></h3>
-        <span class="dialog-modal__desc" id="modal-notes-total"></span>
-      </div>
-
-      <div class="notes-stack" id="modal-notes-stack"></div>
-
-      <div class="dialog-modal__actions">
-        <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
-      </div>
-    </dialog>
-
-    <!-- Modal: Add note -->
-    <dialog class="dialog-modal bottom-sheet" id="add-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
-      </div>
-
-      <form id="add-note-form">
-        <div class="dialog-modal__header">
-          <h3 class="dialog-modal__title">Add Class Note</h3>
-          <span class="dialog-modal__desc">Share lecture slides, handouts, and notes</span>
-        </div>
-
-        <div class="modal-body-scroll">
-          <div class="field">
-            <label for="form-dept-trigger">Department:</label>
-            <div class="nav-filter__item" data-field="dept">
-              <button type="button" class="nav-filter__trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false">
-                <span class="nav-filter__text" id="form-dept-label">Department</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <div class="nav-filter__menu" id="form-dept-menu" hidden role="listbox"></div>
-              <input type="hidden" id="input-dept" name="department" required>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="form-sec-trigger">Section:</label>
-            <div class="nav-filter__item" data-field="sec">
-              <button type="button" class="nav-filter__trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false">
-                <span class="nav-filter__text" id="form-sec-label">Section</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <div class="nav-filter__menu" id="form-sec-menu" hidden role="listbox"></div>
-              <input type="hidden" id="input-section" name="section" required>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="input-date">Date:</label>
-            <input type="date" id="input-date" required>
-          </div>
-
-          <div class="field">
-            <label for="form-course-trigger">Course:</label>
-            <div class="nav-filter__item" data-field="course">
-              <button type="button" class="nav-filter__trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false">
-                <span class="nav-filter__text" id="form-course-label">Course</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <div class="nav-filter__menu" id="form-course-menu" hidden role="listbox"></div>
-              <input type="hidden" id="input-course" name="course" required>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="input-topic">Topic:</label>
-            <input type="text" id="input-topic" placeholder="e.g. Graph Traversal Algorithms" required>
-          </div>
-
-          <div class="field">
-            <label for="input-title">Title:</label>
-            <input type="text" id="input-title" placeholder="e.g. Lecture Slide 12" required>
-          </div>
-
-          <div class="field">
-            <label for="input-link">Resource URL:</label>
-            <input type="text" id="input-link" inputmode="url" placeholder="https://... (Drive, Notion, OneDrive, Dropbox, etc.)">
-          </div>
-        </div>
-
-        <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
-          <button type="submit" class="btn btn--primary" id="btn-submit-note">Submit Note</button>
-        </div>
-      </form>
-    </dialog>
-
-    <!-- Modal: Report link -->
-    <dialog class="dialog-modal bottom-sheet" id="report-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
-      </div>
-      <form id="report-link-form">
-        <div class="dialog-modal__header">
-          <h3 class="dialog-modal__title">Report Broken Link</h3>
-          <span class="dialog-modal__desc">Notify classmates about broken links</span>
-        </div>
-        <div class="modal-body-scroll">
-          <p class="field">
-            <strong>Resource:</strong> <span id="report-note-title"></span><br>
-            <small id="report-note-context" class="dialog-modal__desc"></small>
-          </p>
-          <p class="field dialog-modal__text">
-            Flagging this note notifies section classmates that the link is expired or inaccessible.
-          </p>
-        </div>
-
-        <div class="dialog-modal__actions">
-          <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
-          <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
-        </div>
-      </form>
-    </dialog>
   </div>
 
+  <!-- FEATURE SECTION: CLIP-PATH ELLIPSE DOME & ALTERNATING CARDS -->
+  <section class="curvedHero" id="features-problem-section">
+    <div class="curvedHeroContentContainer">
+      <div class="problem-showcase__inner">
+        <!-- Badge -->
+        <div class="problem-badge-wrap">
+          <span class="problem-pill">Problem</span>
+          <span class="problem-icon-bubble" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="12" y2="12"></line><polyline points="5 12 12 12 12 5"></polyline></svg>
+          </span>
+        </div>
+
+        <!-- Heading & Subheading -->
+        <h2 class="problem-heading">
+          You already know which invoices are overdue.
+        </h2>
+        <p class="problem-subheading">
+          You just haven't had time to do anything about it.
+        </p>
+
+        <!-- Timeline with Blue Node and Dotted Track -->
+        <div class="problem-timeline">
+          <div class="problem-timeline__track" aria-hidden="true"></div>
+          <div class="problem-timeline__node" aria-hidden="true"></div>
+
+          <!-- Card 01 (White background with warm cream border) -->
+          <article class="problem-card">
+            <span class="problem-card__num">01</span>
+            <p class="problem-card__text">
+              <strong>It takes too long.</strong> Logging in, finding the invoice, writing a reminder, sending it, tracking whether they responded. For one invoice that's fine. For thirty it's a part-time job.
+            </p>
+          </article>
+
+          <!-- Card 02 (Cream background with matching border) -->
+          <article class="problem-card">
+            <span class="problem-card__num">02</span>
+            <p class="problem-card__text">
+              <strong>It's easy to forget.</strong> You meant to follow up on Tuesday. Then a client called. Then it was Friday. That invoice is now 60 days overdue and the conversation just got awkward.
+            </p>
+          </article>
+
+          <!-- Card 03 (White background with warm cream border) -->
+          <article class="problem-card">
+            <span class="problem-card__num">03</span>
+            <p class="problem-card__text">
+              <strong>Nothing is consistent.</strong> Some clients get three reminders. Others slip through completely. There's no system, just good intentions and a messy inbox.
+            </p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal: View notes -->
+  <dialog class="dialog-modal bottom-sheet" id="notes-modal">
+    <div class="bottom-sheet__handle-wrapper"><div class="bottom-sheet__handle"></div></div>
+    <div class="dialog-modal__header">
+      <h3 class="dialog-modal__title" id="modal-date-label"></h3>
+      <span class="dialog-modal__desc" id="modal-notes-total"></span>
+    </div>
+    <div class="notes-stack" id="modal-notes-stack"></div>
+    <div class="dialog-modal__actions">
+      <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
+    </div>
+  </dialog>
+
+  <!-- Modal: Add note -->
+  <dialog class="dialog-modal bottom-sheet" id="add-modal">
+    <div class="bottom-sheet__handle-wrapper"><div class="bottom-sheet__handle"></div></div>
+    <form id="add-note-form">
+      <div class="dialog-modal__header">
+        <h3 class="dialog-modal__title">Add Class Note</h3>
+        <span class="dialog-modal__desc">Share lecture slides, handouts, and notes</span>
+      </div>
+
+      <div class="modal-body-scroll">
+        <div class="field">
+          <label>Department:</label>
+          <div class="nav-filter__item" data-field="dept">
+            <button type="button" class="nav-filter__trigger" id="form-dept-trigger" aria-expanded="false">
+              <span class="nav-filter__text" id="form-dept-label">Department</span>
+              <svg class="nav-filter__arrow" width="11" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="nav-filter__menu" id="form-dept-menu" hidden></div>
+            <input type="hidden" id="input-dept" name="department" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Section:</label>
+          <div class="nav-filter__item" data-field="sec">
+            <button type="button" class="nav-filter__trigger" id="form-sec-trigger" aria-expanded="false">
+              <span class="nav-filter__text" id="form-sec-label">Section</span>
+              <svg class="nav-filter__arrow" width="11" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="nav-filter__menu" id="form-sec-menu" hidden></div>
+            <input type="hidden" id="input-section" name="section" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="input-date">Date:</label>
+          <input type="date" id="input-date" required>
+        </div>
+
+        <div class="field">
+          <label>Course:</label>
+          <div class="nav-filter__item" data-field="course">
+            <button type="button" class="nav-filter__trigger" id="form-course-trigger" aria-expanded="false">
+              <span class="nav-filter__text" id="form-course-label">Course</span>
+              <svg class="nav-filter__arrow" width="11" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="nav-filter__menu" id="form-course-menu" hidden></div>
+            <input type="hidden" id="input-course" name="course" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="input-topic">Topic:</label>
+          <input type="text" id="input-topic" placeholder="e.g. Graph Traversal Algorithms" required>
+        </div>
+
+        <div class="field">
+          <label for="input-title">Title:</label>
+          <input type="text" id="input-title" placeholder="e.g. Lecture Slide 12" required>
+        </div>
+
+        <div class="field">
+          <label for="input-link">Resource URL:</label>
+          <input type="text" id="input-link" inputmode="url" placeholder="https://... (Drive, Notion, etc.)">
+        </div>
+      </div>
+
+      <div class="dialog-modal__actions">
+        <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn--primary" id="btn-submit-note">Submit Note</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: Report link -->
+  <dialog class="dialog-modal bottom-sheet" id="report-modal">
+    <div class="bottom-sheet__handle-wrapper"><div class="bottom-sheet__handle"></div></div>
+    <form id="report-link-form">
+      <div class="dialog-modal__header">
+        <h3 class="dialog-modal__title">Report Broken Link</h3>
+        <span class="dialog-modal__desc">Notify classmates about broken links</span>
+      </div>
+      <div class="modal-body-scroll">
+        <p class="field">
+          <strong>Resource:</strong> <span id="report-note-title"></span><br>
+          <small id="report-note-context" class="dialog-modal__desc"></small>
+        </p>
+      </div>
+      <div class="dialog-modal__actions">
+        <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
+      </div>
+    </form>
+  </dialog>
+
   <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
+
   <script src="config.js"></script>
   <script>
     (function () {
@@ -1448,14 +1269,12 @@
       ];
       const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-      const now = new Date();
-
       const state = {
         dept: "",
         sec: "",
         course: "ALL",
         topic: "ALL",
-        viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
+        viewDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         activeDate: null,
         notes: [],
         manualTitleEdited: false
@@ -1464,6 +1283,9 @@
       const ui = {
         mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
         headerNav: document.getElementById("header-nav"),
+        navFeaturesBtn: document.getElementById("nav-features"),
+        navHowFindBtn: document.getElementById("nav-how-find"),
+        navHowUploadBtn: document.getElementById("nav-how-upload"),
 
         selectionBanner: document.getElementById("selection-banner"),
         navFilters: document.getElementById("main-nav-filters"),
@@ -1489,6 +1311,9 @@
         courseTitle: document.getElementById("course-view-title"),
         courseCount: document.getElementById("course-view-count"),
         courseDatesList: document.getElementById("course-dates-list"),
+
+        curvedHeroSection: document.getElementById("features-problem-section"),
+        curvedContainer: document.querySelector(".curvedHeroContentContainer"),
 
         notesModal: document.getElementById("notes-modal"),
         modalDateLabel: document.getElementById("modal-date-label"),
@@ -1568,25 +1393,18 @@
       }
 
       function renderEmptyState(message) {
-        return `
-          <div class="empty-state">
-            <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="9" y1="13" x2="15" y2="13"></line>
-            </svg>
-            <p class="empty-state__text">${escapeHtml(message)}</p>
-          </div>
-        `;
+        return `<div class="empty-state"><p>${escapeHtml(message)}</p></div>`;
       }
 
+      let toastTimer = null;
       function showToast(message) {
+        clearTimeout(toastTimer);
         ui.toastTray.innerHTML = "";
         const toast = document.createElement("div");
         toast.className = "toast";
         toast.textContent = message;
         ui.toastTray.appendChild(toast);
-        setTimeout(() => {
+        toastTimer = setTimeout(() => {
           toast.style.opacity = "0";
           setTimeout(() => toast.remove(), 250);
         }, 2800);
@@ -1594,27 +1412,7 @@
 
       function copyToClipboard(text) {
         if (!text) return;
-        const notify = (ok) => showToast(ok ? "Link copied to clipboard!" : "Unable to copy link.");
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(text).then(() => notify(true)).catch(() => fallbackCopy(text, notify));
-        } else {
-          fallbackCopy(text, notify);
-        }
-      }
-
-      function fallbackCopy(text, cb) {
-        try {
-          const textarea = document.createElement("textarea");
-          textarea.value = text;
-          textarea.style.cssText = "position:fixed;opacity:0";
-          document.body.appendChild(textarea);
-          textarea.select();
-          const ok = document.execCommand("copy");
-          textarea.remove();
-          cb(ok);
-        } catch {
-          cb(false);
-        }
+        navigator.clipboard.writeText(text).then(() => showToast("Link copied!")).catch(() => showToast("Unable to copy"));
       }
 
       async function syncData(payload) {
@@ -1645,7 +1443,8 @@
       const getDeptMeta = (code) => config.departments.find(d => d.code === code) || null;
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
-        let html = includeAll ? `<button type="button" class="nav-filter__option ${selectedVal === "ALL" ? 'is-selected' : ''}" data-value="ALL">${escapeHtml(allLabel)}</button>` : "";
+        const isAllSel = selectedVal === "ALL";
+        let html = includeAll ? `<button type="button" class="nav-filter__option ${isAllSel ? 'is-selected' : ''}" data-value="ALL">${escapeHtml(allLabel)}</button>` : "";
         html += (list || []).map(item => {
           const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
           return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</button>`;
@@ -1654,13 +1453,8 @@
       }
 
       function closeAllMenus() {
-        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => {
-          m.hidden = true;
-          m.removeAttribute("style");
-        });
-        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => {
-          b.setAttribute("aria-expanded", "false");
-        });
+        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => m.hidden = true);
+        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => b.setAttribute("aria-expanded", "false"));
       }
 
       function toggleMenu(menu, trigger) {
@@ -1670,19 +1464,6 @@
         if (isClosed) {
           menu.hidden = false;
           trigger.setAttribute("aria-expanded", "true");
-
-          if (trigger.closest("#main-nav-filters")) {
-            const rect = trigger.getBoundingClientRect();
-            menu.style.position = "fixed";
-            menu.style.top = `${rect.bottom + 6}px`;
-            const menuWidth = Math.min(280, Math.max(210, rect.width));
-            let left = rect.left;
-            if (left + menuWidth > window.innerWidth - 16) {
-              left = window.innerWidth - 16 - menuWidth;
-            }
-            menu.style.left = `${Math.max(16, left)}px`;
-            menu.style.width = `${menuWidth}px`;
-          }
         }
       }
 
@@ -1736,9 +1517,8 @@
         syncTopicMenu();
       }
 
-      /* Unified form cascading logic */
       function updateModalDropdowns(deptCode, secCode, courseCode) {
-        const dept = getDeptMeta(deptCode) || config.departments[0];
+        const dept = getDeptMeta(deptCode) || config.departments[0] || { code: "", sections: [], courses: [] };
         ui.formDept.value = dept.code;
         ui.formDeptLabel.textContent = dept.code;
         renderMenuOptions(ui.formDeptMenu, config.departments.map(d => d.code), dept.code);
@@ -1779,46 +1559,26 @@
         );
       }
 
-      function checkBodyScrollLock() {
-        if (!document.querySelector(".dialog-modal[open]") && !ui.headerNav?.classList.contains("is-open")) {
-          document.body.classList.remove("sheet-open");
-        }
-      }
-
-      function isEventOutside(modal, e) {
-        const rect = modal.getBoundingClientRect();
-        return e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
-      }
-
       function openSheetModal(modalEl) {
         if (!modalEl) return;
         document.body.classList.add("sheet-open");
-        modalEl.style.transform = "";
         if (!modalEl.open) modalEl.showModal();
         modalEl.classList.add("is-open");
       }
 
-      function closeSheetModal(modalEl, onClosed) {
-        if (!modalEl?.open) {
-          onClosed?.();
-          return;
-        }
+      function closeSheetModal(modalEl) {
+        if (!modalEl?.open) return;
         modalEl.classList.remove("is-open");
-        modalEl.style.transform = "";
-        const delay = (modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768) ? 280 : 0;
         setTimeout(() => {
           if (modalEl.open) modalEl.close();
-          checkBodyScrollLock();
-          onClosed?.();
-        }, delay);
+          document.body.classList.remove("sheet-open");
+        }, 200);
       }
 
       function setMobileMenu(open) {
-        if (!ui.headerNav || !ui.mobileMenuToggle) return;
         ui.headerNav.classList.toggle("is-open", open);
         ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
         ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
-        document.body.classList.toggle("sheet-open", open);
       }
 
       function openDateDetails(dateKey) {
@@ -1829,114 +1589,6 @@
         state.activeDate = dateKey;
         renderModalNotes();
         openSheetModal(ui.notesModal);
-      }
-
-      /* High-fidelity interactive drag & velocity physics for bottom sheets */
-      function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
-        if (!sheet || !handle) return;
-
-        let startY = 0;
-        let currentTranslate = 0;
-        let isDragging = false;
-        let startTime = 0;
-        let isStartedOnContent = false;
-
-        function start(clientY, target) {
-          if (window.innerWidth > 768 || !sheet.open) return;
-          if (target && target.closest(".nav-filter__menu")) return;
-          startY = clientY;
-          currentTranslate = 0;
-          startTime = Date.now();
-          isStartedOnContent = Boolean(scrollableContent && scrollableContent.contains(target));
-          if (isStartedOnContent && scrollableContent.scrollTop > 0) {
-            isDragging = false;
-            return;
-          }
-          isDragging = true;
-          sheet.classList.add("is-dragging");
-        }
-
-        function move(clientY, cancelable, preventDefault) {
-          if (window.innerWidth > 768 || !sheet.open) return;
-          if (!isDragging) {
-            if (isStartedOnContent && scrollableContent && scrollableContent.scrollTop <= 0) {
-              const delta = clientY - startY;
-              if (delta > 0) {
-                isDragging = true;
-                startY = clientY;
-                sheet.classList.add("is-dragging");
-              }
-            }
-            return;
-          }
-          const deltaY = clientY - startY;
-          if (deltaY > 0) {
-            currentTranslate = deltaY;
-            sheet.style.transform = `translateY(${deltaY}px)`;
-            if (cancelable && preventDefault) preventDefault();
-          } else {
-            currentTranslate = 0;
-            sheet.style.transform = "translateY(0px)";
-          }
-        }
-
-        function end() {
-          if (!isDragging) {
-            isStartedOnContent = false;
-            return;
-          }
-          isDragging = false;
-          isStartedOnContent = false;
-          sheet.classList.remove("is-dragging");
-
-          const elapsed = Date.now() - startTime;
-          const velocity = currentTranslate / (elapsed || 1);
-          const sheetHeight = sheet.offsetHeight || 340;
-
-          if (currentTranslate > sheetHeight * 0.4 || (currentTranslate > 45 && velocity > 0.42)) {
-            closeCallback();
-          } else {
-            sheet.style.transform = "";
-          }
-        }
-
-        function onTouchMove(e) {
-          move(e.touches[0].clientY, e.cancelable, () => e.preventDefault());
-        }
-
-        function onTouchEnd() {
-          window.removeEventListener("touchmove", onTouchMove);
-          window.removeEventListener("touchend", onTouchEnd);
-          window.removeEventListener("touchcancel", onTouchEnd);
-          end();
-        }
-
-        function onTouchStart(e) {
-          if (window.innerWidth > 768 || !sheet.open) return;
-          start(e.touches[0].clientY, e.target);
-          window.addEventListener("touchmove", onTouchMove, { passive: false });
-          window.addEventListener("touchend", onTouchEnd, { passive: true });
-          window.addEventListener("touchcancel", onTouchEnd, { passive: true });
-        }
-
-        [handle, header, scrollableContent].filter(Boolean).forEach(el => {
-          el.addEventListener("touchstart", onTouchStart, { passive: true });
-        });
-
-        [handle, header].filter(Boolean).forEach(el => {
-          el.addEventListener("mousedown", (e) => {
-            if (window.innerWidth > 768 || !sheet.open) return;
-            start(e.clientY, e.target);
-            function onMouseMove(me) { move(me.clientY); }
-            function onMouseUp() {
-              window.removeEventListener("mousemove", onMouseMove);
-              window.removeEventListener("mouseup", onMouseUp);
-              end();
-            }
-            window.addEventListener("mousemove", onMouseMove);
-            window.addEventListener("mouseup", onMouseUp);
-          });
-        });
       }
 
       function renderCalendarGrid() {
@@ -1979,7 +1631,7 @@
 
           markup += `
             <td class="${classes}" data-date="${dateKey}">
-              <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : ""}>
+              <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""}>
                 ${d}
               </button>
             </td>
@@ -1997,7 +1649,9 @@
 
       function renderCourseDates() {
         const filtered = filterActiveNotes();
-        const uniqueDates = [...new Set(filtered.map(n => n.date).filter(Boolean))].sort();
+        const notesCountMap = {};
+        filtered.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
+        const uniqueDates = Object.keys(notesCountMap).sort();
 
         const titleParts = [];
         if (state.course !== "ALL") titleParts.push(state.course);
@@ -2014,14 +1668,13 @@
 
         ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
           const dateObj = parseLocalDate(dateStr);
-          const noteCount = filtered.filter(n => n.date === dateStr).length;
           return `
             <div class="course-card" data-date="${escapeHtml(dateStr)}">
-              <div class="course-card__info">
+              <div>
                 <span class="course-card__date">${formatReadableDate(dateStr)}</span>
-                <span class="course-card__day">${DAY_NAMES[dateObj.getDay()] || ""}</span>
+                <div class="course-card__day">${DAY_NAMES[dateObj.getDay()] || ""}</div>
               </div>
-              <span class="course-card__badge">${pluralize(noteCount, 'note', 'notes')}</span>
+              <span class="course-card__badge">${pluralize(notesCountMap[dateStr] || 0, 'note', 'notes')}</span>
             </div>
           `;
         }).join("");
@@ -2034,7 +1687,7 @@
         ui.modalNotesTotal.textContent = `Total: ${pluralize(notes.length, 'note', 'notes')}`;
 
         if (!notes.length) {
-          ui.modalNotesStack.innerHTML = renderEmptyState((!state.dept || !state.sec) ? "Please select department and section first." : "No lecture material attached to this date for the selected criteria.");
+          ui.modalNotesStack.innerHTML = renderEmptyState("No lecture material attached to this date.");
           return;
         }
 
@@ -2047,60 +1700,31 @@
         });
 
         let output = "";
-        for (const course in groups) {
+        for (const [course, topics] of Object.entries(groups)) {
           output += `<div class="note-cluster"><h4 class="note-cluster__course">${escapeHtml(course)}</h4>`;
-          for (const topic in groups[course]) {
+          for (const [topic, items] of Object.entries(topics)) {
             output += `<div class="note-cluster__topic-group"><div class="note-cluster__topic-header">${escapeHtml(topic)}</div><ul class="note-cluster__list">`;
-            groups[course][topic].forEach(item => {
-              const isReported = Number(item.reportCount || 0) >= 3;
+            items.forEach(item => {
               const title = escapeHtml(item.title || "View Note");
               const link = sanitizeUrl(item.link);
               const hasLink = Boolean(link);
 
-              const titleBody = `
-                <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                <span class="note-title-text">${title}</span>
-              `;
-
               const titleEl = hasLink
-                ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">${titleBody}</a>`
-                : `<span class="note-title-plain" title="${title}">${titleBody}</span>`;
+                ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="note-title-btn">${title}</a>`
+                : `<span class="note-title-plain">${title}</span>`;
 
               const actions = hasLink ? `
                 <div class="note-row__actions">
-                  <button type="button" class="btn-share" data-title="${title}" data-link="${link}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <circle cx="18" cy="5" r="3"></circle>
-                      <circle cx="6" cy="12" r="3"></circle>
-                      <circle cx="18" cy="19" r="3"></circle>
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                    </svg>
+                  <button type="button" class="btn-share" data-link="${escapeHtml(link)}" title="Share">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                   </button>
-                  <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" aria-label="Report broken link" title="Report">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                      <line x1="4" y1="22" x2="4" y2="15"></line>
-                    </svg>
+                  <button type="button" class="btn-report" data-title="${title}" data-course="${escapeHtml(course)}" title="Report">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
                   </button>
                 </div>
               ` : "";
 
-              output += `
-                <li class="note-row">
-                  <div class="note-row__left">
-                    ${titleEl}
-                    ${isReported ? '<span class="note-row__flag">[Issue Reported]</span>' : ""}
-                  </div>
-                  ${actions}
-                </li>
-              `;
+              output += `<li class="note-row"><div class="note-row__left">${titleEl}</div>${actions}</li>`;
             });
             output += `</ul></div>`;
           }
@@ -2128,22 +1752,70 @@
         render();
       }
 
+      /* --------------------------------------------------------
+         EXACT SCROLL INTERPOLATION
+         - Fully curved below the middle of viewport
+         - Starts flattening ONLY when moving above the middle (0.5 * vh)
+         - Exactly straight (clip-path: none) when reaching the top (rect.top <= 0)
+         -------------------------------------------------------- */
+      function updateScrollCurve() {
+        if (!ui.curvedHeroSection || !ui.curvedContainer) return;
+
+        const rect = ui.curvedHeroSection.getBoundingClientRect();
+        const vh = window.innerHeight;
+
+        const start = vh * 0.5; // Starts flattening above screen midpoint
+        const end = 0;          // Completely flat at the top of the viewport
+
+        if (rect.top <= end) {
+          // Reached the very top: 100% straight!
+          ui.curvedContainer.style.clipPath = "none";
+          return;
+        }
+
+        const isMobile = window.innerWidth <= 768;
+        const baseRx = isMobile ? 128 : 82;
+
+        if (rect.top >= start) {
+          // In the lower half: 100% curved!
+          ui.curvedContainer.style.clipPath = `ellipse(${baseRx}% 100% at 50% 100%)`;
+          return;
+        }
+
+        // Gradually flattening between midpoint and top
+        const ratio = (start - rect.top) / (start - end);
+        const targetRx = isMobile ? 550 : 600;
+        const rx = baseRx + ratio * (targetRx - baseRx);
+
+        ui.curvedContainer.style.clipPath = `ellipse(${rx.toFixed(1)}% 100% at 50% 100%)`;
+      }
+
       function bindEvents() {
         if (ui.mobileMenuToggle && ui.headerNav) {
-          ui.mobileMenuToggle.addEventListener("click", (e) => {
-            e.stopPropagation();
-            setMobileMenu(!ui.headerNav.classList.contains("is-open"));
+          ui.mobileMenuToggle.addEventListener("click", () => setMobileMenu(!ui.headerNav.classList.contains("is-open")));
+          ui.headerNav.querySelectorAll(".nav-link").forEach(link => link.addEventListener("click", () => setMobileMenu(false)));
+        }
+
+        if (ui.navFeaturesBtn && ui.curvedHeroSection) {
+          ui.navFeaturesBtn.addEventListener("click", () => {
+            setMobileMenu(false);
+            ui.curvedHeroSection.scrollIntoView({ behavior: "smooth" });
           });
-          ui.headerNav.querySelectorAll(".nav-link").forEach(link => {
-            link.addEventListener("click", () => setMobileMenu(false));
+        }
+
+        if (ui.navHowFindBtn) {
+          ui.navHowFindBtn.addEventListener("click", () => {
+            setMobileMenu(false);
+            ui.navFilters.scrollIntoView({ behavior: "smooth", block: "center" });
+            const trigger = document.getElementById("dept-trigger");
+            if (trigger) trigger.click();
           });
-          document.addEventListener("click", (e) => {
-            if (!ui.headerNav.contains(e.target) && !ui.mobileMenuToggle.contains(e.target) && ui.headerNav.classList.contains("is-open")) {
-              setMobileMenu(false);
-            }
-          });
-          document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && ui.headerNav.classList.contains("is-open")) setMobileMenu(false);
+        }
+
+        if (ui.navHowUploadBtn) {
+          ui.navHowUploadBtn.addEventListener("click", () => {
+            setMobileMenu(false);
+            ui.addNoteBtn.click();
           });
         }
 
@@ -2151,8 +1823,8 @@
           if (!e.target.closest(".nav-filter__item")) closeAllMenus();
         });
 
-        if (ui.navFilters) ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
-        window.addEventListener("scroll", closeAllMenus, { passive: true });
+        window.addEventListener("scroll", updateScrollCurve, { passive: true });
+        window.addEventListener("resize", updateScrollCurve, { passive: true });
 
         ui.navFilters.addEventListener("click", (e) => {
           const trigger = e.target.closest(".nav-filter__trigger");
@@ -2180,16 +1852,6 @@
           }
         });
 
-        document.querySelectorAll(".dialog-modal").forEach(modal => {
-          modal.addEventListener("click", (e) => {
-            if (e.target === modal && isEventOutside(modal, e)) closeSheetModal(modal);
-          });
-          modal.addEventListener("cancel", (e) => {
-            e.preventDefault();
-            closeSheetModal(modal);
-          });
-        });
-
         document.querySelectorAll("[data-close-modal]").forEach(btn => {
           btn.addEventListener("click", () => {
             const m = btn.closest("dialog");
@@ -2197,15 +1859,11 @@
           });
         });
 
-        ui.notesModal.addEventListener("close", () => { state.activeDate = null; checkBodyScrollLock(); });
-        ui.reportModal.addEventListener("close", checkBodyScrollLock);
-        ui.addModal.addEventListener("close", () => { closeAllMenus(); checkBodyScrollLock(); });
-
         ui.prevMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() - 1); render(); });
         ui.nextMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() + 1); render(); });
         ui.todayBtn.addEventListener("click", () => {
-          const c = new Date();
-          state.viewDate = new Date(c.getFullYear(), c.getMonth(), 1);
+          const now = new Date();
+          state.viewDate = new Date(now.getFullYear(), now.getMonth(), 1);
           render();
         });
 
@@ -2255,81 +1913,42 @@
             ui.addForm.reset();
             state.manualTitleEdited = false;
             updateModalDropdowns(state.dept || config.departments[0]?.code);
-            showToast("Note submitted successfully for section review!");
+            showToast("Note submitted successfully!");
           } catch {
-            showToast("Failed to submit note. Please retry.");
+            showToast("Failed to submit note.");
           } finally {
             setButtonLoading(ui.btnSubmitNote, false);
           }
         });
 
-        // Combined handler for Share and Report (Icon-only buttons)
         ui.modalNotesStack.addEventListener("click", async (e) => {
           const shareBtn = e.target.closest(".btn-share");
           if (shareBtn) {
-            const { title = "Lecture Note", link = "", course = "" } = shareBtn.dataset;
-
-            if (navigator.share) {
-              try {
-                await navigator.share({
-                  title: `${title} (${course})`,
-                  text: `ClassNotes: ${course} - ${title}`,
-                  url: link
-                });
-              } catch (err) {
-                if (err.name !== "AbortError") copyToClipboard(link);
-              }
-            } else {
-              copyToClipboard(link);
-            }
+            copyToClipboard(shareBtn.dataset.link || "");
             return;
           }
 
           const reportBtn = e.target.closest(".btn-report");
           if (reportBtn) {
-            setButtonLoading(ui.btnSubmitReport, false);
-            const { title = "", course = "", row = title } = reportBtn.dataset;
-            const context = `${course} • ${formatReadableDate(state.activeDate)}`;
-
-            closeSheetModal(ui.notesModal, () => {
-              ui.reportTitle.textContent = title;
-              ui.reportContext.textContent = context;
-              ui.reportForm.dataset.targetRow = row;
-              openSheetModal(ui.reportModal);
-            });
+            const title = reportBtn.dataset.title || "";
+            const course = reportBtn.dataset.course || "";
+            closeSheetModal(ui.notesModal);
+            ui.reportTitle.textContent = title;
+            ui.reportContext.textContent = `${course} • ${formatReadableDate(state.activeDate)}`;
+            openSheetModal(ui.reportModal);
           }
         });
 
         ui.reportForm.addEventListener("submit", async (e) => {
           e.preventDefault();
-          const row = ui.reportForm.dataset.targetRow;
-          const key = `reported_row_${row}`;
-
-          if (safeStorage.get(key)) {
-            closeSheetModal(ui.reportModal);
-            showToast("You have already reported this link.");
-            return;
-          }
-
           setButtonLoading(ui.btnSubmitReport, true);
           try {
-            await syncData({ type: "report", row });
-            safeStorage.set(key, "true");
+            await syncData({ type: "report" });
             closeSheetModal(ui.reportModal);
-            showToast("Thank you. Link report has been recorded.");
-          } catch {
-            showToast("Could not submit report. Check internet.");
+            showToast("Link reported. Thank you!");
           } finally {
             setButtonLoading(ui.btnSubmitReport, false);
           }
-        });
-
-        // Initialize bottom sheet gesture handlers
-        document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
-          const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
-          const header = sheet.querySelector(".dialog-modal__header");
-          const content = sheet.querySelector(".notes-stack, .modal-body-scroll");
-          setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
         });
       }
 
@@ -2339,6 +1958,7 @@
         bindEvents();
         render();
         loadNotes();
+        updateScrollCurve();
       }
 
       init();
