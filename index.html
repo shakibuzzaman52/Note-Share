@@ -1448,14 +1448,12 @@
       ];
       const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-      const now = new Date();
-
       const state = {
         dept: "",
         sec: "",
         course: "ALL",
         topic: "ALL",
-        viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
+        viewDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         activeDate: null,
         notes: [],
         manualTitleEdited: false
@@ -1580,13 +1578,15 @@
         `;
       }
 
+      let toastTimer = null;
       function showToast(message) {
+        clearTimeout(toastTimer);
         ui.toastTray.innerHTML = "";
         const toast = document.createElement("div");
         toast.className = "toast";
         toast.textContent = message;
         ui.toastTray.appendChild(toast);
-        setTimeout(() => {
+        toastTimer = setTimeout(() => {
           toast.style.opacity = "0";
           setTimeout(() => toast.remove(), 250);
         }, 2800);
@@ -1645,10 +1645,11 @@
       const getDeptMeta = (code) => config.departments.find(d => d.code === code) || null;
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
-        let html = includeAll ? `<button type="button" class="nav-filter__option ${selectedVal === "ALL" ? 'is-selected' : ''}" data-value="ALL">${escapeHtml(allLabel)}</button>` : "";
+        const isAllSel = selectedVal === "ALL";
+        let html = includeAll ? `<button type="button" class="nav-filter__option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">${escapeHtml(allLabel)}</button>` : "";
         html += (list || []).map(item => {
           const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
-          return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</button>`;
+          return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</button>`;
         }).join("");
         container.innerHTML = html;
       }
@@ -1675,11 +1676,8 @@
             const rect = trigger.getBoundingClientRect();
             menu.style.position = "fixed";
             menu.style.top = `${rect.bottom + 6}px`;
-            const menuWidth = Math.min(280, Math.max(210, rect.width));
-            let left = rect.left;
-            if (left + menuWidth > window.innerWidth - 16) {
-              left = window.innerWidth - 16 - menuWidth;
-            }
+            const menuWidth = Math.min(280, Math.max(210, rect.width), Math.max(100, window.innerWidth - 32));
+            const left = Math.min(rect.left, window.innerWidth - 16 - menuWidth);
             menu.style.left = `${Math.max(16, left)}px`;
             menu.style.width = `${menuWidth}px`;
           }
@@ -1738,7 +1736,7 @@
 
       /* Unified form cascading logic */
       function updateModalDropdowns(deptCode, secCode, courseCode) {
-        const dept = getDeptMeta(deptCode) || config.departments[0];
+        const dept = getDeptMeta(deptCode) || config.departments[0] || { code: "", sections: [], courses: [] };
         ui.formDept.value = dept.code;
         ui.formDeptLabel.textContent = dept.code;
         renderMenuOptions(ui.formDeptMenu, config.departments.map(d => d.code), dept.code);
@@ -1792,6 +1790,7 @@
 
       function openSheetModal(modalEl) {
         if (!modalEl) return;
+        delete modalEl.dataset.closing;
         document.body.classList.add("sheet-open");
         modalEl.style.transform = "";
         if (!modalEl.open) modalEl.showModal();
@@ -1803,10 +1802,13 @@
           onClosed?.();
           return;
         }
+        if (modalEl.dataset.closing === "true") return;
+        modalEl.dataset.closing = "true";
         modalEl.classList.remove("is-open");
         modalEl.style.transform = "";
         const delay = (modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768) ? 280 : 0;
         setTimeout(() => {
+          delete modalEl.dataset.closing;
           if (modalEl.open) modalEl.close();
           checkBodyScrollLock();
           onClosed?.();
@@ -1912,7 +1914,7 @@
         }
 
         function onTouchStart(e) {
-          if (window.innerWidth > 768 || !sheet.open) return;
+          if (window.innerWidth > 768 || !sheet.open || e.touches.length > 1) return;
           start(e.touches[0].clientY, e.target);
           window.addEventListener("touchmove", onTouchMove, { passive: false });
           window.addEventListener("touchend", onTouchEnd, { passive: true });
@@ -1997,7 +1999,9 @@
 
       function renderCourseDates() {
         const filtered = filterActiveNotes();
-        const uniqueDates = [...new Set(filtered.map(n => n.date).filter(Boolean))].sort();
+        const notesCountMap = {};
+        filtered.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
+        const uniqueDates = Object.keys(notesCountMap).sort();
 
         const titleParts = [];
         if (state.course !== "ALL") titleParts.push(state.course);
@@ -2014,14 +2018,13 @@
 
         ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
           const dateObj = parseLocalDate(dateStr);
-          const noteCount = filtered.filter(n => n.date === dateStr).length;
           return `
             <div class="course-card" data-date="${escapeHtml(dateStr)}">
               <div class="course-card__info">
                 <span class="course-card__date">${formatReadableDate(dateStr)}</span>
                 <span class="course-card__day">${DAY_NAMES[dateObj.getDay()] || ""}</span>
               </div>
-              <span class="course-card__badge">${pluralize(noteCount, 'note', 'notes')}</span>
+              <span class="course-card__badge">${pluralize(notesCountMap[dateStr] || 0, 'note', 'notes')}</span>
             </div>
           `;
         }).join("");
@@ -2047,15 +2050,16 @@
         });
 
         let output = "";
-        for (const course in groups) {
+        for (const [course, topics] of Object.entries(groups)) {
           output += `<div class="note-cluster"><h4 class="note-cluster__course">${escapeHtml(course)}</h4>`;
-          for (const topic in groups[course]) {
+          for (const [topic, items] of Object.entries(topics)) {
             output += `<div class="note-cluster__topic-group"><div class="note-cluster__topic-header">${escapeHtml(topic)}</div><ul class="note-cluster__list">`;
-            groups[course][topic].forEach(item => {
+            items.forEach(item => {
               const isReported = Number(item.reportCount || 0) >= 3;
               const title = escapeHtml(item.title || "View Note");
               const link = sanitizeUrl(item.link);
               const hasLink = Boolean(link);
+              const escapedLink = escapeHtml(link);
 
               const titleBody = `
                 <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2069,12 +2073,12 @@
               `;
 
               const titleEl = hasLink
-                ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">${titleBody}</a>`
+                ? `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">${titleBody}</a>`
                 : `<span class="note-title-plain" title="${title}">${titleBody}</span>`;
 
               const actions = hasLink ? `
                 <div class="note-row__actions">
-                  <button type="button" class="btn-share" data-title="${title}" data-link="${link}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
+                  <button type="button" class="btn-share" data-title="${title}" data-link="${escapedLink}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <circle cx="18" cy="5" r="3"></circle>
                       <circle cx="6" cy="12" r="3"></circle>
@@ -2083,7 +2087,7 @@
                       <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                     </svg>
                   </button>
-                  <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" aria-label="Report broken link" title="Report">
+                  <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? item.title ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" aria-label="Report broken link" title="Report">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
                       <line x1="4" y1="22" x2="4" y2="15"></line>
@@ -2153,6 +2157,7 @@
 
         if (ui.navFilters) ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
         window.addEventListener("scroll", closeAllMenus, { passive: true });
+        window.addEventListener("resize", closeAllMenus, { passive: true });
 
         ui.navFilters.addEventListener("click", (e) => {
           const trigger = e.target.closest(".nav-filter__trigger");
@@ -2204,8 +2209,8 @@
         ui.prevMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() - 1); render(); });
         ui.nextMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() + 1); render(); });
         ui.todayBtn.addEventListener("click", () => {
-          const c = new Date();
-          state.viewDate = new Date(c.getFullYear(), c.getMonth(), 1);
+          const now = new Date();
+          state.viewDate = new Date(now.getFullYear(), now.getMonth(), 1);
           render();
         });
 
@@ -2267,7 +2272,9 @@
         ui.modalNotesStack.addEventListener("click", async (e) => {
           const shareBtn = e.target.closest(".btn-share");
           if (shareBtn) {
-            const { title = "Lecture Note", link = "", course = "" } = shareBtn.dataset;
+            const title = shareBtn.dataset.title || "Lecture Note";
+            const link = shareBtn.dataset.link || "";
+            const course = shareBtn.dataset.course || "";
 
             if (navigator.share) {
               try {
@@ -2288,7 +2295,9 @@
           const reportBtn = e.target.closest(".btn-report");
           if (reportBtn) {
             setButtonLoading(ui.btnSubmitReport, false);
-            const { title = "", course = "", row = title } = reportBtn.dataset;
+            const title = reportBtn.dataset.title || "";
+            const course = reportBtn.dataset.course || "";
+            const row = reportBtn.dataset.row || title;
             const context = `${course} • ${formatReadableDate(state.activeDate)}`;
 
             closeSheetModal(ui.notesModal, () => {
