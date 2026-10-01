@@ -570,13 +570,6 @@
       gap: 1rem;
     }
 
-    .calendar-nav-meta {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
     .calendar-nav-title {
       font-family: var(--font-display);
       font-size: 2.75rem;
@@ -589,25 +582,6 @@
 
     .calendar-nav-title .month-short {
       display: none;
-    }
-
-    .calendar-swipe-badge {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--brand-primary);
-      background: var(--bg-subtle);
-      border-radius: var(--radius-full);
-      padding: 0.22rem 0.75rem;
-      opacity: 0;
-      transform: translateY(2px);
-      transition: opacity 0.18s ease, transform 0.18s ease;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    .calendar-swipe-badge.is-visible {
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .calendar-nav-actions {
@@ -743,7 +717,7 @@
       font-size: 2.25rem;
       font-weight: 400;
       color: var(--text-main);
-      line-1.1;
+      line-height: 1.1;
     }
 
     .course-dates-count {
@@ -1343,10 +1317,7 @@
       <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
-          <div class="calendar-nav-meta">
-            <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
-            <span class="calendar-swipe-badge" id="calendar-swipe-badge" aria-hidden="true"></span>
-          </div>
+          <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
           <div class="calendar-nav-actions">
             <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1365,7 +1336,7 @@
         </div>
 
         <!-- Swipeable 3-panel Calendar Carousel -->
-        <div class="calendar-carousel" id="calendar-carousel" title="Swipe left or right to change months">
+        <div class="calendar-carousel" id="calendar-carousel">
           <div class="calendar-track" id="calendar-track">
             <!-- Prev Month Panel -->
             <div class="calendar-panel" id="panel-prev" aria-hidden="true">
@@ -1625,7 +1596,6 @@
 
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
-        calendarSwipeBadge: document.getElementById("calendar-swipe-badge"),
         calendarCarousel: document.getElementById("calendar-carousel"),
         calendarTrack: document.getElementById("calendar-track"),
         calendarCellsPrev: document.getElementById("calendar-cells-prev"),
@@ -2281,7 +2251,6 @@
         track.style.transition = "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
         track.style.transform = "translate3d(-33.333333%, 0, 0)";
 
-        if (ui.calendarSwipeBadge) ui.calendarSwipeBadge.classList.remove("is-visible");
         if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
 
         setTimeout(() => {
@@ -2361,22 +2330,6 @@
           const carouselWidth = carousel.offsetWidth || 300;
           const currentPx = -carouselWidth + dx;
           track.style.transform = `translate3d(${currentPx}px, 0, 0)`;
-
-          // Visual hint badge showing which month will be opened
-          if (ui.calendarSwipeBadge) {
-            const currMonth = state.viewDate.getMonth();
-            if (dx < -35) {
-              const nextMonthIndex = (currMonth + 1) % 12;
-              ui.calendarSwipeBadge.textContent = `${MONTH_NAMES[nextMonthIndex]} →`;
-              ui.calendarSwipeBadge.classList.add("is-visible");
-            } else if (dx > 35) {
-              const prevMonthIndex = (currMonth - 1 + 12) % 12;
-              ui.calendarSwipeBadge.textContent = `← ${MONTH_NAMES[prevMonthIndex]}`;
-              ui.calendarSwipeBadge.classList.add("is-visible");
-            } else {
-              ui.calendarSwipeBadge.classList.remove("is-visible");
-            }
-          }
         }
 
         function onGestureEnd() {
@@ -2386,7 +2339,6 @@
           const velocity = currentDeltaX / (elapsed || 1);
 
           carousel.classList.remove("is-dragging");
-          if (ui.calendarSwipeBadge) ui.calendarSwipeBadge.classList.remove("is-visible");
 
           if (isDragging) {
             const threshold = Math.min(65, carouselWidth * 0.16);
