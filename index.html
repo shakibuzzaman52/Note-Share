@@ -1455,9 +1455,14 @@
         remove: (key) => { try { localStorage.removeItem(key); } catch {} }
       };
 
+      const savedDept = safeStorage.get("selected_dept") || "";
+      const validDept = config.departments.find(d => d.code === savedDept);
+      const savedSec = safeStorage.get("selected_sec") || "";
+      const validSec = (validDept && validDept.sections.includes(savedSec)) ? savedSec : "";
+
       const state = {
-        dept: "",
-        sec: "",
+        dept: validDept ? validDept.code : "",
+        sec: validSec,
         course: "ALL",
         topic: "ALL",
         viewDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -1629,33 +1634,27 @@
         });
       }
 
-      async function loadNotes(forceFetch = false) {
-        // ১. যদি পূর্বে ক্যাশ করা থাকে, তবে নেটওয়ার্ক রিকোয়েস্ট ছাড়াই লোকাল থেকে ডাটা লোড হবে
-        if (!forceFetch) {
-          const cached = safeStorage.get("cached_notes");
-          if (cached) {
-            try {
-              const parsed = JSON.parse(cached);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                state.notes = parsed;
-                syncTopicMenu();
-                render();
-                return; // ক্যাশ থেকে পাওয়া গেছে, তাই গুগল ফেচ কল হবে না
-              }
-            } catch (err) {
-              console.warn("Invalid cached notes:", err);
+      async function loadNotes() {
+        const cached = safeStorage.get("cached_notes");
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length) {
+              state.notes = parsed;
+              syncTopicMenu();
+              render();
+              return;
             }
-          }
+          } catch {}
         }
 
-        // ২. ক্যাশ না থাকলে বা নতুন নোট দিলে গুগল থেকে একবার ফেচ হবে এবং সেভ থাকবে
         if (!config.googleAppsScriptUrl) return;
         try {
           const res = await fetch(config.googleAppsScriptUrl);
           const data = await res.json();
           if (data?.success && Array.isArray(data.notes)) {
             state.notes = data.notes;
-            safeStorage.set("cached_notes", JSON.stringify(data.notes)); // ডাটা ক্যাশ করা হলো
+            safeStorage.set("cached_notes", JSON.stringify(data.notes));
             syncTopicMenu();
             render();
           }
@@ -2109,7 +2108,7 @@
                   </button>
                   <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? item.title ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" aria-label="Report broken link" title="Report">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1z"></path>
                       <line x1="4" y1="22" x2="4" y2="15"></line>
                     </svg>
                   </button>
@@ -2143,20 +2142,22 @@
       }
 
       function onFilterSelect(key, val) {
-        if (key === "dept") { 
-          state.dept = val; 
-          state.sec = ""; 
-          state.course = state.topic = "ALL"; 
+        if (key === "dept") {
+          state.dept = val;
+          state.sec = "";
+          state.course = state.topic = "ALL";
           safeStorage.set("selected_dept", val);
           safeStorage.set("selected_sec", "");
-        }
-        else if (key === "sec") { 
-          state.sec = val; 
-          state.course = state.topic = "ALL"; 
+        } else if (key === "sec") {
+          state.sec = val;
+          state.course = state.topic = "ALL";
           safeStorage.set("selected_sec", val);
+        } else if (key === "course") {
+          state.course = val;
+          state.topic = "ALL";
+        } else if (key === "topic") {
+          state.topic = val;
         }
-        else if (key === "course") { state.course = val; state.topic = "ALL"; }
-        else if (key === "topic") { state.topic = val; }
         closeAllMenus();
         syncDropdownStates();
         render();
@@ -2289,7 +2290,6 @@
               link: normalizeUrl(ui.formLink.value),
               status: "Pending"
             });
-            // নতুন নোট যোগ হওয়ায় ক্যাশ ক্লিয়ার করা হলো যেন আপডেটেড ডাটা পাওয়া যায়
             safeStorage.remove("cached_notes");
             closeSheetModal(ui.addModal);
             ui.addForm.reset();
@@ -2376,23 +2376,10 @@
       }
 
       function init() {
-        // ১. LocalStorage থেকে সেভ থাকা ডিপার্টমেন্ট ও সেকশন রিস্টোর করা
-        const savedDept = safeStorage.get("selected_dept");
-        const savedSec = safeStorage.get("selected_sec");
-
-        const validDept = config.departments.find(d => d.code === savedDept);
-        if (validDept) {
-          state.dept = validDept.code;
-          if (savedSec && validDept.sections.includes(savedSec)) {
-            state.sec = savedSec;
-          }
-        }
-
         updateModalDropdowns(state.dept || config.departments[0]?.code || "CSE", state.sec);
         syncDropdownStates();
         bindEvents();
         render();
-        // ২. ডাটা ফেচ অথবা ক্যাশ থেকে সাথে সাথে লোড করা
         loadNotes();
       }
 
