@@ -225,7 +225,6 @@
     }
 
     .nav-link {
-      padding: 0;
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--text-muted);
@@ -287,7 +286,6 @@
       font-size: 0.9375rem;
       color: var(--text-main);
       transition: background-color 0.15s ease;
-      border: 1px solid transparent;
     }
 
     .field input:focus {
@@ -359,7 +357,7 @@
       flex-wrap: nowrap;
       align-items: center;
       width: 100%;
-      margin: 0 0 1rem;
+      margin-bottom: 1rem;
       padding: 0.35rem 0 1rem;
       border-bottom: 1px solid var(--border-subtle);
       position: relative;
@@ -400,8 +398,7 @@
       cursor: pointer;
       user-select: none;
       width: 100%;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      border: 1px solid transparent;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .nav-filter-trigger:hover,
@@ -411,7 +408,7 @@
     }
 
     .nav-filter-trigger[aria-expanded="true"] {
-      border-color: var(--border-subtle);
+      box-shadow: inset 0 0 0 1px var(--border-subtle);
     }
 
     .nav-filter-text {
@@ -569,7 +566,6 @@
       height: 56px;
       text-align: center;
       vertical-align: middle;
-      padding: 0;
     }
 
     .calendar-cell--empty,
@@ -580,7 +576,7 @@
     .calendar-cell-btn {
       width: 48px;
       height: 48px;
-      margin: 0 auto;
+      margin: auto;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -615,8 +611,7 @@
     }
 
     .calendar-cell--disabled .calendar-cell-btn {
-      background-color: transparent;
-      border-color: transparent;
+      border: 0;
       color: var(--text-disabled);
       opacity: 0.4;
       cursor: default;
@@ -973,7 +968,6 @@
       color: var(--text-muted);
       transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
       flex-shrink: 0;
-      padding: 0;
     }
 
     .btn-share svg,
@@ -1053,7 +1047,6 @@
         align-items: flex-start;
         gap: 1.25rem;
         overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -1145,7 +1138,6 @@
         transform: translateY(100%);
         transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         overscroll-behavior: contain;
-        will-change: transform;
       }
 
       .dialog-modal.bottom-sheet.is-open {
@@ -1595,7 +1587,8 @@
         try {
           const textarea = document.createElement("textarea");
           textarea.value = text;
-          textarea.style.cssText = "position:fixed;opacity:0";
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
           document.body.appendChild(textarea);
           textarea.select();
           const ok = document.execCommand("copy");
