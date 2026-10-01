@@ -34,6 +34,7 @@
       --radius-full: 9999px;
       --radius-lg: 16px;
       --radius-md: 10px;
+      --radius-sm: 8px;
 
       --font-display: 'Instrument Serif', Georgia, serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -307,7 +308,7 @@
       background-color: var(--bg-class-notes-badge);
     }
 
-    /* Form controls */
+    /* Form controls - simple & clean */
     .field {
       margin-bottom: 1rem;
       position: relative;
@@ -429,6 +430,7 @@
       max-width: 35%;
     }
 
+    /* Simple filter trigger - no border transforms */
     .nav-filter-trigger {
       display: flex;
       align-items: center;
@@ -443,17 +445,13 @@
       cursor: pointer;
       user-select: none;
       width: 100%;
-      transition: background-color 0.15s ease, box-shadow 0.15s ease;
+      transition: background-color 0.15s ease;
     }
 
     .nav-filter-trigger:hover,
     .nav-filter-trigger:focus-visible,
     .nav-filter-trigger[aria-expanded="true"] {
       background-color: var(--bg-hover);
-    }
-
-    .nav-filter-trigger[aria-expanded="true"] {
-      box-shadow: inset 0 0 0 1px var(--border-subtle);
     }
 
     .nav-filter-text {
@@ -469,13 +467,14 @@
       pointer-events: none;
       flex-shrink: 0;
       color: var(--text-muted);
-      transition: transform 0.2s ease;
+      transition: transform 0.15s ease;
     }
 
     .nav-filter-trigger[aria-expanded="true"] .nav-filter-arrow {
       transform: rotate(180deg);
     }
 
+    /* Simple, clean dropdown menu */
     .nav-filter-menu {
       position: absolute;
       top: calc(100% + 5px);
@@ -486,11 +485,11 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 0.35rem 0;
-      z-index: 150;
+      padding: 0.35rem;
+      z-index: 250;
       max-height: 260px;
       overflow-y: auto;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
       scrollbar-width: none;
     }
 
@@ -498,19 +497,38 @@
       display: none;
     }
 
+    /* Clean & simple options */
     .nav-filter-option {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       width: 100%;
-      padding: 0.55rem 0.95rem;
-      font-size: 0.8125rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
       font-weight: 500;
       color: var(--text-main);
       text-align: left;
       cursor: pointer;
-      word-break: break-word;
       line-height: 1.4;
+      background: transparent;
+      gap: 0.5rem;
       transition: background-color 0.12s ease;
+    }
+
+    .nav-filter-option-text {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .nav-filter-check {
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
     }
 
     .nav-filter-option:hover {
@@ -518,18 +536,20 @@
     }
 
     .nav-filter-option.is-selected {
-      font-weight: 700;
+      font-weight: 600;
       background-color: var(--bg-pill);
-      color: var(--brand-primary);
+      color: var(--text-main);
     }
 
     .nav-filter-empty {
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1rem;
       color: var(--text-subtle);
       font-size: 0.8125rem;
+      text-align: center;
+      user-select: none;
     }
 
-    /* Modal Form dropdowns */
+    /* Modal Form dropdowns - simple & consistent */
     .field .nav-filter-item {
       width: 100%;
     }
@@ -539,6 +559,12 @@
       border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
+      background-color: var(--bg-subtle);
+    }
+
+    .field .nav-filter-trigger:hover,
+    .field .nav-filter-trigger[aria-expanded="true"] {
+      background-color: var(--bg-hover);
     }
 
     .field .nav-filter-menu {
@@ -546,8 +572,8 @@
       min-width: 100%;
       max-width: 100%;
       top: calc(100% + 4px);
-      z-index: 200;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      z-index: 250;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
     .content-area {
@@ -1053,7 +1079,7 @@
       border-radius: 50%;
       background-color: var(--bg-subtle);
       color: var(--text-muted);
-      transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      transition: background-color 0.15s ease, color 0.15s ease;
       flex-shrink: 0;
     }
 
@@ -1072,11 +1098,6 @@
     .btn-report:hover {
       color: var(--brand-danger);
       background-color: var(--bg-hover);
-    }
-
-    .btn-share:active,
-    .btn-report:active {
-      transform: scale(0.94);
     }
 
     .toast-tray {
@@ -1820,12 +1841,29 @@
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         const isAllSel = selectedVal === "ALL";
-        let html = includeAll ? `<button type="button" class="nav-filter-option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">${escapeHtml(allLabel)}</button>` : "";
+        const checkIcon = `<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+        let html = includeAll ? `
+          <button type="button" class="nav-filter-option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">
+            <span class="nav-filter-option-text">${escapeHtml(allLabel)}</span>
+            ${isAllSel ? checkIcon : ''}
+          </button>` : "";
+
         html += (list || []).map(item => {
           const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
-          return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</button>`;
+          const label = prefix ? `${prefix} ${item}` : item;
+          return `
+            <button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">
+              <span class="nav-filter-option-text">${escapeHtml(label)}</span>
+              ${isSel ? checkIcon : ''}
+            </button>`;
         }).join("");
+
         container.innerHTML = html;
+      }
+
+      function renderMenuNotice(container, message) {
+        container.innerHTML = `<div class="nav-filter-empty">${escapeHtml(message)}</div>`;
       }
 
       function closeAllMenus() {
@@ -1849,7 +1887,7 @@
           if (trigger.closest("#main-nav-filters")) {
             const rect = trigger.getBoundingClientRect();
             menu.style.position = "fixed";
-            menu.style.top = `${rect.bottom + 6}px`;
+            menu.style.top = `${rect.bottom + 5}px`;
             const menuWidth = Math.min(280, Math.max(210, rect.width), Math.max(100, window.innerWidth - 32));
             const left = Math.min(rect.left, window.innerWidth - 16 - menuWidth);
             menu.style.left = `${Math.max(16, left)}px`;
@@ -1878,7 +1916,7 @@
 
       function syncTopicMenu() {
         if (!state.dept || !state.sec) {
-          ui.topicMenu.innerHTML = '<div class="nav-filter-empty">Select Department & Section first</div>';
+          renderMenuNotice(ui.topicMenu, "Select Department & Section first");
           return;
         }
 
@@ -1903,7 +1941,8 @@
           renderMenuOptions(ui.secMenu, activeDept.sections, state.sec || null, false, "", "Sec");
           renderMenuOptions(ui.courseMenu, activeDept.courses, state.sec ? state.course : "ALL", true, "All Courses");
         } else {
-          ui.secMenu.innerHTML = ui.courseMenu.innerHTML = '<div class="nav-filter-empty">Please select Department first</div>';
+          renderMenuNotice(ui.secMenu, "Please select Department first");
+          renderMenuNotice(ui.courseMenu, "Please select Department first");
         }
         syncTopicMenu();
       }
