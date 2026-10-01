@@ -1628,18 +1628,19 @@
         });
       }
 
-      /* Loads statically from data.json for instant performance */
       async function loadNotes() {
+        if (!config.googleAppsScriptUrl) return;
         try {
-          const res = await fetch("data.json");
-          if (!res.ok) throw new Error("Could not load data.json");
+          const res = await fetch(config.googleAppsScriptUrl);
           const data = await res.json();
-          state.notes = Array.isArray(data) ? data : (data?.notes || []);
+          if (data?.success && Array.isArray(data.notes)) {
+            state.notes = data.notes;
+            syncTopicMenu();
+            render();
+          }
         } catch (err) {
-          console.warn("Unable to load data.json:", err);
+          console.warn("Unable to sync lecture notes:", err);
         }
-        syncTopicMenu();
-        render();
       }
 
       const getDeptMeta = (code) => config.departments.find(d => d.code === code) || null;
@@ -2120,27 +2121,21 @@
         showCalendar ? renderCalendarGrid() : renderCourseDates();
       }
 
-      /* Saves department & section to localStorage automatically on user selection */
       function onFilterSelect(key, val) {
-        if (key === "dept") {
-          state.dept = val;
-          state.sec = "";
-          state.course = state.topic = "ALL";
-          safeStorage.set("user_dept", val);
-          safeStorage.set("user_sec", "");
+        if (key === "dept") { 
+          state.dept = val; 
+          state.sec = ""; 
+          state.course = state.topic = "ALL"; 
+          safeStorage.set("selected_dept", val);
+          safeStorage.set("selected_sec", "");
         }
-        else if (key === "sec") {
-          state.sec = val;
-          state.course = state.topic = "ALL";
-          safeStorage.set("user_sec", val);
+        else if (key === "sec") { 
+          state.sec = val; 
+          state.course = state.topic = "ALL"; 
+          safeStorage.set("selected_sec", val);
         }
-        else if (key === "course") {
-          state.course = val;
-          state.topic = "ALL";
-        }
-        else if (key === "topic") {
-          state.topic = val;
-        }
+        else if (key === "course") { state.course = val; state.topic = "ALL"; }
+        else if (key === "topic") { state.topic = val; }
         closeAllMenus();
         syncDropdownStates();
         render();
@@ -2357,15 +2352,14 @@
         });
       }
 
-      /* Reads saved department and section from localStorage on startup */
       function init() {
-        const savedDept = safeStorage.get("user_dept");
-        const savedSec = safeStorage.get("user_sec");
+        const savedDept = safeStorage.get("selected_dept");
+        const savedSec = safeStorage.get("selected_sec");
 
-        if (savedDept && getDeptMeta(savedDept)) {
-          state.dept = savedDept;
-          const deptMeta = getDeptMeta(savedDept);
-          if (savedSec && deptMeta.sections.includes(savedSec)) {
+        const validDept = config.departments.find(d => d.code === savedDept);
+        if (validDept) {
+          state.dept = validDept.code;
+          if (savedSec && validDept.sections.includes(savedSec)) {
             state.sec = savedSec;
           }
         }
