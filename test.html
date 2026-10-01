@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-canvas: #f6f0e2;
+      --bg-canvas: #F6F0E2;
       --bg-surface: #FFFFFF;
       --bg-subtle: #ECE5D7;
       --bg-hover: #E3DCCF;
@@ -17,6 +17,7 @@
       --bg-class-notes-badge: #FFB4F9;
 
       --border-subtle: #E4DCD0;
+      --border-hover: #D6CEC0;
 
       --text-main: #181716;
       --text-muted: #3C3833;
@@ -47,7 +48,7 @@
     html {
       scrollbar-gutter: stable;
       scrollbar-width: thin;
-      scrollbar-color: #D2CBC0 transparent;
+      scrollbar-color: var(--border-hover) transparent;
     }
 
     html::-webkit-scrollbar {
@@ -55,12 +56,12 @@
     }
 
     html::-webkit-scrollbar-thumb {
-      background-color: #D2CBC0;
+      background-color: var(--border-hover);
       border-radius: var(--radius-full);
     }
 
     html::-webkit-scrollbar-thumb:hover {
-      background-color: #B8B0A5;
+      background-color: var(--text-disabled);
     }
 
     button, input {
@@ -677,7 +678,7 @@
 
     .calendar-cell-btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
-      border-color: #D6CEC0;
+      border-color: var(--border-hover);
     }
 
     .calendar-cell--today .calendar-cell-btn {
@@ -749,7 +750,7 @@
 
     .course-card:hover {
       background-color: var(--bg-hover);
-      border-color: #D6CEC0;
+      border-color: var(--border-hover);
     }
 
     .course-card-info {
@@ -824,6 +825,7 @@
       cursor: grab;
     }
 
+    .bottom-sheet-handle-wrapper:active,
     .bottom-sheet-handle:active {
       cursor: grabbing;
     }
@@ -831,7 +833,7 @@
     .bottom-sheet-handle {
       width: 42px;
       height: 4.5px;
-      background-color: #D2CBC0;
+      background-color: var(--border-hover);
       border-radius: var(--radius-full);
       transition: background-color 0.15s ease;
     }
@@ -1192,6 +1194,7 @@
       .calendar-nav-title .month-full {
         display: none;
       }
+
       .calendar-nav-title .month-short {
         display: inline;
       }
@@ -1645,7 +1648,8 @@
         toastTray: document.getElementById("toast-tray")
       };
 
-      const formatDateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      const toDateKey = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const formatDateKey = (date) => toDateKey(date.getFullYear(), date.getMonth(), date.getDate());
 
       function parseLocalDate(dateKey) {
         if (!dateKey) return new Date();
@@ -1723,6 +1727,7 @@
         try {
           const textarea = document.createElement("textarea");
           textarea.value = text;
+          textarea.readOnly = true;
           textarea.style.position = "fixed";
           textarea.style.opacity = "0";
           document.body.appendChild(textarea);
@@ -1745,6 +1750,14 @@
         });
       }
 
+      function normalizeNote(n) {
+        return {
+          ...n,
+          department: n.department || state.dept,
+          section: n.section || state.sec
+        };
+      }
+
       async function loadNotes(forceFetch = false) {
         if (!state.dept || !state.sec) {
           state.notes = [];
@@ -1762,7 +1775,7 @@
             try {
               const parsed = JSON.parse(cached);
               if (Array.isArray(parsed)) {
-                state.notes = parsed;
+                state.notes = parsed.map(normalizeNote);
                 state.isLoading = false;
                 syncTopicMenu();
                 render();
@@ -1774,6 +1787,7 @@
 
         if (!config.googleAppsScriptUrl) {
           state.isLoading = false;
+          syncTopicMenu();
           render();
           return;
         }
@@ -1786,10 +1800,9 @@
           const res = await fetch(`${config.googleAppsScriptUrl}${sep}department=${encodeURIComponent(state.dept)}&section=${encodeURIComponent(state.sec)}`);
           const data = await res.json();
           if (data?.success && Array.isArray(data.notes)) {
-            const sectionNotes = data.notes.filter(n =>
-              (!n.department || n.department === state.dept) &&
-              (!n.section || n.section === state.sec)
-            );
+            const sectionNotes = data.notes
+              .filter(n => (!n.department || n.department === state.dept) && (!n.section || n.section === state.sec))
+              .map(normalizeNote);
             state.notes = sectionNotes;
             safeStorage.set(cacheKey, JSON.stringify(sectionNotes));
           }
@@ -1938,9 +1951,7 @@
       }
 
       function checkBodyScrollLock() {
-        if (!document.querySelector(".dialog-modal[open]") && !ui.headerNav?.classList.contains("is-open")) {
-          document.body.classList.remove("sheet-open");
-        }
+        document.body.classList.toggle("sheet-open", Boolean(document.querySelector(".dialog-modal[open]") || ui.headerNav?.classList.contains("is-open")));
       }
 
       function isEventOutside(modal, e) {
@@ -1980,7 +1991,7 @@
         ui.headerNav.classList.toggle("is-open", open);
         ui.mobileMenuToggle.setAttribute("aria-expanded", String(open));
         ui.mobileMenuToggle.textContent = open ? "Close" : "Menu";
-        document.body.classList.toggle("sheet-open", open);
+        checkBodyScrollLock();
       }
 
       function openDateDetails(dateKey) {
@@ -2088,7 +2099,7 @@
           el.addEventListener("mousedown", (e) => {
             if (window.innerWidth > 768 || !sheet.open) return;
             start(e.clientY, e.target);
-            function onMouseMove(me) { move(me.clientY); }
+            function onMouseMove(me) { move(me.clientY, me.cancelable, () => me.preventDefault()); }
             function onMouseUp() {
               window.removeEventListener("mousemove", onMouseMove);
               window.removeEventListener("mouseup", onMouseUp);
@@ -2126,13 +2137,9 @@
           }
 
           if (state.isLoading) {
-            markup += `
-              <td class="calendar-cell">
-                <div class="calendar-cell-btn skeleton-btn" aria-hidden="true"></div>
-              </td>
-            `;
+            markup += '<td class="calendar-cell"><div class="calendar-cell-btn skeleton-btn" aria-hidden="true"></div></td>';
           } else {
-            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            const dateKey = toDateKey(year, month, d);
             const isFuture = dateKey > todayKey;
             const noteCount = notesCountMap[dateKey] || 0;
             const hasNotes = noteCount > 0;
@@ -2159,8 +2166,7 @@
           markup += '<td class="calendar-cell calendar-cell--empty"></td>';
           col++;
         }
-        markup += "</tr>";
-        return markup;
+        return markup + "</tr>";
       }
 
       function updateCalendarTitle(dateObj) {
@@ -2175,18 +2181,13 @@
 
         updateCalendarTitle(state.viewDate);
 
-        // Render current month
         ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate);
 
-        // Render adjacent months for seamless swipe preview
-        const prevDate = new Date(currYear, currMonth - 1, 1);
-        const nextDate = new Date(currYear, currMonth + 1, 1);
-
         if (ui.calendarCellsPrev) {
-          ui.calendarCellsPrev.innerHTML = generateMonthMarkup(prevDate);
+          ui.calendarCellsPrev.innerHTML = generateMonthMarkup(new Date(currYear, currMonth - 1, 1));
         }
         if (ui.calendarCellsNext) {
-          ui.calendarCellsNext.innerHTML = generateMonthMarkup(nextDate);
+          ui.calendarCellsNext.innerHTML = generateMonthMarkup(new Date(currYear, currMonth + 1, 1));
         }
       }
 
@@ -2199,14 +2200,13 @@
 
         const track = ui.calendarTrack;
         if (!track) {
+          state.viewDate.setDate(1);
           state.viewDate.setMonth(state.viewDate.getMonth() + direction);
           renderCalendarGrid();
           isAnimatingMonth = false;
           return;
         }
 
-        // direction > 0: next month (translate to -66.6666%)
-        // direction < 0: prev month (translate to 0%)
         const targetTransform = direction > 0 ? "translate3d(-66.666666%, 0, 0)" : "translate3d(0%, 0, 0)";
 
         track.classList.remove("is-dragging");
@@ -2221,15 +2221,13 @@
           transitionFired = true;
           track.removeEventListener("transitionend", onTransitionEnd);
 
-          // Update active month
+          state.viewDate.setDate(1);
           state.viewDate.setMonth(state.viewDate.getMonth() + direction);
 
-          // Reset track immediately back to center (-33.333333%) without animation
           track.style.transition = "none";
           track.style.transform = "translate3d(-33.333333%, 0, 0)";
-          void track.offsetWidth; // force browser reflow
+          void track.offsetWidth;
 
-          // Re-render calendar months
           renderCalendarGrid();
 
           if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
@@ -2241,7 +2239,7 @@
         }
 
         track.addEventListener("transitionend", onTransitionEnd);
-        setTimeout(onTransitionEnd, 320); // Safety fallback
+        setTimeout(onTransitionEnd, 320);
       }
 
       function snapBackCalendar() {
@@ -2302,7 +2300,7 @@
 
           if (isHorizontalGesture === null) {
             if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 7) {
-              isHorizontalGesture = false; // vertical scroll allowed
+              isHorizontalGesture = false;
               return;
             }
             if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 7) {
@@ -2321,15 +2319,10 @@
           }
 
           currentDeltaX = dx;
-          if (Math.abs(dx) > 8) {
-            hasSwiped = true;
-          }
+          if (Math.abs(dx) > 8) hasSwiped = true;
 
-          // Real-time tracking with finger/mouse:
-          // The middle panel is at -carouselWidth px. We add dx in real time.
           const carouselWidth = carousel.offsetWidth || 300;
-          const currentPx = -carouselWidth + dx;
-          track.style.transform = `translate3d(${currentPx}px, 0, 0)`;
+          track.style.transform = `translate3d(${-carouselWidth + dx}px, 0, 0)`;
         }
 
         function onGestureEnd() {
@@ -2343,9 +2336,9 @@
           if (isDragging) {
             const threshold = Math.min(65, carouselWidth * 0.16);
             if (currentDeltaX < -threshold || (currentDeltaX < -20 && velocity < -0.25)) {
-              slideMonth(1); // Next month
+              slideMonth(1);
             } else if (currentDeltaX > threshold || (currentDeltaX > 20 && velocity > 0.25)) {
-              slideMonth(-1); // Previous month
+              slideMonth(-1);
             } else {
               snapBackCalendar();
             }
@@ -2364,13 +2357,11 @@
           }
         }
 
-        // Touch events
         carousel.addEventListener("touchstart", onGestureStart, { passive: true });
         window.addEventListener("touchmove", onGestureMove, { passive: false });
         window.addEventListener("touchend", onGestureEnd, { passive: true });
         window.addEventListener("touchcancel", onGestureEnd, { passive: true });
 
-        // Mouse events for desktop drag
         carousel.addEventListener("mousedown", onGestureStart);
         window.addEventListener("mousemove", onGestureMove);
         window.addEventListener("mouseup", onGestureEnd);
@@ -2687,7 +2678,7 @@
             closeSheetModal(ui.addModal);
             ui.addForm.reset();
             state.manualTitleEdited = false;
-            updateModalDropdowns(state.dept || departments[0]?.code);
+            updateModalDropdowns(state.dept || departments[0]?.code, state.sec, state.course !== "ALL" ? state.course : "");
             showToast("Note submitted successfully for section review!");
           } catch {
             showToast("Failed to submit note. Please retry.");
@@ -2767,7 +2758,6 @@
           setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
         });
 
-        // Initialize calendar swipe gestures
         setupCalendarSwipe();
       }
 
