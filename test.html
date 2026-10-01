@@ -195,13 +195,17 @@
       50% { opacity: 0.38; }
     }
 
+    .skeleton-line,
     .calendar-cell-btn.skeleton-btn {
       background-color: var(--bg-hover);
+      animation: skeleton-pulse 1.3s ease-in-out infinite;
+    }
+
+    .calendar-cell-btn.skeleton-btn {
       border: 1px solid var(--border-subtle);
       color: transparent;
       pointer-events: none;
       cursor: default;
-      animation: skeleton-pulse 1.3s ease-in-out infinite;
     }
 
     .course-card.skeleton-card {
@@ -212,8 +216,6 @@
 
     .skeleton-line {
       border-radius: var(--radius-full);
-      background-color: var(--bg-hover);
-      animation: skeleton-pulse 1.3s ease-in-out infinite;
     }
 
     .skeleton-line--date {
@@ -308,7 +310,7 @@
       background-color: var(--bg-class-notes-badge);
     }
 
-    /* Form controls - simple & clean */
+    /* Form controls */
     .field {
       margin-bottom: 1rem;
       position: relative;
@@ -409,6 +411,11 @@
       position: relative;
       gap: clamp(0.35rem, 1.2vw, 0.75rem);
       overflow-x: auto;
+    }
+
+    .nav-filters,
+    .notes-stack,
+    .modal-body-scroll {
       scrollbar-width: none;
     }
 
@@ -429,7 +436,7 @@
       max-width: 35%;
     }
 
-    /* Simple filter trigger - no border transforms */
+    /* Filter Triggers */
     .nav-filter-trigger {
       display: flex;
       align-items: center;
@@ -473,7 +480,7 @@
       transform: rotate(180deg);
     }
 
-    /* Clean dropdown menu with visible & smooth custom scrollbar */
+    /* Filter Menus */
     .nav-filter-menu {
       position: absolute;
       top: calc(100% + 5px);
@@ -516,7 +523,6 @@
       display: none;
     }
 
-    /* Clean & simple options */
     .nav-filter-option {
       display: flex;
       align-items: center;
@@ -568,7 +574,7 @@
       user-select: none;
     }
 
-    /* Modal Form dropdowns - simple & consistent */
+    /* Modal Form dropdowns */
     .field .nav-filter-item {
       width: 100%;
     }
@@ -581,25 +587,17 @@
       background-color: var(--bg-subtle);
     }
 
-    .field .nav-filter-trigger:hover,
-    .field .nav-filter-trigger[aria-expanded="true"] {
-      background-color: var(--bg-hover);
-    }
-
     .field .nav-filter-menu {
-      width: 100%;
       min-width: 100%;
       max-width: 100%;
       top: calc(100% + 4px);
-      z-index: 250;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
     .content-area {
       margin-top: 0.5rem;
     }
 
-    /* Views */
+    /* Calendar & Views */
     #calendar-view,
     .course-dates-view {
       padding: 0.5rem 0 1rem;
@@ -636,7 +634,7 @@
       gap: 0.45rem;
     }
 
-    /* Gesture & Carousel Container for Calendar */
+    /* Carousel Container */
     .calendar-carousel {
       position: relative;
       overflow: hidden;
@@ -667,7 +665,6 @@
     .calendar-panel {
       width: 33.333333%;
       flex: 0 0 33.333333%;
-      box-sizing: border-box;
       padding: 0 0.15rem;
     }
 
@@ -924,7 +921,6 @@
       margin-top: 1rem;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
-      scrollbar-width: none;
     }
 
     .notes-stack {
@@ -1810,19 +1806,16 @@
         const cacheKey = `notes_${state.dept}_${state.sec}`;
 
         if (!forceFetch) {
-          const cached = safeStorage.get(cacheKey);
-          if (cached) {
-            try {
-              const parsed = JSON.parse(cached);
-              if (Array.isArray(parsed)) {
-                state.notes = parsed.map(normalizeNote);
-                state.isLoading = false;
-                syncTopicMenu();
-                render();
-                return;
-              }
-            } catch {}
-          }
+          try {
+            const cached = JSON.parse(safeStorage.get(cacheKey) || "null");
+            if (Array.isArray(cached)) {
+              state.notes = cached.map(normalizeNote);
+              state.isLoading = false;
+              syncTopicMenu();
+              render();
+              return;
+            }
+          } catch {}
         }
 
         if (!config.googleAppsScriptUrl) {
@@ -1858,27 +1851,18 @@
 
       const getDeptMeta = (code) => departments.find(d => d.code === code) || null;
 
-      function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
-        const isAllSel = selectedVal === "ALL";
-        const checkIcon = `<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
+        const checkSvg = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
+        list.forEach(item => items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) }));
 
-        let html = includeAll ? `
-          <button type="button" class="nav-filter-option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">
-            <span class="nav-filter-option-text">${escapeHtml(allLabel)}</span>
-            ${isAllSel ? checkIcon : ''}
-          </button>` : "";
-
-        html += (list || []).map(item => {
-          const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
-          const label = prefix ? `${prefix} ${item}` : item;
-          return `
-            <button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">
-              <span class="nav-filter-option-text">${escapeHtml(label)}</span>
-              ${isSel ? checkIcon : ''}
-            </button>`;
+        container.innerHTML = items.map(({ val, text }) => {
+          const isSel = selectedVal === val;
+          return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(val)}" role="option" aria-selected="${isSel}">
+            <span class="nav-filter-option-text">${escapeHtml(text)}</span>
+            ${isSel ? checkSvg : ''}
+          </button>`;
         }).join("");
-
-        container.innerHTML = html;
       }
 
       function renderMenuNotice(container, message) {
@@ -1956,7 +1940,7 @@
         renderMenuOptions(ui.deptMenu, departments.map(d => d.code), state.dept || null);
         const activeDept = getDeptMeta(state.dept);
 
-        if (activeDept && state.dept) {
+        if (activeDept) {
           renderMenuOptions(ui.secMenu, activeDept.sections, state.sec || null, false, "", "Sec");
           renderMenuOptions(ui.courseMenu, activeDept.courses, state.sec ? state.course : "ALL", true, "All Courses");
         } else {
