@@ -15,1170 +15,174 @@
       --bg-hover: #E3DCCF;
       --bg-pill: #EBE4D5;
       --bg-class-notes-badge: #FFB4F9;
-
       --border-subtle: #E4DCD0;
-
       --text-main: #181716;
       --text-muted: #3C3833;
       --text-subtle: #8A847A;
       --text-disabled: #B8B0A5;
-
       --brand-primary: #0A37F5;
       --brand-primary-hover: #072CC4;
       --brand-dark: #181716;
       --brand-dark-hover: #2B2A28;
       --brand-danger: #DC2626;
       --brand-danger-hover: #B91C1C;
-
       --radius-full: 9999px;
       --radius-lg: 16px;
       --radius-md: 10px;
-
       --font-display: 'Instrument Serif', Georgia, serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Prevent Page Layout Shift / Jumping */
-    html {
-      scrollbar-gutter: stable;
-      scrollbar-width: thin;
-      scrollbar-color: #D2CBC0 transparent;
-    }
-
-    html::-webkit-scrollbar {
-      width: 7px;
-    }
-    html::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    html::-webkit-scrollbar-thumb {
-      background-color: #D2CBC0;
-      border-radius: var(--radius-full);
-    }
-    html::-webkit-scrollbar-thumb:hover {
-      background-color: #B8B0A5;
-    }
-
-    button, input {
-      font-family: inherit;
-      border: 0;
-      outline: 0;
-    }
-
-    button {
-      background: transparent;
-    }
-
-    body {
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      font-family: var(--font-body);
-      font-size: 15px;
-      line-height: 1.5;
-      min-height: 100vh;
-      padding-bottom: 4rem;
-    }
-
-    body.sheet-open {
-      overflow: hidden;
-      touch-action: none;
-    }
-
-    .shell {
-      max-width: 1240px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 0 clamp(1rem, 3.5vw, 2.5rem);
-    }
-
-    /* Core buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      font-size: 0.875rem;
-      font-weight: 600;
-      padding: 0.625rem 1.25rem;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: background-color 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    .btn--primary {
-      background-color: var(--brand-primary);
-      color: #FFFFFF;
-    }
-    .btn--primary:hover:not(:disabled) {
-      background-color: var(--brand-primary-hover);
-    }
-
-    .btn-plus {
-      font-size: 1.25em;
-      line-height: 1;
-      margin-right: 0.25rem;
-      display: inline-block;
-    }
-
-    .btn--dark {
-      background-color: var(--brand-dark);
-      color: #FFFFFF;
-      padding: 0.5rem 1.15rem;
-      font-size: 0.8125rem;
-    }
-    .btn--dark:hover:not(:disabled) {
-      background-color: var(--brand-dark-hover);
-    }
-
-    .btn--ghost {
-      background-color: var(--bg-subtle);
-      color: var(--text-main);
-    }
-    .btn--ghost:hover:not(:disabled) {
-      background-color: var(--bg-hover);
-    }
-
-    .btn--subtle {
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      padding: 0.5rem 1rem;
-      font-size: 0.8125rem;
-      gap: 0.4rem;
-    }
-    .btn--subtle:hover:not(:disabled) {
-      background-color: var(--bg-subtle);
-    }
-
-    .btn--danger {
-      background-color: var(--brand-danger);
-      color: #FFFFFF;
-    }
-    .btn--danger:hover:not(:disabled) {
-      background-color: var(--brand-danger-hover);
-    }
-
-    .btn.is-loading {
-      pointer-events: none;
-      color: transparent;
-    }
-
-    .btn.is-loading::after {
-      content: '';
-      position: absolute;
-      width: 1rem;
-      height: 1rem;
-      border: 2px solid #FFFFFF;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    /* Header & Navigation */
-    .site-header {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.75rem clamp(1rem, 4vw, 3.5rem);
-      background: var(--bg-canvas);
-      position: relative;
-    }
-
-    .brand-mark {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 1.875rem;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      line-height: 1;
-    }
-
-    .brand-mark sup {
-      font-size: 0.75rem;
-      font-family: var(--font-body);
-      font-style: normal;
-      color: var(--text-subtle);
-      font-weight: 600;
-      margin-left: 2px;
-    }
-
-    .header-nav {
-      display: flex;
-      align-items: center;
-      gap: clamp(2.5rem, 4.5vw, 3.75rem);
-    }
-
-    .nav-link {
-      padding: 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      text-decoration: none;
-      transition: color 0.15s ease;
-    }
-
-    .nav-link:hover {
-      color: var(--text-main);
-    }
-
-    .header-menu-toggle {
-      display: none;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      background: var(--bg-subtle);
-      color: var(--text-main);
-      font-family: var(--font-display);
-      font-style: italic;
-      border-radius: var(--radius-full);
-      padding: 0.15rem 0.85rem;
-    }
-
-    .hero__title .badge {
-      background-color: var(--bg-class-notes-badge);
-    }
-
-    /* Form controls */
-    .field {
-      margin-bottom: 1rem;
-      position: relative;
-    }
-
-    .field label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-subtle);
-      margin-bottom: 0.35rem;
-    }
-
-    .field input {
-      width: 100%;
-      background-color: var(--bg-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.75rem 1rem;
-      font-size: 0.9375rem;
-      color: var(--text-main);
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      border: 1px solid transparent;
-    }
-
-    .field input:focus {
-      background-color: var(--bg-hover);
-    }
-
-    /* Hero */
-    .hero {
-      padding-top: clamp(3.5rem, 6vw, 5.5rem);
-      text-align: center;
-      max-width: 840px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .hero__title {
-      font-family: var(--font-display);
-      font-size: clamp(2.5rem, 5vw, 4.25rem);
-      font-weight: 400;
-      line-height: 1.15;
-      letter-spacing: -0.025em;
-      color: var(--text-main);
-      margin-bottom: 1.4rem;
-    }
-
-    .hero__desc {
-      font-size: clamp(1rem, 1.2vw, 1.125rem);
-      color: var(--text-muted);
-      max-width: 500px;
-      line-height: 1.6;
-      margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
-    }
-
-    /* Selection Banner */
-    .selection-banner-wrapper {
-      margin: 0 auto 0.85rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    .selection-banner {
-      font-family: var(--font-display);
-      font-size: clamp(1.25rem, 2.3vw, 1.65rem);
-      font-weight: 400;
-      letter-spacing: -0.015em;
-      color: var(--text-main);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      line-height: 1.35;
-    }
-
-    .selection-banner .badge {
-      background-color: var(--brand-primary);
-      color: #FFFFFF;
-      font-size: 0.95em;
-      font-style: normal;
-    }
-
-    /* Filters Bar */
-    .nav-filters {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
-      width: 100%;
-      margin: 0 0 1rem;
-      padding: 0.35rem 0 1rem;
-      border-bottom: 1px solid var(--border-subtle);
-      position: relative;
-      gap: clamp(0.35rem, 1.2vw, 0.75rem);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-
-    .nav-filters::-webkit-scrollbar {
-      display: none;
-    }
-
-    .nav-filter__item {
-      position: relative;
-      min-width: 0;
-    }
-
-    .nav-filters .nav-filter__item {
-      flex: 1 1 auto;
-      min-width: 72px;
-      max-width: 35%;
-    }
-
-    .nav-filter__trigger {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(0.2rem, 0.8vw, 0.45rem);
-      background-color: var(--bg-subtle);
-      border-radius: var(--radius-full);
-      padding: 0.6rem clamp(0.4rem, 1.2vw, 1.15rem);
-      color: var(--text-main);
-      font-size: clamp(0.75rem, 1.1vw, 0.875rem);
-      font-weight: 600;
-      cursor: pointer;
-      user-select: none;
-      width: 100%;
-      -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      border: 1px solid transparent;
-    }
-
-    .nav-filter__trigger:hover,
-    .nav-filter__trigger:focus-visible {
-      background-color: var(--bg-hover);
-    }
-
-    .nav-filter__trigger[aria-expanded="true"] {
-      background-color: var(--bg-hover);
-      border-color: var(--border-subtle);
-    }
-
-    .nav-filter__text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      pointer-events: none;
-      min-width: 0;
-      text-align: center;
-    }
-
-    .nav-filter__arrow {
-      pointer-events: none;
-      flex-shrink: 0;
-      color: var(--text-muted);
-      transition: transform 0.2s ease;
-    }
-
-    .nav-filter__trigger[aria-expanded="true"] .nav-filter__arrow {
-      transform: rotate(180deg);
-    }
-
-    .nav-filter__menu {
-      position: absolute;
-      top: calc(100% + 5px);
-      left: 0;
-      width: 100%;
-      min-width: 220px;
-      max-width: min(420px, calc(100vw - 2rem));
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.35rem 0;
-      z-index: 150;
-      max-height: 260px;
-      overflow-y: auto;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      scrollbar-width: none;
-    }
-
-    .nav-filter__menu::-webkit-scrollbar {
-      display: none;
-    }
-
-    .nav-filter__menu[hidden] {
-      display: none;
-    }
-
-    .nav-filter__option {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      padding: 0.55rem 0.95rem;
-      font-size: 0.8125rem;
-      font-weight: 500;
-      color: var(--text-main);
-      text-align: left;
-      cursor: pointer;
-      word-break: break-word;
-      line-height: 1.4;
-      transition: background-color 0.12s ease;
-    }
-
-    .nav-filter__option:hover {
-      background-color: var(--bg-hover);
-    }
-
-    .nav-filter__option.is-selected {
-      font-weight: 700;
-      background-color: var(--bg-pill);
-      color: var(--brand-primary);
-    }
-
-    .nav-filter__empty {
-      padding: 0.75rem 1rem;
-      color: var(--text-subtle);
-      font-size: 0.8125rem;
-    }
-
-    /* Modal Form dropdowns */
-    .field .nav-filter__item {
-      width: 100%;
-    }
-
-    .field .nav-filter__trigger {
-      justify-content: space-between;
-      border-radius: var(--radius-md);
-      padding: 0.75rem 1rem;
-      font-size: 0.9375rem;
-    }
-
-    .field .nav-filter__menu {
-      width: 100%;
-      min-width: 100%;
-      max-width: 100%;
-      top: calc(100% + 4px);
-      z-index: 200;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .content-area {
-      margin-top: 0.5rem;
-    }
-
-    /* Views */
-    #calendar-view,
-    .course-dates-view {
-      padding: 0.5rem 0 1rem;
-    }
-
-    .calendar-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.85rem;
-      padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border-subtle);
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .calendar-nav__title {
-      font-family: var(--font-display);
-      font-size: 2.75rem;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      line-height: 1;
-    }
-
-    .calendar-nav__title .month-short {
-      display: none;
-    }
-
-    .calendar-nav__actions {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-    }
-
-    .calendar-grid {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 0.85rem;
-      table-layout: fixed;
-    }
-
-    .calendar-grid th {
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      padding: 0.25rem 0.25rem 0.75rem;
-      text-align: center;
-    }
-
-    .calendar-cell {
-      height: 56px;
-      text-align: center;
-      vertical-align: middle;
-      padding: 0;
-    }
-
-    .calendar-cell--empty,
-    .calendar-cell--disabled {
-      pointer-events: none;
-    }
-
-    .calendar-cell__btn {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--bg-pill);
-      border: 1px solid var(--border-subtle);
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-    }
-
-    .calendar-cell__btn:hover:not(:disabled) {
-      background-color: var(--bg-hover);
-      border-color: #D6CEC0;
-    }
-
-    .calendar-cell--today .calendar-cell__btn {
-      border: 2px solid var(--text-main);
-      font-weight: 700;
-    }
-
-    .calendar-cell.has-notes .calendar-cell__btn {
-      border: 2px solid var(--brand-primary);
-      color: var(--brand-primary);
-      font-weight: 700;
-    }
-
-    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
-      border-color: var(--brand-primary-hover);
-    }
-
-    .calendar-cell--disabled .calendar-cell__btn {
-      background-color: transparent;
-      border-color: transparent;
-      color: var(--text-disabled);
-      opacity: 0.4;
-      cursor: default;
-    }
-
-    .course-dates__header {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border-subtle);
-      flex-wrap: wrap;
-    }
-
-    .course-dates__title {
-      font-family: var(--font-display);
-      font-size: 2.25rem;
-      font-weight: 400;
-      color: var(--text-main);
-      line-height: 1.1;
-    }
-
-    .course-dates__count {
-      font-size: 0.875rem;
-      color: var(--text-subtle);
-      font-weight: 600;
-    }
-
-    .course-dates__grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 0.85rem;
-      width: 100%;
-    }
-
-    .course-card {
-      background-color: var(--bg-pill);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.95rem 1.15rem;
-      cursor: pointer;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 0.75rem;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      text-align: left;
-    }
-
-    .course-card:hover {
-      background-color: var(--bg-hover);
-      border-color: #D6CEC0;
-    }
-
-    .course-card__info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .course-card__date {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      line-height: 1.3;
-    }
-
-    .course-card__day {
-      font-size: 0.8125rem;
-      color: var(--text-subtle);
-      font-weight: 500;
-    }
-
-    .course-card__badge {
-      align-self: flex-start;
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 0.2rem 0.65rem;
-      border-radius: var(--radius-full);
-      font-size: 0.75rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    /* Modals */
-    .dialog-modal {
-      position: fixed;
-      inset: 0;
-      margin: auto;
-      max-width: 520px;
-      width: calc(100% - 2rem);
-      max-height: 88vh;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      color: var(--text-main);
-    }
-
-    .dialog-modal[open] {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .dialog-modal > form {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .dialog-modal::backdrop {
-      background: rgba(0, 0, 0, 0.55);
-      cursor: pointer;
-    }
-
-    .bottom-sheet__handle-wrapper {
-      display: none;
-      width: 100%;
-      justify-content: center;
-      align-items: center;
-      padding: 0.5rem 0 0.85rem;
-      touch-action: none;
-      user-select: none;
-      flex-shrink: 0;
-      cursor: grab;
-    }
-
-    .bottom-sheet__handle:active {
-      cursor: grabbing;
-    }
-
-    .bottom-sheet__handle {
-      width: 42px;
-      height: 4.5px;
-      background-color: #D2CBC0;
-      border-radius: var(--radius-full);
-      transition: background-color 0.15s ease;
-    }
-
-    .dialog-modal__header {
-      padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border-subtle);
-      flex-shrink: 0;
-    }
-
-    .dialog-modal__title {
-      font-family: var(--font-display);
-      font-size: 1.75rem;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.2rem;
-    }
-
-    .dialog-modal__desc {
-      font-size: 0.8125rem;
-      color: var(--text-subtle);
-      font-weight: 600;
-    }
-
-    .dialog-modal__text {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-    }
-
-    .dialog-modal__actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      margin-top: 1rem;
-      flex-shrink: 0;
-    }
-
-    /* Modal Scroll Areas - Completely Hide Scrollbars */
-    .notes-stack,
-    .modal-body-scroll {
-      flex: 1 1 auto;
-      overflow-y: auto;
-      margin-top: 1rem;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-      scrollbar-width: none;
-    }
-
-    .notes-stack::-webkit-scrollbar,
-    .modal-body-scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    .notes-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-    }
-
-    .modal-body-scroll {
-      padding-bottom: 1.5rem;
-    }
-
-    .modal-body-scroll .field:last-child {
-      margin-bottom: 0;
-    }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 3.5rem 1.5rem;
-      gap: 0.85rem;
-      width: 100%;
-      grid-column: 1 / -1;
-      margin: 0 auto;
-    }
-
-    .empty-state__icon {
-      width: 44px;
-      height: 44px;
-      color: var(--text-subtle);
-      opacity: 0.75;
-    }
-
-    .empty-state__text {
-      font-size: 0.9375rem;
-      color: var(--text-subtle);
-      font-weight: 500;
-      max-width: 420px;
-      line-height: 1.45;
-    }
-
-    .note-cluster {
-      background-color: #FAF5EB;
-      border-radius: var(--radius-md);
-      padding: 0.95rem 1.15rem;
-    }
-
-    .note-cluster__course {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 0.4rem;
-    }
-
-    .note-cluster__topic-group {
-      margin-left: 1.1rem;
-      margin-top: 0.45rem;
-      margin-bottom: 0.65rem;
-    }
-
-    .note-cluster__topic-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .note-cluster__topic-header {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 0.35rem;
-    }
-
-    .note-cluster__list {
-      list-style: none;
-      margin-left: 0.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .note-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.6rem;
-      padding: 0.15rem 0;
-      width: 100%;
-    }
-
-    .note-row__left {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-size: 0.9rem;
-      min-width: 0;
-      flex: 1 1 auto;
-    }
-
-    /* Note Title Pill / Button */
-    .note-title-btn,
-    .note-title-plain {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      background-color: var(--bg-subtle);
-      border-radius: var(--radius-full);
-      padding: 0.38rem 0.85rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      line-height: 1.35;
-      min-width: 0;
-      max-width: 100%;
-    }
-
-    .note-title-btn {
-      color: var(--brand-primary);
-      text-decoration: none;
-      cursor: pointer;
-      transition: background-color 0.15s ease, color 0.15s ease;
-    }
-
-    .note-title-btn:hover {
-      background-color: var(--bg-hover);
-      color: var(--brand-primary-hover);
-    }
-
-    .note-title-plain {
-      color: var(--text-main);
-      cursor: default;
-    }
-
-    .note-title-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
-    }
-
-    .note-row__icon {
-      width: 14px;
-      height: 14px;
-      color: var(--text-subtle);
-      flex-shrink: 0;
-    }
-
-    .note-row__flag {
-      color: var(--brand-danger);
-      font-weight: 600;
-      font-size: 0.72rem;
-      margin-left: 0.25rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    /* Actions: Icon-only buttons */
-    .note-row__actions {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      flex-shrink: 0;
-    }
-
-    .btn-share,
-    .btn-report {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      border-radius: 50%;
-      background-color: var(--bg-subtle);
-      color: var(--text-muted);
-      transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-      flex-shrink: 0;
-      padding: 0;
-    }
-
-    .btn-share svg,
-    .btn-report svg {
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-    }
-
-    .btn-share:hover {
-      color: var(--brand-primary);
-      background-color: var(--bg-hover);
-    }
-
-    .btn-report:hover {
-      color: var(--brand-danger);
-      background-color: var(--bg-hover);
-    }
-
-    .btn-share:active,
-    .btn-report:active {
-      transform: scale(0.94);
-    }
-
-    /* Toast Notification */
-    .toast-tray {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      pointer-events: none;
-    }
-
-    .toast {
-      pointer-events: auto;
-      background: var(--brand-dark);
-      color: #FFFFFF;
-      padding: 0.75rem 1.25rem;
-      border-radius: var(--radius-md);
-      font-size: 0.875rem;
-      font-weight: 500;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
-      transition: opacity 0.25s ease;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #D2CBC0 transparent; }
+    html::-webkit-scrollbar { width: 7px; }
+    html::-webkit-scrollbar-thumb { background-color: #D2CBC0; border-radius: var(--radius-full); }
+    button, input { font-family: inherit; border: 0; outline: 0; }
+    button { background: transparent; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-body); font-size: 15px; line-height: 1.5; min-height: 100vh; padding-bottom: 4rem; }
+    body.sheet-open { overflow: hidden; touch-action: none; }
+    .shell { max-width: 1240px; width: 100%; margin: 0 auto; padding: 0 clamp(1rem, 3.5vw, 2.5rem); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; position: relative; font-size: 0.875rem; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: var(--radius-full); cursor: pointer; text-decoration: none; white-space: nowrap; transition: background-color 0.15s ease, opacity 0.15s ease; }
+    .btn:disabled { cursor: not-allowed; opacity: 0.6; }
+    .btn--primary { background-color: var(--brand-primary); color: #FFFFFF; }
+    .btn--primary:hover:not(:disabled) { background-color: var(--brand-primary-hover); }
+    .btn-plus { font-size: 1.25em; line-height: 1; margin-right: 0.25rem; }
+    .btn--dark { background-color: var(--brand-dark); color: #FFFFFF; padding: 0.5rem 1.15rem; font-size: 0.8125rem; }
+    .btn--dark:hover:not(:disabled) { background-color: var(--brand-dark-hover); }
+    .btn--ghost { background-color: var(--bg-subtle); color: var(--text-main); }
+    .btn--ghost:hover:not(:disabled) { background-color: var(--bg-hover); }
+    .btn--subtle { background-color: var(--bg-canvas); color: var(--text-main); border: 1px solid var(--border-subtle); padding: 0.5rem 1rem; font-size: 0.8125rem; gap: 0.4rem; }
+    .btn--subtle:hover:not(:disabled) { background-color: var(--bg-subtle); }
+    .btn--danger { background-color: var(--brand-danger); color: #FFFFFF; }
+    .btn--danger:hover:not(:disabled) { background-color: var(--brand-danger-hover); }
+    .btn.is-loading { pointer-events: none; color: transparent; }
+    .btn.is-loading::after { content: ''; position: absolute; width: 1rem; height: 1rem; border: 2px solid #FFFFFF; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .site-header { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 1.75rem clamp(1rem, 4vw, 3.5rem); background: var(--bg-canvas); position: sticky; top: 0; z-index: 300; }
+    .brand-mark { font-family: var(--font-display); font-style: italic; font-size: 1.875rem; letter-spacing: -0.02em; color: var(--text-main); line-height: 1; }
+    .brand-mark sup { font-size: 0.75rem; font-family: var(--font-body); font-style: normal; color: var(--text-subtle); font-weight: 600; margin-left: 2px; }
+    .header-nav { display: flex; align-items: center; gap: clamp(2.5rem, 4.5vw, 3.75rem); }
+    .nav-link { padding: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-decoration: none; }
+    .nav-link:hover { color: var(--text-main); }
+    .header-menu-toggle { display: none; padding: 0.25rem 0.5rem; font-size: 0.95rem; font-weight: 600; color: var(--text-main); cursor: pointer; }
+    .badge { display: inline-flex; align-items: center; background: var(--bg-subtle); color: var(--text-main); font-family: var(--font-display); font-style: italic; border-radius: var(--radius-full); padding: 0.15rem 0.85rem; }
+    .hero__title .badge { background-color: var(--bg-class-notes-badge); }
+    .field { margin-bottom: 1rem; position: relative; }
+    .field label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-subtle); margin-bottom: 0.35rem; }
+    .field input { width: 100%; background-color: var(--bg-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; font-size: 0.9375rem; color: var(--text-main); border: 1px solid transparent; }
+    .field input:focus { background-color: var(--bg-hover); }
+    .hero { padding-top: clamp(3.5rem, 6vw, 5.5rem); text-align: center; max-width: 840px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+    .hero__title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.25rem); font-weight: 400; line-height: 1.15; letter-spacing: -0.025em; color: var(--text-main); margin-bottom: 1.4rem; }
+    .hero__desc { font-size: clamp(1rem, 1.2vw, 1.125rem); color: var(--text-muted); max-width: 500px; line-height: 1.6; margin: 0 auto clamp(2rem, 3.5vw, 2.75rem); }
+    .selection-banner-wrapper { margin: 0 auto 0.85rem; display: flex; justify-content: center; align-items: center; text-align: center; }
+    .selection-banner { font-family: var(--font-display); font-size: clamp(1.25rem, 2.3vw, 1.65rem); font-weight: 400; letter-spacing: -0.015em; color: var(--text-main); display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.45rem; line-height: 1.35; }
+    .selection-banner .badge { background-color: var(--brand-primary); color: #FFFFFF; font-size: 0.95em; font-style: normal; }
+    .nav-filters { display: flex; flex-wrap: nowrap; align-items: center; width: 100%; margin: 0 0 1rem; padding: 0.35rem 0 1rem; border-bottom: 1px solid var(--border-subtle); position: relative; gap: clamp(0.35rem, 1.2vw, 0.75rem); overflow-x: auto; scrollbar-width: none; }
+    .nav-filters::-webkit-scrollbar { display: none; }
+    .nav-filter__item { position: relative; min-width: 0; }
+    .nav-filters .nav-filter__item { flex: 1 1 auto; min-width: 72px; max-width: 35%; }
+    .nav-filter__trigger { display: flex; align-items: center; justify-content: center; gap: clamp(0.2rem, 0.8vw, 0.45rem); background-color: var(--bg-subtle); border-radius: var(--radius-full); padding: 0.6rem clamp(0.4rem, 1.2vw, 1.15rem); color: var(--text-main); font-size: clamp(0.75rem, 1.1vw, 0.875rem); font-weight: 600; cursor: pointer; user-select: none; width: 100%; border: 1px solid transparent; }
+    .nav-filter__trigger:hover, .nav-filter__trigger[aria-expanded="true"] { background-color: var(--bg-hover); }
+    .nav-filter__text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; min-width: 0; text-align: center; }
+    .nav-filter__arrow { pointer-events: none; flex-shrink: 0; color: var(--text-muted); transition: transform 0.2s ease; }
+    .nav-filter__trigger[aria-expanded="true"] .nav-filter__arrow { transform: rotate(180deg); }
+    .nav-filter__menu { position: absolute; top: calc(100% + 5px); left: 0; width: 100%; min-width: 220px; max-width: min(420px, calc(100vw - 2rem)); background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.35rem 0; z-index: 150; max-height: 260px; overflow-y: auto; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); scrollbar-width: none; }
+    .nav-filter__menu::-webkit-scrollbar { display: none; }
+    .nav-filter__menu[hidden] { display: none; }
+    .nav-filter__option { display: flex; align-items: center; width: 100%; padding: 0.55rem 0.95rem; font-size: 0.8125rem; font-weight: 500; color: var(--text-main); text-align: left; cursor: pointer; word-break: break-word; line-height: 1.4; }
+    .nav-filter__option:hover { background-color: var(--bg-hover); }
+    .nav-filter__option.is-selected { font-weight: 700; background-color: var(--bg-pill); color: var(--brand-primary); }
+    .nav-filter__empty { padding: 0.75rem 1rem; color: var(--text-subtle); font-size: 0.8125rem; }
+    .field .nav-filter__item { width: 100%; }
+    .field .nav-filter__trigger { justify-content: space-between; border-radius: var(--radius-md); padding: 0.75rem 1rem; font-size: 0.9375rem; }
+    .field .nav-filter__menu { width: 100%; min-width: 100%; max-width: 100%; top: calc(100% + 4px); z-index: 200; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+    .content-area { margin-top: 0.5rem; }
+    #calendar-view, .course-dates-view { padding: 0.5rem 0 1rem; }
+    .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem; }
+    .calendar-nav__title { font-family: var(--font-display); font-size: 2.75rem; font-weight: 400; letter-spacing: -0.02em; color: var(--text-main); line-height: 1; }
+    .calendar-nav__title .month-short { display: none; }
+    .calendar-nav__actions { display: flex; align-items: center; gap: 0.45rem; }
+    .calendar-grid { width: 100%; border-collapse: separate; border-spacing: 0 0.85rem; table-layout: fixed; }
+    .calendar-grid th { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); padding: 0.25rem 0.25rem 0.75rem; text-align: center; }
+    .calendar-cell { height: 56px; text-align: center; vertical-align: middle; padding: 0; }
+    .calendar-cell--empty, .calendar-cell--disabled { pointer-events: none; }
+    .calendar-cell__btn { width: 48px; height: 48px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background-color: var(--bg-pill); border: 1px solid var(--border-subtle); font-weight: 600; font-size: 0.95rem; color: var(--text-main); border-radius: 50%; cursor: pointer; }
+    .calendar-cell__btn:hover:not(:disabled) { background-color: var(--bg-hover); border-color: #D6CEC0; }
+    .calendar-cell--today .calendar-cell__btn { border: 2px solid var(--text-main); font-weight: 700; }
+    .calendar-cell.has-notes .calendar-cell__btn { border: 2px solid var(--brand-primary); color: var(--brand-primary); font-weight: 700; }
+    .calendar-cell--disabled .calendar-cell__btn { background-color: transparent; border-color: transparent; color: var(--text-disabled); opacity: 0.4; }
+    .course-dates__header { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border-subtle); flex-wrap: wrap; }
+    .course-dates__title { font-family: var(--font-display); font-size: 2.25rem; font-weight: 400; color: var(--text-main); line-height: 1.1; }
+    .course-dates__count { font-size: 0.875rem; color: var(--text-subtle); font-weight: 600; }
+    .course-dates__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem; width: 100%; }
+    .course-card { background-color: var(--bg-pill); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.95rem 1.15rem; cursor: pointer; display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+    .course-card:hover { background-color: var(--bg-hover); border-color: #D6CEC0; }
+    .course-card__info { display: flex; flex-direction: column; gap: 0.25rem; }
+    .course-card__date { font-weight: 600; font-size: 0.95rem; color: var(--text-main); line-height: 1.3; }
+    .course-card__day { font-size: 0.8125rem; color: var(--text-subtle); font-weight: 500; }
+    .course-card__badge { align-self: flex-start; color: var(--text-subtle); font-size: 0.8125rem; font-weight: 600; white-space: nowrap; }
+    .dialog-modal { position: fixed; inset: 0; margin: auto; max-width: 520px; width: calc(100% - 2rem); max-height: 88vh; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; color: var(--text-main); }
+    .dialog-modal[open] { display: flex; flex-direction: column; }
+    .dialog-modal > form { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .dialog-modal::backdrop { background: rgba(0, 0, 0, 0.55); cursor: pointer; }
+    .bottom-sheet__handle-wrapper { display: none; width: 100%; justify-content: center; align-items: center; padding: 0.5rem 0 0.85rem; touch-action: none; cursor: grab; }
+    .bottom-sheet__handle { width: 42px; height: 4.5px; background-color: #D2CBC0; border-radius: var(--radius-full); }
+    .dialog-modal__header { padding-bottom: 0.85rem; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+    .dialog-modal__title { font-family: var(--font-display); font-size: 1.75rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 0.2rem; }
+    .dialog-modal__desc { font-size: 0.8125rem; color: var(--text-subtle); font-weight: 600; }
+    .dialog-modal__text { font-size: 0.875rem; color: var(--text-muted); }
+    .dialog-modal__actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; flex-shrink: 0; }
+    .notes-stack, .modal-body-scroll { flex: 1 1 auto; overflow-y: auto; margin-top: 1rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .notes-stack::-webkit-scrollbar, .modal-body-scroll::-webkit-scrollbar { display: none; }
+    .notes-stack { display: flex; flex-direction: column; gap: 0.85rem; }
+    .modal-body-scroll { padding-bottom: 1.5rem; }
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3.5rem 1.5rem; gap: 0.85rem; width: 100%; grid-column: 1 / -1; }
+    .empty-state__icon { width: 44px; height: 44px; color: var(--text-subtle); opacity: 0.75; }
+    .empty-state__text { font-size: 0.9375rem; color: var(--text-subtle); font-weight: 500; max-width: 420px; line-height: 1.45; }
+    .note-cluster { background-color: #FAF5EB; border-radius: var(--radius-md); padding: 0.95rem 1.15rem; }
+    .note-cluster__course { font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem; }
+    .note-cluster__topic-group { margin-left: 1.1rem; margin-top: 0.45rem; margin-bottom: 0.65rem; }
+    .note-cluster__topic-header { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .note-cluster__list { list-style: none; margin-left: 0.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .note-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.15rem 0; width: 100%; }
+    .note-row__left { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; min-width: 0; flex: 1 1 auto; }
+    .note-title-btn, .note-title-plain { display: inline-flex; align-items: center; gap: 0.45rem; background-color: var(--bg-subtle); border-radius: var(--radius-full); padding: 0.38rem 0.85rem; font-size: 0.875rem; font-weight: 600; line-height: 1.35; min-width: 0; max-width: 100%; }
+    .note-title-btn { color: var(--brand-primary); text-decoration: none; cursor: pointer; }
+    .note-title-btn:hover { background-color: var(--bg-hover); color: var(--brand-primary-hover); }
+    .note-title-plain { color: var(--text-main); }
+    .note-title-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .note-row__icon { width: 14px; height: 14px; color: var(--text-subtle); flex-shrink: 0; }
+    .note-row__flag { color: var(--brand-danger); font-weight: 600; font-size: 0.72rem; margin-left: 0.25rem; white-space: nowrap; flex-shrink: 0; }
+    .note-row__actions { display: inline-flex; align-items: center; gap: 0.35rem; flex-shrink: 0; }
+    .btn-share, .btn-report { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; cursor: pointer; border-radius: 50%; background-color: var(--bg-subtle); color: var(--text-muted); flex-shrink: 0; padding: 0; }
+    .btn-share svg, .btn-report svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .btn-share:hover { color: var(--brand-primary); background-color: var(--bg-hover); }
+    .btn-report:hover { color: var(--brand-danger); background-color: var(--bg-hover); }
+    .toast-tray { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+    .toast { pointer-events: auto; background: var(--brand-dark); color: #FFFFFF; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 500; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16); transition: opacity 0.25s ease; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 768px) {
-      .site-header {
-        padding: 1.25rem 1rem;
-      }
-
-      .brand-mark,
-      .header-menu-toggle {
-        position: relative;
-        z-index: 320;
-      }
-
-      .header-menu-toggle {
-        display: block;
-        font-size: 0.9rem;
-      }
-
-      .header-nav {
-        display: flex;
-        position: fixed;
-        inset: 0;
-        height: 100dvh;
-        background-color: var(--bg-canvas);
-        padding: 5.5rem 1.75rem 2.5rem;
-        z-index: 310;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.25rem;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition: opacity 0.22s ease, visibility 0.22s ease;
-      }
-
-      .header-nav.is-open {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-      }
-
-      .nav-link {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-main);
-        width: 100%;
-        text-align: left;
-        padding: 0.25rem 0;
-      }
-
-      .header-nav .btn--primary {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0.85rem 1.25rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-      }
-
+      .site-header { padding: 1.25rem 1rem; }
+      .brand-mark, .header-menu-toggle { position: relative; z-index: 320; }
+      .header-menu-toggle { display: block; font-size: 0.9rem; }
+      .header-nav { display: flex; position: fixed; inset: 0; height: 100dvh; background-color: var(--bg-canvas); padding: 5.5rem 1.75rem 2.5rem; z-index: 310; flex-direction: column; align-items: flex-start; gap: 1.25rem; overflow-y: auto; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.22s ease, visibility 0.22s ease; }
+      .header-nav.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
+      .nav-link { font-size: 1.1rem; width: 100%; text-align: left; }
+      .header-nav .btn--primary { width: 100%; margin-top: 1rem; padding: 0.85rem 1.25rem; }
       .hero { padding-top: 2rem; }
-      .hero__desc { margin-bottom: 1.5rem; }
-      .selection-banner { font-size: 1.2rem; }
-
-      .nav-filters {
-        gap: 0.45rem;
-        padding: 0.35rem 0 0.85rem;
-      }
-
-      .nav-filters .nav-filter__item {
-        flex: 1 0 auto;
-        max-width: 205px;
-      }
-
-      .nav-filters .nav-filter__trigger {
-        padding: 0.55rem 0.65rem;
-        font-size: 0.82rem;
-        gap: 0.3rem;
-      }
-
-      .nav-filters .nav-filter__arrow {
-        width: 10px;
-        height: 6px;
-      }
-
+      .nav-filters { gap: 0.45rem; padding: 0.35rem 0 0.85rem; }
+      .nav-filters .nav-filter__item { flex: 1 0 auto; max-width: 205px; }
+      .nav-filters .nav-filter__trigger { padding: 0.55rem 0.65rem; font-size: 0.82rem; }
       .calendar-nav__title { font-size: 2.15rem; }
-      .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
-
-      .calendar-nav__title .month-full {
-        display: none;
-      }
-      .calendar-nav__title .month-short {
-        display: inline;
-      }
-
-      #cal-prev span,
-      #cal-next span {
-        display: none;
-      }
-      #cal-prev,
-      #cal-next {
-        padding: 0.5rem 0.75rem;
-        gap: 0;
-      }
-
+      .calendar-nav__title .month-full { display: none; }
+      .calendar-nav__title .month-short { display: inline; }
+      #cal-prev span, #cal-next span { display: none; }
+      #cal-prev, #cal-next { padding: 0.5rem 0.75rem; }
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
       .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
-
-      .dialog-modal.bottom-sheet {
-        inset: auto 0 0 0;
-        margin: 0 auto;
-        max-width: 100%;
-        width: 100%;
-        max-height: 82vh;
-        border-radius: 20px 20px 0 0;
-        border-bottom: 0;
-        padding: 0.5rem 1.25rem 1.25rem;
-        transform: translateY(100%);
-        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        overscroll-behavior: contain;
-        will-change: transform;
-      }
-
-      .dialog-modal.bottom-sheet.is-open {
-        transform: translateY(0);
-      }
-
-      .dialog-modal.bottom-sheet.is-dragging {
-        transition: none;
-      }
-
-      .dialog-modal.bottom-sheet .dialog-modal__header {
-        cursor: grab;
-        user-select: none;
-        touch-action: none;
-      }
-
-      .bottom-sheet__handle-wrapper {
-        display: flex;
-      }
-
+      .dialog-modal.bottom-sheet { inset: auto 0 0 0; margin: 0 auto; max-width: 100%; width: 100%; max-height: 82vh; border-radius: 20px 20px 0 0; border-bottom: 0; padding: 0.5rem 1.25rem 1.25rem; transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+      .dialog-modal.bottom-sheet.is-open { transform: translateY(0); }
+      .dialog-modal.bottom-sheet.is-dragging { transition: none; }
+      .bottom-sheet__handle-wrapper { display: flex; }
       .toast-tray { left: 1rem; right: 1rem; bottom: 1rem; }
     }
   </style>
@@ -1186,9 +190,7 @@
 <body>
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
-
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
-
     <nav class="header-nav" id="header-nav">
       <button type="button" class="nav-link">Features</button>
       <button type="button" class="nav-link">How to Find</button>
@@ -1201,20 +203,16 @@
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp;<br><span class="badge">class notes</span></h2>
       <p class="hero__desc">Find class notes and academic resources organized by department, section, course and date.</p>
-
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
       </div>
     </section>
 
-    <!-- Filters Bar -->
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="dept-label">Department</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="nav-filter__menu" id="dept-menu" hidden role="listbox"></div>
       </div>
@@ -1222,9 +220,7 @@
       <div class="nav-filter__item" data-filter="sec">
         <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="sec-label">Section</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="nav-filter__menu" id="sec-menu" hidden role="listbox"></div>
       </div>
@@ -1232,9 +228,7 @@
       <div class="nav-filter__item" data-filter="course">
         <button type="button" class="nav-filter__trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="course-label">Course</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="nav-filter__menu" id="course-menu" hidden role="listbox"></div>
       </div>
@@ -1242,9 +236,7 @@
       <div class="nav-filter__item" data-filter="topic">
         <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="nav-filter__text" id="topic-label">Topic</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-            <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="nav-filter__menu" id="topic-menu" hidden role="listbox"></div>
       </div>
@@ -1256,31 +248,20 @@
           <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
           <div class="calendar-nav__actions">
             <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13L5 8L10 3"/>
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13L5 8L10 3"/></svg>
               <span>Prev</span>
             </button>
             <button type="button" class="btn btn--dark" id="cal-today">Today</button>
             <button type="button" class="btn btn--subtle" id="cal-next" aria-label="Next Month">
               <span>Next</span>
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 3L11 8L6 13"/>
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3L11 8L6 13"/></svg>
             </button>
           </div>
         </div>
-
         <table class="calendar-grid">
           <thead>
             <tr>
-              <th scope="col">Sun</th>
-              <th scope="col">Mon</th>
-              <th scope="col">Tue</th>
-              <th scope="col">Wed</th>
-              <th scope="col">Thu</th>
-              <th scope="col">Fri</th>
-              <th scope="col">Sat</th>
+              <th scope="col">Sun</th><th scope="col">Mon</th><th scope="col">Tue</th><th scope="col">Wed</th><th scope="col">Thu</th><th scope="col">Fri</th><th scope="col">Sat</th>
             </tr>
           </thead>
           <tbody id="calendar-cells"></tbody>
@@ -1298,17 +279,12 @@
 
     <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
-      </div>
-
+      <div class="bottom-sheet__handle-wrapper"><div class="bottom-sheet__handle"></div></div>
       <div class="dialog-modal__header">
         <h3 class="dialog-modal__title" id="modal-date-label"></h3>
         <span class="dialog-modal__desc" id="modal-notes-total"></span>
       </div>
-
       <div class="notes-stack" id="modal-notes-stack"></div>
-
       <div class="dialog-modal__actions">
         <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
       </div>
@@ -1316,80 +292,63 @@
 
     <!-- Modal: Add note -->
     <dialog class="dialog-modal bottom-sheet" id="add-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
-      </div>
-
+      <div class="bottom-sheet__handle-wrapper"><div class="bottom-sheet__handle"></div></div>
       <form id="add-note-form">
         <div class="dialog-modal__header">
           <h3 class="dialog-modal__title">Add Class Note</h3>
           <span class="dialog-modal__desc">Share lecture slides, handouts, and notes</span>
         </div>
-
         <div class="modal-body-scroll">
           <div class="field">
             <label for="form-dept-trigger">Department:</label>
             <div class="nav-filter__item" data-field="dept">
               <button type="button" class="nav-filter__trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-dept-label">Department</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0"/></svg>
               </button>
               <div class="nav-filter__menu" id="form-dept-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-dept" name="department" required>
             </div>
           </div>
-
           <div class="field">
             <label for="form-sec-trigger">Section:</label>
             <div class="nav-filter__item" data-field="sec">
               <button type="button" class="nav-filter__trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-sec-label">Section</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0"/></svg>
               </button>
               <div class="nav-filter__menu" id="form-sec-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-section" name="section" required>
             </div>
           </div>
-
           <div class="field">
             <label for="input-date">Date:</label>
             <input type="date" id="input-date" required>
           </div>
-
           <div class="field">
             <label for="form-course-trigger">Course:</label>
             <div class="nav-filter__item" data-field="course">
               <button type="button" class="nav-filter__trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false">
                 <span class="nav-filter__text" id="form-course-label">Course</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none"><path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0"/></svg>
               </button>
               <div class="nav-filter__menu" id="form-course-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-course" name="course" required>
             </div>
           </div>
-
           <div class="field">
             <label for="input-topic">Topic:</label>
             <input type="text" id="input-topic" placeholder="e.g. Graph Traversal Algorithms" required>
           </div>
-
           <div class="field">
             <label for="input-title">Title:</label>
             <input type="text" id="input-title" placeholder="e.g. Lecture Slide 12" required>
           </div>
-
           <div class="field">
             <label for="input-link">Resource URL:</label>
             <input type="text" id="input-link" inputmode="url" placeholder="https://... (Drive, Notion, OneDrive, Dropbox, etc.)">
           </div>
         </div>
-
         <div class="dialog-modal__actions">
           <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--primary" id="btn-submit-note">Submit Note</button>
@@ -1399,9 +358,7 @@
 
     <!-- Modal: Report link -->
     <dialog class="dialog-modal bottom-sheet" id="report-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
-      </div>
+      <div class="bottom-sheet__handle-wrapper"><div class="bottom-sheet__handle"></div></div>
       <form id="report-link-form">
         <div class="dialog-modal__header">
           <h3 class="dialog-modal__title">Report Broken Link</h3>
@@ -1416,7 +373,6 @@
             Flagging this note notifies section classmates that the link is expired or inaccessible.
           </p>
         </div>
-
         <div class="dialog-modal__actions">
           <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
@@ -1427,8 +383,12 @@
 
   <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
   <script src="config.js"></script>
+
+  <!-- ================================================================= -->
+  <!-- SCRIPT 1: DATA, STATE, HELPERS & BACKEND SERVICES (ClassNotesCore) -->
+  <!-- ================================================================= -->
   <script>
-    (function () {
+    window.ClassNotesCore = (function () {
       "use strict";
 
       const config = window.APP_CONFIG || {
@@ -1458,6 +418,195 @@
         notes: [],
         manualTitleEdited: false
       };
+
+      const safeStorage = {
+        get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
+        set: (key, val) => { try { localStorage.setItem(key, val); } catch {} }
+      };
+
+      const formatDateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+      function parseLocalDate(dateKey) {
+        if (!dateKey) return new Date();
+        const [y, m, d] = dateKey.split("-").map(Number);
+        return new Date(y, m - 1, d);
+      }
+
+      function formatReadableDate(dateKey) {
+        if (!dateKey) return "";
+        const [y, m, d] = dateKey.split("-");
+        return `${Number(d)} ${MONTH_NAMES[m - 1]} ${y}`;
+      }
+
+      const pluralize = (count, s, p) => `${count} ${count === 1 ? s : p}`;
+
+      function escapeHtml(text) {
+        if (!text && text !== 0) return "";
+        return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      }
+
+      function normalizeUrl(input) {
+        const t = String(input || "").trim();
+        return !t ? "" : /^[a-z][a-z0-9+.-]*:/i.test(t) ? t : `https://${t}`;
+      }
+
+      function sanitizeUrl(rawUrl) {
+        const c = String(rawUrl || "").trim();
+        return /^(https?:|\/\/)/i.test(c) ? c : "";
+      }
+
+      function setButtonLoading(btn, isLoading) {
+        if (!btn) return;
+        btn.disabled = isLoading;
+        btn.classList.toggle("is-loading", isLoading);
+      }
+
+      function renderEmptyState(message) {
+        return `
+          <div class="empty-state">
+            <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="9" y1="13" x2="15" y2="13"></line>
+            </svg>
+            <p class="empty-state__text">${escapeHtml(message)}</p>
+          </div>
+        `;
+      }
+
+      let toastTimer = null;
+      function showToast(message) {
+        const tray = document.getElementById("toast-tray");
+        if (!tray) return;
+        clearTimeout(toastTimer);
+        tray.innerHTML = "";
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
+        tray.appendChild(toast);
+        toastTimer = setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 250);
+        }, 2800);
+      }
+
+      function copyToClipboard(text) {
+        if (!text) return;
+        const notify = (ok) => showToast(ok ? "Link copied to clipboard!" : "Unable to copy link.");
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(() => notify(true)).catch(() => fallbackCopy(text, notify));
+        } else {
+          fallbackCopy(text, notify);
+        }
+      }
+
+      function fallbackCopy(text, cb) {
+        try {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.cssText = "position:fixed;opacity:0";
+          document.body.appendChild(textarea);
+          textarea.select();
+          const ok = document.execCommand("copy");
+          textarea.remove();
+          cb(ok);
+        } catch {
+          cb(false);
+        }
+      }
+
+      async function syncData(payload) {
+        if (!config.googleAppsScriptUrl) return;
+        return fetch(config.googleAppsScriptUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      async function loadNotes(callback) {
+        if (!config.googleAppsScriptUrl) return;
+        try {
+          const res = await fetch(config.googleAppsScriptUrl);
+          const data = await res.json();
+          if (data?.success && Array.isArray(data.notes)) {
+            state.notes = data.notes;
+            if (typeof callback === "function") callback();
+          }
+        } catch (err) {
+          console.warn("Unable to sync lecture notes:", err);
+        }
+      }
+
+      const getDeptMeta = (code) => config.departments.find(d => d.code === code) || null;
+
+      function filterActiveNotes() {
+        if (!state.dept || !state.sec) return [];
+        return state.notes.filter(n =>
+          n.department === state.dept &&
+          n.section === state.sec &&
+          String(n.status || "").toLowerCase() === "approved" &&
+          (state.course === "ALL" || n.course === state.course) &&
+          (state.topic === "ALL" || n.topic === state.topic)
+        );
+      }
+
+      return {
+        config,
+        state,
+        MONTH_NAMES,
+        DAY_NAMES,
+        safeStorage,
+        formatDateKey,
+        parseLocalDate,
+        formatReadableDate,
+        pluralize,
+        escapeHtml,
+        normalizeUrl,
+        sanitizeUrl,
+        setButtonLoading,
+        renderEmptyState,
+        showToast,
+        copyToClipboard,
+        syncData,
+        loadNotes,
+        getDeptMeta,
+        filterActiveNotes
+      };
+    })();
+  </script>
+
+  <!-- ================================================================= -->
+  <!-- SCRIPT 2: UI RENDERING, MODALS & EVENT HANDLERS (ClassNotesUI)     -->
+  <!-- ================================================================= -->
+  <script>
+    (function () {
+      "use strict";
+
+      const Core = window.ClassNotesCore;
+      const {
+        config,
+        state,
+        MONTH_NAMES,
+        DAY_NAMES,
+        safeStorage,
+        formatDateKey,
+        parseLocalDate,
+        formatReadableDate,
+        pluralize,
+        escapeHtml,
+        normalizeUrl,
+        sanitizeUrl,
+        setButtonLoading,
+        renderEmptyState,
+        showToast,
+        copyToClipboard,
+        syncData,
+        loadNotes,
+        getDeptMeta,
+        filterActiveNotes
+      } = Core;
 
       const ui = {
         mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
@@ -1518,131 +667,8 @@
         reportForm: document.getElementById("report-link-form"),
         reportTitle: document.getElementById("report-note-title"),
         reportContext: document.getElementById("report-note-context"),
-        btnSubmitReport: document.getElementById("btn-submit-report"),
-
-        toastTray: document.getElementById("toast-tray")
+        btnSubmitReport: document.getElementById("btn-submit-report")
       };
-
-      const safeStorage = {
-        get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
-        set: (key, val) => { try { localStorage.setItem(key, val); } catch {} }
-      };
-
-      const formatDateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-
-      function parseLocalDate(dateKey) {
-        if (!dateKey) return new Date();
-        const [y, m, d] = dateKey.split("-").map(Number);
-        return new Date(y, m - 1, d);
-      }
-
-      function formatReadableDate(dateKey) {
-        if (!dateKey) return "";
-        const [y, m, d] = dateKey.split("-");
-        return `${Number(d)} ${MONTH_NAMES[m - 1]} ${y}`;
-      }
-
-      const pluralize = (count, s, p) => `${count} ${count === 1 ? s : p}`;
-
-      function escapeHtml(text) {
-        if (!text && text !== 0) return "";
-        return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-      }
-
-      function normalizeUrl(input) {
-        const t = String(input || "").trim();
-        return !t ? "" : /^[a-z][a-z0-9+.-]*:/i.test(t) ? t : `https://${t}`;
-      }
-
-      function sanitizeUrl(rawUrl) {
-        const c = String(rawUrl || "").trim();
-        return /^(https?:|\/\/)/i.test(c) ? c : "";
-      }
-
-      function setButtonLoading(btn, isLoading) {
-        if (!btn) return;
-        btn.disabled = isLoading;
-        btn.classList.toggle("is-loading", isLoading);
-      }
-
-      function renderEmptyState(message) {
-        return `
-          <div class="empty-state">
-            <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="9" y1="13" x2="15" y2="13"></line>
-            </svg>
-            <p class="empty-state__text">${escapeHtml(message)}</p>
-          </div>
-        `;
-      }
-
-      let toastTimer = null;
-      function showToast(message) {
-        clearTimeout(toastTimer);
-        ui.toastTray.innerHTML = "";
-        const toast = document.createElement("div");
-        toast.className = "toast";
-        toast.textContent = message;
-        ui.toastTray.appendChild(toast);
-        toastTimer = setTimeout(() => {
-          toast.style.opacity = "0";
-          setTimeout(() => toast.remove(), 250);
-        }, 2800);
-      }
-
-      function copyToClipboard(text) {
-        if (!text) return;
-        const notify = (ok) => showToast(ok ? "Link copied to clipboard!" : "Unable to copy link.");
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(text).then(() => notify(true)).catch(() => fallbackCopy(text, notify));
-        } else {
-          fallbackCopy(text, notify);
-        }
-      }
-
-      function fallbackCopy(text, cb) {
-        try {
-          const textarea = document.createElement("textarea");
-          textarea.value = text;
-          textarea.style.cssText = "position:fixed;opacity:0";
-          document.body.appendChild(textarea);
-          textarea.select();
-          const ok = document.execCommand("copy");
-          textarea.remove();
-          cb(ok);
-        } catch {
-          cb(false);
-        }
-      }
-
-      async function syncData(payload) {
-        if (!config.googleAppsScriptUrl) return;
-        return fetch(config.googleAppsScriptUrl, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-      }
-
-      async function loadNotes() {
-        if (!config.googleAppsScriptUrl) return;
-        try {
-          const res = await fetch(config.googleAppsScriptUrl);
-          const data = await res.json();
-          if (data?.success && Array.isArray(data.notes)) {
-            state.notes = data.notes;
-            syncTopicMenu();
-            render();
-          }
-        } catch (err) {
-          console.warn("Unable to sync lecture notes:", err);
-        }
-      }
-
-      const getDeptMeta = (code) => config.departments.find(d => d.code === code) || null;
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         const isAllSel = selectedVal === "ALL";
@@ -1713,7 +739,7 @@
           n.section === state.sec &&
           (state.course === "ALL" || n.course === state.course) &&
           String(n.status || "").toLowerCase() === "approved" &&
-          n.topic && n.topic.trim() !== ""
+          n.topic?.trim()
         );
 
         const uniqueTopics = [...new Set(matching.map(n => n.topic.trim()))].sort();
@@ -1734,7 +760,18 @@
         syncTopicMenu();
       }
 
-      /* Unified form cascading logic */
+      function calculateDefaultTitle() {
+        if (state.manualTitleEdited) return;
+        const targetDate = ui.formDate.value || state.activeDate || formatDateKey(new Date());
+        const count = state.notes.filter(n =>
+          n.department === ui.formDept.value &&
+          n.section === ui.formSec.value &&
+          n.date === targetDate &&
+          (!ui.formCourse.value || n.course === ui.formCourse.value)
+        ).length;
+        ui.formTitle.value = `Note ${count + 1}`;
+      }
+
       function updateModalDropdowns(deptCode, secCode, courseCode) {
         const dept = getDeptMeta(deptCode) || config.departments[0] || { code: "", sections: [], courses: [] };
         ui.formDept.value = dept.code;
@@ -1752,29 +789,6 @@
         renderMenuOptions(ui.formCourseMenu, dept.courses, course);
 
         calculateDefaultTitle();
-      }
-
-      function calculateDefaultTitle() {
-        if (state.manualTitleEdited) return;
-        const targetDate = ui.formDate.value || state.activeDate || formatDateKey(new Date());
-        const count = state.notes.filter(n =>
-          n.department === ui.formDept.value &&
-          n.section === ui.formSec.value &&
-          n.date === targetDate &&
-          (!ui.formCourse.value || n.course === ui.formCourse.value)
-        ).length;
-        ui.formTitle.value = `Note ${count + 1}`;
-      }
-
-      function filterActiveNotes() {
-        if (!state.dept || !state.sec) return [];
-        return state.notes.filter(n =>
-          n.department === state.dept &&
-          n.section === state.sec &&
-          String(n.status || "").toLowerCase() === "approved" &&
-          (state.course === "ALL" || n.course === state.course) &&
-          (state.topic === "ALL" || n.topic === state.topic)
-        );
       }
 
       function checkBodyScrollLock() {
@@ -1833,7 +847,6 @@
         openSheetModal(ui.notesModal);
       }
 
-      /* High-fidelity interactive drag & velocity physics for bottom sheets */
       function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
         if (!sheet || !handle) return;
 
@@ -2177,10 +1190,13 @@
           }
           const opt = e.target.closest(".field .nav-filter__option");
           if (opt?.dataset.value) {
+            const val = opt.dataset.value;
             const field = opt.closest(".nav-filter__item").dataset.field;
-            if (field === "dept") updateModalDropdowns(opt.dataset.value, ui.formSec.value, ui.formCourse.value);
-            else if (field === "sec") updateModalDropdowns(ui.formDept.value, opt.dataset.value, ui.formCourse.value);
-            else if (field === "course") updateModalDropdowns(ui.formDept.value, ui.formSec.value, opt.dataset.value);
+            updateModalDropdowns(
+              field === "dept" ? val : ui.formDept.value,
+              field === "sec" ? val : ui.formSec.value,
+              field === "course" ? val : ui.formCourse.value
+            );
             closeAllMenus();
           }
         });
@@ -2268,7 +1284,6 @@
           }
         });
 
-        // Combined handler for Share and Report (Icon-only buttons)
         ui.modalNotesStack.addEventListener("click", async (e) => {
           const shareBtn = e.target.closest(".btn-share");
           if (shareBtn) {
@@ -2333,7 +1348,6 @@
           }
         });
 
-        // Initialize bottom sheet gesture handlers
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
           const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
           const header = sheet.querySelector(".dialog-modal__header");
@@ -2347,7 +1361,10 @@
         syncDropdownStates();
         bindEvents();
         render();
-        loadNotes();
+        loadNotes(() => {
+          syncTopicMenu();
+          render();
+        });
       }
 
       init();
