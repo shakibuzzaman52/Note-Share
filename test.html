@@ -187,6 +187,39 @@
       animation: spin 0.6s linear infinite;
     }
 
+    /* Simple Content Loading State */
+    .content-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+      padding: 3.5rem 1.5rem;
+      gap: 1rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .content-loader[hidden] {
+      display: none;
+    }
+
+    .simple-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--bg-hover);
+      border-top-color: var(--brand-primary);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    .loading-text {
+      font-size: 0.9375rem;
+      color: var(--text-subtle);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
     /* Header & Navigation */
     .site-header {
       width: 100%;
@@ -1229,6 +1262,12 @@
     </nav>
 
     <main class="content-area">
+      <!-- Simple Loading Animation -->
+      <div id="content-loader" class="content-loader" hidden>
+        <div class="simple-spinner"></div>
+        <p class="loading-text" id="loading-text">Loading notes and resources...</p>
+      </div>
+
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
@@ -1443,7 +1482,8 @@
         viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
         activeDate: null,
         notes: [],
-        manualTitleEdited: false
+        manualTitleEdited: false,
+        isLoading: false
       };
 
       const ui = {
@@ -1461,6 +1501,9 @@
         secLabel: document.getElementById("sec-label"),
         courseLabel: document.getElementById("course-label"),
         topicLabel: document.getElementById("topic-label"),
+
+        contentLoader: document.getElementById("content-loader"),
+        loadingText: document.getElementById("loading-text"),
 
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
@@ -1612,6 +1655,7 @@
       async function loadNotes(forceFetch = false) {
         if (!state.dept || !state.sec) {
           state.notes = [];
+          state.isLoading = false;
           syncTopicMenu();
           render();
           return;
@@ -1626,6 +1670,7 @@
               const parsed = JSON.parse(cached);
               if (Array.isArray(parsed)) {
                 state.notes = parsed;
+                state.isLoading = false;
                 syncTopicMenu();
                 render();
                 return;
@@ -1634,7 +1679,16 @@
           }
         }
 
-        if (!config.googleAppsScriptUrl) return;
+        if (!config.googleAppsScriptUrl) {
+          state.isLoading = false;
+          render();
+          return;
+        }
+
+        // Show loading state while fetching from Google Apps Script
+        state.isLoading = true;
+        render();
+
         try {
           const sep = config.googleAppsScriptUrl.includes("?") ? "&" : "?";
           const res = await fetch(`${config.googleAppsScriptUrl}${sep}department=${encodeURIComponent(state.dept)}&section=${encodeURIComponent(state.sec)}`);
@@ -1646,11 +1700,14 @@
             );
             state.notes = sectionNotes;
             safeStorage.set(cacheKey, JSON.stringify(sectionNotes));
-            syncTopicMenu();
-            render();
           }
         } catch (err) {
           console.warn("Unable to sync lecture notes:", err);
+          showToast("Could not load latest notes. Please check your connection.");
+        } finally {
+          state.isLoading = false;
+          syncTopicMenu();
+          render();
         }
       }
 
@@ -2126,6 +2183,17 @@
       function render() {
         updateSelectionBanner();
         updateFilterLabels();
+
+        // If loading data, display the simple loader and hide views
+        if (state.isLoading) {
+          if (ui.contentLoader) ui.contentLoader.hidden = false;
+          if (ui.calendarView) ui.calendarView.hidden = true;
+          if (ui.courseView) ui.courseView.hidden = true;
+          return;
+        }
+
+        // Data loaded - hide loader and render calendar or course view
+        if (ui.contentLoader) ui.contentLoader.hidden = true;
         const showCalendar = (state.course === "ALL" && state.topic === "ALL");
         ui.calendarView.hidden = !showCalendar;
         ui.courseView.hidden = showCalendar;
