@@ -570,6 +570,13 @@
       gap: 1rem;
     }
 
+    .calendar-nav-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
     .calendar-nav-title {
       font-family: var(--font-display);
       font-size: 2.75rem;
@@ -577,16 +584,76 @@
       letter-spacing: -0.02em;
       color: var(--text-main);
       line-height: 1;
+      transition: opacity 0.2s ease;
     }
 
     .calendar-nav-title .month-short {
       display: none;
     }
 
+    .calendar-swipe-badge {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--brand-primary);
+      background: var(--bg-subtle);
+      border-radius: var(--radius-full);
+      padding: 0.22rem 0.75rem;
+      opacity: 0;
+      transform: translateY(2px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .calendar-swipe-badge.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .calendar-nav-actions {
       display: flex;
       align-items: center;
       gap: 0.45rem;
+    }
+
+    /* Gesture & Carousel Container for Calendar */
+    .calendar-carousel {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      touch-action: pan-y;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+      border-radius: var(--radius-md);
+    }
+
+    .calendar-carousel.is-dragging {
+      cursor: grabbing;
+    }
+
+    .calendar-track {
+      display: flex;
+      width: 300%;
+      will-change: transform;
+      transform: translate3d(-33.333333%, 0, 0);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .calendar-track.is-dragging {
+      transition: none !important;
+    }
+
+    .calendar-panel {
+      width: 33.333333%;
+      flex: 0 0 33.333333%;
+      box-sizing: border-box;
+      padding: 0 0.15rem;
+    }
+
+    .calendar-panel:not(.is-current) {
+      pointer-events: none;
+      opacity: 0.9;
     }
 
     .calendar-grid {
@@ -676,7 +743,7 @@
       font-size: 2.25rem;
       font-weight: 400;
       color: var(--text-main);
-      line-height: 1.1;
+      line-1.1;
     }
 
     .course-dates-count {
@@ -1276,7 +1343,10 @@
       <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
-          <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
+          <div class="calendar-nav-meta">
+            <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
+            <span class="calendar-swipe-badge" id="calendar-swipe-badge" aria-hidden="true"></span>
+          </div>
           <div class="calendar-nav-actions">
             <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1294,20 +1364,64 @@
           </div>
         </div>
 
-        <table class="calendar-grid">
-          <thead>
-            <tr>
-              <th scope="col">Sun</th>
-              <th scope="col">Mon</th>
-              <th scope="col">Tue</th>
-              <th scope="col">Wed</th>
-              <th scope="col">Thu</th>
-              <th scope="col">Fri</th>
-              <th scope="col">Sat</th>
-            </tr>
-          </thead>
-          <tbody id="calendar-cells"></tbody>
-        </table>
+        <!-- Swipeable 3-panel Calendar Carousel -->
+        <div class="calendar-carousel" id="calendar-carousel" title="Swipe left or right to change months">
+          <div class="calendar-track" id="calendar-track">
+            <!-- Prev Month Panel -->
+            <div class="calendar-panel" id="panel-prev" aria-hidden="true">
+              <table class="calendar-grid">
+                <thead>
+                  <tr>
+                    <th scope="col">Sun</th>
+                    <th scope="col">Mon</th>
+                    <th scope="col">Tue</th>
+                    <th scope="col">Wed</th>
+                    <th scope="col">Thu</th>
+                    <th scope="col">Fri</th>
+                    <th scope="col">Sat</th>
+                  </tr>
+                </thead>
+                <tbody id="calendar-cells-prev"></tbody>
+              </table>
+            </div>
+
+            <!-- Current Month Panel -->
+            <div class="calendar-panel is-current" id="panel-curr">
+              <table class="calendar-grid">
+                <thead>
+                  <tr>
+                    <th scope="col">Sun</th>
+                    <th scope="col">Mon</th>
+                    <th scope="col">Tue</th>
+                    <th scope="col">Wed</th>
+                    <th scope="col">Thu</th>
+                    <th scope="col">Fri</th>
+                    <th scope="col">Sat</th>
+                  </tr>
+                </thead>
+                <tbody id="calendar-cells"></tbody>
+              </table>
+            </div>
+
+            <!-- Next Month Panel -->
+            <div class="calendar-panel" id="panel-next" aria-hidden="true">
+              <table class="calendar-grid">
+                <thead>
+                  <tr>
+                    <th scope="col">Sun</th>
+                    <th scope="col">Mon</th>
+                    <th scope="col">Tue</th>
+                    <th scope="col">Wed</th>
+                    <th scope="col">Thu</th>
+                    <th scope="col">Fri</th>
+                    <th scope="col">Sat</th>
+                  </tr>
+                </thead>
+                <tbody id="calendar-cells-next"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Course Dates Cards View -->
@@ -1511,7 +1625,12 @@
 
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
+        calendarSwipeBadge: document.getElementById("calendar-swipe-badge"),
+        calendarCarousel: document.getElementById("calendar-carousel"),
+        calendarTrack: document.getElementById("calendar-track"),
+        calendarCellsPrev: document.getElementById("calendar-cells-prev"),
         calendarCells: document.getElementById("calendar-cells"),
+        calendarCellsNext: document.getElementById("calendar-cells-next"),
         prevMonthBtn: document.getElementById("cal-prev"),
         todayBtn: document.getElementById("cal-today"),
         nextMonthBtn: document.getElementById("cal-next"),
@@ -2011,11 +2130,9 @@
         });
       }
 
-      function renderCalendarGrid() {
-        const year = state.viewDate.getFullYear();
-        const month = state.viewDate.getMonth();
-        ui.calendarTitle.innerHTML = `<span class="month-full">${MONTH_NAMES[month]}</span><span class="month-short">${MONTH_NAMES[month].slice(0, 3)}</span> ${year}`;
-
+      function generateMonthMarkup(dateObj) {
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const notes = state.isLoading ? [] : filterActiveNotes();
@@ -2073,7 +2190,238 @@
           col++;
         }
         markup += "</tr>";
-        ui.calendarCells.innerHTML = markup;
+        return markup;
+      }
+
+      function updateCalendarTitle(dateObj) {
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
+        ui.calendarTitle.innerHTML = `<span class="month-full">${MONTH_NAMES[month]}</span><span class="month-short">${MONTH_NAMES[month].slice(0, 3)}</span> ${year}`;
+      }
+
+      function renderCalendarGrid() {
+        const currYear = state.viewDate.getFullYear();
+        const currMonth = state.viewDate.getMonth();
+
+        updateCalendarTitle(state.viewDate);
+
+        // Render current month
+        ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate);
+
+        // Render adjacent months for seamless swipe preview
+        const prevDate = new Date(currYear, currMonth - 1, 1);
+        const nextDate = new Date(currYear, currMonth + 1, 1);
+
+        if (ui.calendarCellsPrev) {
+          ui.calendarCellsPrev.innerHTML = generateMonthMarkup(prevDate);
+        }
+        if (ui.calendarCellsNext) {
+          ui.calendarCellsNext.innerHTML = generateMonthMarkup(nextDate);
+        }
+      }
+
+      let isAnimatingMonth = false;
+      let hasSwiped = false;
+
+      function slideMonth(direction) {
+        if (isAnimatingMonth || state.isLoading) return;
+        isAnimatingMonth = true;
+
+        const track = ui.calendarTrack;
+        if (!track) {
+          state.viewDate.setMonth(state.viewDate.getMonth() + direction);
+          renderCalendarGrid();
+          isAnimatingMonth = false;
+          return;
+        }
+
+        // direction > 0: next month (translate to -66.6666%)
+        // direction < 0: prev month (translate to 0%)
+        const targetTransform = direction > 0 ? "translate3d(-66.666666%, 0, 0)" : "translate3d(0%, 0, 0)";
+
+        track.classList.remove("is-dragging");
+        track.style.transition = "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)";
+        track.style.transform = targetTransform;
+
+        if (ui.calendarTitle) ui.calendarTitle.style.opacity = "0.5";
+
+        let transitionFired = false;
+        function onTransitionEnd() {
+          if (transitionFired) return;
+          transitionFired = true;
+          track.removeEventListener("transitionend", onTransitionEnd);
+
+          // Update active month
+          state.viewDate.setMonth(state.viewDate.getMonth() + direction);
+
+          // Reset track immediately back to center (-33.333333%) without animation
+          track.style.transition = "none";
+          track.style.transform = "translate3d(-33.333333%, 0, 0)";
+          void track.offsetWidth; // force browser reflow
+
+          // Re-render calendar months
+          renderCalendarGrid();
+
+          if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
+          track.style.transition = "";
+
+          setTimeout(() => {
+            isAnimatingMonth = false;
+          }, 40);
+        }
+
+        track.addEventListener("transitionend", onTransitionEnd);
+        setTimeout(onTransitionEnd, 320); // Safety fallback
+      }
+
+      function snapBackCalendar() {
+        const track = ui.calendarTrack;
+        if (!track) return;
+        track.classList.remove("is-dragging");
+        track.style.transition = "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
+        track.style.transform = "translate3d(-33.333333%, 0, 0)";
+
+        if (ui.calendarSwipeBadge) ui.calendarSwipeBadge.classList.remove("is-visible");
+        if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
+
+        setTimeout(() => {
+          track.style.transition = "";
+          isAnimatingMonth = false;
+        }, 260);
+      }
+
+      function setupCalendarSwipe() {
+        const carousel = ui.calendarCarousel;
+        const track = ui.calendarTrack;
+        if (!carousel || !track) return;
+
+        let startX = 0;
+        let startY = 0;
+        let currentDeltaX = 0;
+        let startTime = 0;
+        let isDragging = false;
+        let isHorizontalGesture = null;
+
+        function getClientPos(e) {
+          if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          return { x: e.clientX, y: e.clientY };
+        }
+
+        function onGestureStart(e) {
+          if (isAnimatingMonth || state.isLoading) return;
+          if (e.type === "mousedown" && e.button !== 0) return;
+
+          const pos = getClientPos(e);
+          startX = pos.x;
+          startY = pos.y;
+          currentDeltaX = 0;
+          startTime = Date.now();
+          isDragging = false;
+          isHorizontalGesture = (e.type === "mousedown") ? true : null;
+          hasSwiped = false;
+        }
+
+        function onGestureMove(e) {
+          if (startX === 0 && startY === 0) return;
+          if (isAnimatingMonth) return;
+
+          const pos = getClientPos(e);
+          const dx = pos.x - startX;
+          const dy = pos.y - startY;
+
+          if (isHorizontalGesture === null) {
+            if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 7) {
+              isHorizontalGesture = false; // vertical scroll allowed
+              return;
+            }
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 7) {
+              isHorizontalGesture = true;
+            }
+          }
+
+          if (!isHorizontalGesture) return;
+
+          if (e.cancelable) e.preventDefault();
+
+          if (!isDragging) {
+            isDragging = true;
+            carousel.classList.add("is-dragging");
+            track.classList.add("is-dragging");
+          }
+
+          currentDeltaX = dx;
+          if (Math.abs(dx) > 8) {
+            hasSwiped = true;
+          }
+
+          // Real-time tracking with finger/mouse:
+          // The middle panel is at -carouselWidth px. We add dx in real time.
+          const carouselWidth = carousel.offsetWidth || 300;
+          const currentPx = -carouselWidth + dx;
+          track.style.transform = `translate3d(${currentPx}px, 0, 0)`;
+
+          // Visual hint badge showing which month will be opened
+          if (ui.calendarSwipeBadge) {
+            const currMonth = state.viewDate.getMonth();
+            if (dx < -35) {
+              const nextMonthIndex = (currMonth + 1) % 12;
+              ui.calendarSwipeBadge.textContent = `${MONTH_NAMES[nextMonthIndex]} →`;
+              ui.calendarSwipeBadge.classList.add("is-visible");
+            } else if (dx > 35) {
+              const prevMonthIndex = (currMonth - 1 + 12) % 12;
+              ui.calendarSwipeBadge.textContent = `← ${MONTH_NAMES[prevMonthIndex]}`;
+              ui.calendarSwipeBadge.classList.add("is-visible");
+            } else {
+              ui.calendarSwipeBadge.classList.remove("is-visible");
+            }
+          }
+        }
+
+        function onGestureEnd() {
+          if (startX === 0 && startY === 0) return;
+          const carouselWidth = carousel.offsetWidth || 300;
+          const elapsed = Date.now() - startTime;
+          const velocity = currentDeltaX / (elapsed || 1);
+
+          carousel.classList.remove("is-dragging");
+          if (ui.calendarSwipeBadge) ui.calendarSwipeBadge.classList.remove("is-visible");
+
+          if (isDragging) {
+            const threshold = Math.min(65, carouselWidth * 0.16);
+            if (currentDeltaX < -threshold || (currentDeltaX < -20 && velocity < -0.25)) {
+              slideMonth(1); // Next month
+            } else if (currentDeltaX > threshold || (currentDeltaX > 20 && velocity > 0.25)) {
+              slideMonth(-1); // Previous month
+            } else {
+              snapBackCalendar();
+            }
+          }
+
+          startX = 0;
+          startY = 0;
+          currentDeltaX = 0;
+          isDragging = false;
+          isHorizontalGesture = null;
+
+          if (hasSwiped) {
+            setTimeout(() => {
+              hasSwiped = false;
+            }, 80);
+          }
+        }
+
+        // Touch events
+        carousel.addEventListener("touchstart", onGestureStart, { passive: true });
+        window.addEventListener("touchmove", onGestureMove, { passive: false });
+        window.addEventListener("touchend", onGestureEnd, { passive: true });
+        window.addEventListener("touchcancel", onGestureEnd, { passive: true });
+
+        // Mouse events for desktop drag
+        carousel.addEventListener("mousedown", onGestureStart);
+        window.addEventListener("mousemove", onGestureMove);
+        window.addEventListener("mouseup", onGestureEnd);
       }
 
       function renderCourseDates() {
@@ -2323,23 +2671,24 @@
 
         ui.prevMonthBtn.addEventListener("click", () => { 
           if (state.isLoading) return;
-          state.viewDate.setMonth(state.viewDate.getMonth() - 1); 
-          render(); 
+          slideMonth(-1);
         });
         ui.nextMonthBtn.addEventListener("click", () => { 
           if (state.isLoading) return;
-          state.viewDate.setMonth(state.viewDate.getMonth() + 1); 
-          render(); 
+          slideMonth(1);
         });
         ui.todayBtn.addEventListener("click", () => {
-          if (state.isLoading) return;
+          if (state.isLoading || isAnimatingMonth) return;
           const t = new Date();
-          state.viewDate = new Date(t.getFullYear(), t.getMonth(), 1);
-          render();
+          const target = new Date(t.getFullYear(), t.getMonth(), 1);
+          const current = new Date(state.viewDate.getFullYear(), state.viewDate.getMonth(), 1);
+          if (target.getTime() === current.getTime()) return;
+          state.viewDate = target;
+          renderCalendarGrid();
         });
 
         ui.calendarCells.addEventListener("click", (e) => {
-          if (state.isLoading) return;
+          if (hasSwiped || state.isLoading) return;
           const cell = e.target.closest("td[data-date]");
           if (cell && !cell.classList.contains("calendar-cell--disabled")) openDateDetails(cell.dataset.date);
         });
@@ -2465,6 +2814,9 @@
           const content = sheet.querySelector(".notes-stack, .modal-body-scroll");
           setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
         });
+
+        // Initialize calendar swipe gestures
+        setupCalendarSwipe();
       }
 
       function init() {
