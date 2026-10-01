@@ -44,7 +44,6 @@
       padding: 0;
     }
 
-    /* Prevent Page Layout Shift / Jumping */
     html {
       scrollbar-gutter: stable;
       scrollbar-width: thin;
@@ -54,13 +53,16 @@
     html::-webkit-scrollbar {
       width: 7px;
     }
+
     html::-webkit-scrollbar-track {
       background: transparent;
     }
+
     html::-webkit-scrollbar-thumb {
       background-color: #D2CBC0;
       border-radius: var(--radius-full);
     }
+
     html::-webkit-scrollbar-thumb:hover {
       background-color: #B8B0A5;
     }
@@ -122,6 +124,7 @@
       background-color: var(--brand-primary);
       color: #FFFFFF;
     }
+
     .btn--primary:hover:not(:disabled) {
       background-color: var(--brand-primary-hover);
     }
@@ -139,6 +142,7 @@
       padding: 0.5rem 1.15rem;
       font-size: 0.8125rem;
     }
+
     .btn--dark:hover:not(:disabled) {
       background-color: var(--brand-dark-hover);
     }
@@ -147,6 +151,7 @@
       background-color: var(--bg-subtle);
       color: var(--text-main);
     }
+
     .btn--ghost:hover:not(:disabled) {
       background-color: var(--bg-hover);
     }
@@ -159,6 +164,7 @@
       font-size: 0.8125rem;
       gap: 0.4rem;
     }
+
     .btn--subtle:hover:not(:disabled) {
       background-color: var(--bg-subtle);
     }
@@ -167,6 +173,7 @@
       background-color: var(--brand-danger);
       color: #FFFFFF;
     }
+
     .btn--danger:hover:not(:disabled) {
       background-color: var(--brand-danger-hover);
     }
@@ -195,7 +202,9 @@
       justify-content: space-between;
       padding: 1.75rem clamp(1rem, 4vw, 3.5rem);
       background: var(--bg-canvas);
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 300;
     }
 
     .brand-mark {
@@ -694,12 +703,8 @@
 
     .course-card__badge {
       align-self: flex-start;
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 0.2rem 0.65rem;
-      border-radius: var(--radius-full);
-      font-size: 0.75rem;
+      color: var(--text-subtle);
+      font-size: 0.8125rem;
       font-weight: 600;
       white-space: nowrap;
     }
@@ -795,7 +800,6 @@
       flex-shrink: 0;
     }
 
-    /* Modal Scroll Areas - Completely Hide Scrollbars */
     .notes-stack,
     .modal-body-scroll {
       flex: 1 1 auto;
@@ -909,7 +913,6 @@
       flex: 1 1 auto;
     }
 
-    /* Note Title Pill / Button */
     .note-title-btn,
     .note-title-plain {
       display: inline-flex;
@@ -965,7 +968,6 @@
       flex-shrink: 0;
     }
 
-    /* Actions: Icon-only buttons */
     .note-row__actions {
       display: inline-flex;
       align-items: center;
@@ -1011,7 +1013,6 @@
       transform: scale(0.94);
     }
 
-    /* Toast Notification */
     .toast-tray {
       position: fixed;
       bottom: 1.5rem;
@@ -1136,6 +1137,7 @@
       #cal-next span {
         display: none;
       }
+
       #cal-prev,
       #cal-next {
         padding: 0.5rem 0.75rem;
@@ -1207,7 +1209,6 @@
       </div>
     </section>
 
-    <!-- Filters Bar -->
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter__item" data-filter="dept">
         <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
@@ -1713,7 +1714,7 @@
           n.section === state.sec &&
           (state.course === "ALL" || n.course === state.course) &&
           String(n.status || "").toLowerCase() === "approved" &&
-          n.topic && n.topic.trim() !== ""
+          n.topic?.trim()
         );
 
         const uniqueTopics = [...new Set(matching.map(n => n.topic.trim()))].sort();
@@ -1734,7 +1735,6 @@
         syncTopicMenu();
       }
 
-      /* Unified form cascading logic */
       function updateModalDropdowns(deptCode, secCode, courseCode) {
         const dept = getDeptMeta(deptCode) || config.departments[0] || { code: "", sections: [], courses: [] };
         ui.formDept.value = dept.code;
@@ -1833,7 +1833,6 @@
         openSheetModal(ui.notesModal);
       }
 
-      /* High-fidelity interactive drag & velocity physics for bottom sheets */
       function setupBottomSheetGestures(sheet, handle, header, scrollableContent, closeCallback) {
         if (!sheet || !handle) return;
 
@@ -2177,10 +2176,13 @@
           }
           const opt = e.target.closest(".field .nav-filter__option");
           if (opt?.dataset.value) {
+            const val = opt.dataset.value;
             const field = opt.closest(".nav-filter__item").dataset.field;
-            if (field === "dept") updateModalDropdowns(opt.dataset.value, ui.formSec.value, ui.formCourse.value);
-            else if (field === "sec") updateModalDropdowns(ui.formDept.value, opt.dataset.value, ui.formCourse.value);
-            else if (field === "course") updateModalDropdowns(ui.formDept.value, ui.formSec.value, opt.dataset.value);
+            updateModalDropdowns(
+              field === "dept" ? val : ui.formDept.value,
+              field === "sec" ? val : ui.formSec.value,
+              field === "course" ? val : ui.formCourse.value
+            );
             closeAllMenus();
           }
         });
@@ -2268,7 +2270,6 @@
           }
         });
 
-        // Combined handler for Share and Report (Icon-only buttons)
         ui.modalNotesStack.addEventListener("click", async (e) => {
           const shareBtn = e.target.closest(".btn-share");
           if (shareBtn) {
@@ -2333,7 +2334,6 @@
           }
         });
 
-        // Initialize bottom sheet gesture handlers
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
           const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
           const header = sheet.querySelector(".dialog-modal__header");
