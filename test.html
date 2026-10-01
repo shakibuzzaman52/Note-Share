@@ -189,18 +189,14 @@
 
     /* Skeleton Loading Animations */
     @keyframes skeleton-pulse {
-      0%, 100% {
-        opacity: 0.95;
-      }
-      50% {
-        opacity: 0.38;
-      }
+      0%, 100% { opacity: 0.95; }
+      50% { opacity: 0.38; }
     }
 
     .calendar-cell-btn.skeleton-btn {
-      background-color: var(--bg-hover) !important;
-      border: 1px solid var(--border-subtle) !important;
-      color: transparent !important;
+      background-color: var(--bg-hover);
+      border: 1px solid var(--border-subtle);
+      color: transparent;
       pointer-events: none;
       cursor: default;
       animation: skeleton-pulse 1.3s ease-in-out infinite;
@@ -210,7 +206,6 @@
       pointer-events: none;
       user-select: none;
       cursor: default;
-      background-color: var(--bg-pill);
     }
 
     .skeleton-line {
@@ -1694,7 +1689,6 @@
           return;
         }
 
-        // Activate skeleton loading state
         state.isLoading = true;
         render();
 
@@ -2017,69 +2011,6 @@
         });
       }
 
-      /* Skeleton Renderer: Calendar View */
-      function renderCalendarSkeleton() {
-        const year = state.viewDate.getFullYear();
-        const month = state.viewDate.getMonth();
-        ui.calendarTitle.innerHTML = `<span class="month-full">${MONTH_NAMES[month]}</span><span class="month-short">${MONTH_NAMES[month].slice(0, 3)}</span> ${year}`;
-
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        let markup = "<tr>";
-        let col = 0;
-
-        for (let i = 0; i < firstDay; i++) {
-          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
-          col++;
-        }
-
-        for (let d = 1; d <= daysInMonth; d++) {
-          if (col === 7) {
-            markup += "</tr><tr>";
-            col = 0;
-          }
-          markup += `
-            <td class="calendar-cell">
-              <div class="calendar-cell-btn skeleton-btn" aria-hidden="true"></div>
-            </td>
-          `;
-          col++;
-        }
-
-        while (col < 7 && col > 0) {
-          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
-          col++;
-        }
-        markup += "</tr>";
-        ui.calendarCells.innerHTML = markup;
-      }
-
-      /* Skeleton Renderer: Course Dates Cards View */
-      function renderCourseDatesSkeleton() {
-        const titleParts = [];
-        if (state.course !== "ALL") titleParts.push(state.course);
-        if (state.topic !== "ALL") titleParts.push(`Topic: ${state.topic}`);
-        if (!titleParts.length) titleParts.push("Filtered Classes");
-
-        ui.courseTitle.textContent = titleParts.join(" • ");
-        ui.courseCount.textContent = "(Loading...)";
-
-        let markup = "";
-        for (let i = 0; i < 6; i++) {
-          markup += `
-            <div class="course-card skeleton-card" aria-hidden="true">
-              <div class="course-card-info">
-                <div class="skeleton-line skeleton-line--date"></div>
-                <div class="skeleton-line skeleton-line--day"></div>
-              </div>
-              <div class="skeleton-line skeleton-line--badge"></div>
-            </div>
-          `;
-        }
-        ui.courseDatesList.innerHTML = markup;
-      }
-
       function renderCalendarGrid() {
         const year = state.viewDate.getFullYear();
         const month = state.viewDate.getMonth();
@@ -2087,7 +2018,7 @@
 
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const notes = filterActiveNotes();
+        const notes = state.isLoading ? [] : filterActiveNotes();
 
         const notesCountMap = {};
         notes.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
@@ -2106,25 +2037,34 @@
             markup += "</tr><tr>";
             col = 0;
           }
-          const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-          const isFuture = dateKey > todayKey;
-          const noteCount = notesCountMap[dateKey] || 0;
-          const hasNotes = noteCount > 0;
 
-          const classes = [
-            "calendar-cell",
-            dateKey === todayKey && "calendar-cell--today",
-            isFuture && "calendar-cell--disabled",
-            hasNotes && "has-notes"
-          ].filter(Boolean).join(" ");
+          if (state.isLoading) {
+            markup += `
+              <td class="calendar-cell">
+                <div class="calendar-cell-btn skeleton-btn" aria-hidden="true"></div>
+              </td>
+            `;
+          } else {
+            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            const isFuture = dateKey > todayKey;
+            const noteCount = notesCountMap[dateKey] || 0;
+            const hasNotes = noteCount > 0;
 
-          markup += `
-            <td class="${classes}" data-date="${dateKey}">
-              <button type="button" class="calendar-cell-btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : ""}>
-                ${d}
-              </button>
-            </td>
-          `;
+            const classes = [
+              "calendar-cell",
+              dateKey === todayKey && "calendar-cell--today",
+              isFuture && "calendar-cell--disabled",
+              hasNotes && "has-notes"
+            ].filter(Boolean).join(" ");
+
+            markup += `
+              <td class="${classes}" data-date="${dateKey}">
+                <button type="button" class="calendar-cell-btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : ""}>
+                  ${d}
+                </button>
+              </td>
+            `;
+          }
           col++;
         }
 
@@ -2137,17 +2077,30 @@
       }
 
       function renderCourseDates() {
+        const titleParts = [];
+        if (state.course !== "ALL") titleParts.push(state.course);
+        if (state.topic !== "ALL") titleParts.push(`Topic: ${state.topic}`);
+        ui.courseTitle.textContent = (titleParts.length ? titleParts : ["Filtered Classes"]).join(" • ");
+
+        if (state.isLoading) {
+          ui.courseCount.textContent = "(Loading...)";
+          ui.courseDatesList.innerHTML = Array.from({ length: 6 }, () => `
+            <div class="course-card skeleton-card" aria-hidden="true">
+              <div class="course-card-info">
+                <div class="skeleton-line skeleton-line--date"></div>
+                <div class="skeleton-line skeleton-line--day"></div>
+              </div>
+              <div class="skeleton-line skeleton-line--badge"></div>
+            </div>
+          `).join("");
+          return;
+        }
+
         const filtered = filterActiveNotes();
         const notesCountMap = {};
         filtered.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
         const uniqueDates = Object.keys(notesCountMap).sort();
 
-        const titleParts = [];
-        if (state.course !== "ALL") titleParts.push(state.course);
-        if (state.topic !== "ALL") titleParts.push(`Topic: ${state.topic}`);
-        if (!titleParts.length) titleParts.push("Filtered Classes");
-
-        ui.courseTitle.textContent = titleParts.join(" • ");
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
 
         if (!uniqueDates.length) {
@@ -2260,12 +2213,11 @@
         ui.calendarView.hidden = !showCalendar;
         ui.courseView.hidden = showCalendar;
 
-        if (state.isLoading) {
-          showCalendar ? renderCalendarSkeleton() : renderCourseDatesSkeleton();
-          return;
+        if (showCalendar) {
+          renderCalendarGrid();
+        } else {
+          renderCourseDates();
         }
-
-        showCalendar ? renderCalendarGrid() : renderCourseDates();
       }
 
       function onFilterSelect(key, val) {
