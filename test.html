@@ -187,37 +187,53 @@
       animation: spin 0.6s linear infinite;
     }
 
-    /* Simple Content Loading State */
-    .content-loader {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 280px;
-      padding: 3.5rem 1.5rem;
-      gap: 1rem;
-      text-align: center;
-      width: 100%;
+    /* Skeleton Loading Animations */
+    @keyframes skeleton-pulse {
+      0%, 100% {
+        opacity: 0.95;
+      }
+      50% {
+        opacity: 0.38;
+      }
     }
 
-    .content-loader[hidden] {
-      display: none;
+    .calendar-cell-btn.skeleton-btn {
+      background-color: var(--bg-hover) !important;
+      border: 1px solid var(--border-subtle) !important;
+      color: transparent !important;
+      pointer-events: none;
+      cursor: default;
+      animation: skeleton-pulse 1.3s ease-in-out infinite;
     }
 
-    .simple-spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid var(--bg-hover);
-      border-top-color: var(--brand-primary);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
+    .course-card.skeleton-card {
+      pointer-events: none;
+      user-select: none;
+      cursor: default;
+      background-color: var(--bg-pill);
     }
 
-    .loading-text {
-      font-size: 0.9375rem;
-      color: var(--text-subtle);
-      font-weight: 500;
-      letter-spacing: -0.01em;
+    .skeleton-line {
+      border-radius: var(--radius-full);
+      background-color: var(--bg-hover);
+      animation: skeleton-pulse 1.3s ease-in-out infinite;
+    }
+
+    .skeleton-line--date {
+      width: 140px;
+      height: 15px;
+      margin-bottom: 5px;
+    }
+
+    .skeleton-line--day {
+      width: 48px;
+      height: 12px;
+    }
+
+    .skeleton-line--badge {
+      width: 50px;
+      height: 14px;
+      align-self: flex-start;
     }
 
     /* Header & Navigation */
@@ -1262,12 +1278,7 @@
     </nav>
 
     <main class="content-area">
-      <!-- Simple Loading Animation -->
-      <div id="content-loader" class="content-loader" hidden>
-        <div class="simple-spinner"></div>
-        <p class="loading-text" id="loading-text">Loading notes and resources...</p>
-      </div>
-
+      <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
@@ -1304,6 +1315,7 @@
         </table>
       </section>
 
+      <!-- Course Dates Cards View -->
       <section class="course-dates-view" id="course-view" hidden>
         <div class="course-dates-header">
           <h3 class="course-dates-title" id="course-view-title"></h3>
@@ -1502,9 +1514,6 @@
         courseLabel: document.getElementById("course-label"),
         topicLabel: document.getElementById("topic-label"),
 
-        contentLoader: document.getElementById("content-loader"),
-        loadingText: document.getElementById("loading-text"),
-
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
         calendarCells: document.getElementById("calendar-cells"),
@@ -1685,7 +1694,7 @@
           return;
         }
 
-        // Show loading state while fetching from Google Apps Script
+        // Activate skeleton loading state
         state.isLoading = true;
         render();
 
@@ -2008,6 +2017,69 @@
         });
       }
 
+      /* Skeleton Renderer: Calendar View */
+      function renderCalendarSkeleton() {
+        const year = state.viewDate.getFullYear();
+        const month = state.viewDate.getMonth();
+        ui.calendarTitle.innerHTML = `<span class="month-full">${MONTH_NAMES[month]}</span><span class="month-short">${MONTH_NAMES[month].slice(0, 3)}</span> ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let markup = "<tr>";
+        let col = 0;
+
+        for (let i = 0; i < firstDay; i++) {
+          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
+          col++;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          if (col === 7) {
+            markup += "</tr><tr>";
+            col = 0;
+          }
+          markup += `
+            <td class="calendar-cell">
+              <div class="calendar-cell-btn skeleton-btn" aria-hidden="true"></div>
+            </td>
+          `;
+          col++;
+        }
+
+        while (col < 7 && col > 0) {
+          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
+          col++;
+        }
+        markup += "</tr>";
+        ui.calendarCells.innerHTML = markup;
+      }
+
+      /* Skeleton Renderer: Course Dates Cards View */
+      function renderCourseDatesSkeleton() {
+        const titleParts = [];
+        if (state.course !== "ALL") titleParts.push(state.course);
+        if (state.topic !== "ALL") titleParts.push(`Topic: ${state.topic}`);
+        if (!titleParts.length) titleParts.push("Filtered Classes");
+
+        ui.courseTitle.textContent = titleParts.join(" • ");
+        ui.courseCount.textContent = "(Loading...)";
+
+        let markup = "";
+        for (let i = 0; i < 6; i++) {
+          markup += `
+            <div class="course-card skeleton-card" aria-hidden="true">
+              <div class="course-card-info">
+                <div class="skeleton-line skeleton-line--date"></div>
+                <div class="skeleton-line skeleton-line--day"></div>
+              </div>
+              <div class="skeleton-line skeleton-line--badge"></div>
+            </div>
+          `;
+        }
+        ui.courseDatesList.innerHTML = markup;
+      }
+
       function renderCalendarGrid() {
         const year = state.viewDate.getFullYear();
         const month = state.viewDate.getMonth();
@@ -2184,19 +2256,15 @@
         updateSelectionBanner();
         updateFilterLabels();
 
-        // If loading data, display the simple loader and hide views
-        if (state.isLoading) {
-          if (ui.contentLoader) ui.contentLoader.hidden = false;
-          if (ui.calendarView) ui.calendarView.hidden = true;
-          if (ui.courseView) ui.courseView.hidden = true;
-          return;
-        }
-
-        // Data loaded - hide loader and render calendar or course view
-        if (ui.contentLoader) ui.contentLoader.hidden = true;
         const showCalendar = (state.course === "ALL" && state.topic === "ALL");
         ui.calendarView.hidden = !showCalendar;
         ui.courseView.hidden = showCalendar;
+
+        if (state.isLoading) {
+          showCalendar ? renderCalendarSkeleton() : renderCourseDatesSkeleton();
+          return;
+        }
+
         showCalendar ? renderCalendarGrid() : renderCourseDates();
       }
 
@@ -2301,20 +2369,31 @@
         ui.reportModal.addEventListener("close", checkBodyScrollLock);
         ui.addModal.addEventListener("close", () => { closeAllMenus(); checkBodyScrollLock(); });
 
-        ui.prevMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() - 1); render(); });
-        ui.nextMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() + 1); render(); });
+        ui.prevMonthBtn.addEventListener("click", () => { 
+          if (state.isLoading) return;
+          state.viewDate.setMonth(state.viewDate.getMonth() - 1); 
+          render(); 
+        });
+        ui.nextMonthBtn.addEventListener("click", () => { 
+          if (state.isLoading) return;
+          state.viewDate.setMonth(state.viewDate.getMonth() + 1); 
+          render(); 
+        });
         ui.todayBtn.addEventListener("click", () => {
+          if (state.isLoading) return;
           const t = new Date();
           state.viewDate = new Date(t.getFullYear(), t.getMonth(), 1);
           render();
         });
 
         ui.calendarCells.addEventListener("click", (e) => {
+          if (state.isLoading) return;
           const cell = e.target.closest("td[data-date]");
           if (cell && !cell.classList.contains("calendar-cell--disabled")) openDateDetails(cell.dataset.date);
         });
 
         ui.courseDatesList.addEventListener("click", (e) => {
+          if (state.isLoading) return;
           const card = e.target.closest("[data-date]");
           if (card?.dataset.date) openDateDetails(card.dataset.date);
         });
