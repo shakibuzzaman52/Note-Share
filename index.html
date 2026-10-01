@@ -99,6 +99,7 @@
       padding: 0 clamp(1rem, 3.5vw, 2.5rem);
     }
 
+    /* Core buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -193,6 +194,7 @@
       animation: spin 0.6s linear infinite;
     }
 
+    /* Header & Navigation */
     .site-header {
       width: 100%;
       display: flex;
@@ -252,6 +254,7 @@
       cursor: pointer;
     }
 
+    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -267,6 +270,7 @@
       background-color: var(--bg-class-notes-badge);
     }
 
+    /* Form controls */
     .field {
       margin-bottom: 1rem;
       position: relative;
@@ -297,6 +301,7 @@
       background-color: var(--bg-hover);
     }
 
+    /* Hero */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       text-align: center;
@@ -325,6 +330,7 @@
       margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
+    /* Selection Banner */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -354,6 +360,7 @@
       font-style: normal;
     }
 
+    /* Filters Bar */
     .nav-filters {
       display: flex;
       flex-wrap: nowrap;
@@ -490,6 +497,7 @@
       font-size: 0.8125rem;
     }
 
+    /* Modal Form dropdowns */
     .field .nav-filter__item {
       width: 100%;
     }
@@ -514,6 +522,7 @@
       margin-top: 0.5rem;
     }
 
+    /* Views */
     #calendar-view,
     .course-dates-view {
       padding: 0.5rem 0 1rem;
@@ -700,6 +709,7 @@
       white-space: nowrap;
     }
 
+    /* Modals */
     .dialog-modal {
       position: fixed;
       inset: 0;
@@ -1178,7 +1188,9 @@
 <body>
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
+
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
+
     <nav class="header-nav" id="header-nav">
       <button type="button" class="nav-link">Features</button>
       <button type="button" class="nav-link">How to Find</button>
@@ -1191,6 +1203,7 @@
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp;<br><span class="badge">class notes</span></h2>
       <p class="hero__desc">Find class notes and academic resources organized by department, section, course and date.</p>
+
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
       </div>
@@ -1289,11 +1302,14 @@
       <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
+
       <div class="dialog-modal__header">
         <h3 class="dialog-modal__title" id="modal-date-label"></h3>
         <span class="dialog-modal__desc" id="modal-notes-total"></span>
       </div>
+
       <div class="notes-stack" id="modal-notes-stack"></div>
+
       <div class="dialog-modal__actions">
         <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
       </div>
@@ -1304,6 +1320,7 @@
       <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
+
       <form id="add-note-form">
         <div class="dialog-modal__header">
           <h3 class="dialog-modal__title">Add Class Note</h3>
@@ -1455,6 +1472,7 @@
       const ui = {
         mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
         headerNav: document.getElementById("header-nav"),
+
         selectionBanner: document.getElementById("selection-banner"),
         navFilters: document.getElementById("main-nav-filters"),
 
