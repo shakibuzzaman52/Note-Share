@@ -1409,16 +1409,15 @@
     (function () {
       "use strict";
 
-      const config = window.APP_CONFIG || {
-        googleAppsScriptUrl: "",
-        departments: [
-          {
-            code: "CSE",
-            sections: ["73_A", "73_B", "73_L"],
-            courses: ["CSE Fundamentals", "CSE101", "CSE102", "CSE103"]
-          }
-        ]
-      };
+      const config = window.APP_CONFIG || {};
+      const departments = Array.isArray(config.departments) && config.departments.length ? config.departments : [
+        {
+          code: "CSE",
+          sections: ["73_A", "73_B", "73_L"],
+          courses: ["CSE Fundamentals", "CSE101", "CSE102", "CSE103"]
+        }
+      ];
+      config.departments = departments;
 
       const MONTH_NAMES = [
         "January", "February", "March", "April", "May", "June",
@@ -1432,15 +1431,16 @@
         remove: (key) => { try { localStorage.removeItem(key); } catch {} }
       };
 
-      const savedDept = config.departments.find(d => d.code === safeStorage.get("selected_dept"));
+      const savedDept = departments.find(d => d.code === safeStorage.get("selected_dept"));
       const savedSec = savedDept?.sections.includes(safeStorage.get("selected_sec")) ? safeStorage.get("selected_sec") : "";
+      const now = new Date();
 
       const state = {
         dept: savedDept ? savedDept.code : "",
         sec: savedSec,
         course: "ALL",
         topic: "ALL",
-        viewDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+        viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
         activeDate: null,
         notes: [],
         manualTitleEdited: false
@@ -1520,7 +1520,7 @@
       function formatReadableDate(dateKey) {
         if (!dateKey) return "";
         const [y, m, d] = dateKey.split("-");
-        return `${Number(d)} ${MONTH_NAMES[m - 1]} ${y}`;
+        return `${Number(d)} ${MONTH_NAMES[Number(m) - 1]} ${y}`;
       }
 
       const pluralize = (count, s, p) => `${count} ${count === 1 ? s : p}`;
@@ -1536,8 +1536,8 @@
       }
 
       function sanitizeUrl(rawUrl) {
-        const c = String(rawUrl || "").trim();
-        return /^(https?:|\/\/)/i.test(c) ? c : "";
+        const url = normalizeUrl(rawUrl);
+        return /^https?:\/\//i.test(url) ? url : "";
       }
 
       function setButtonLoading(btn, isLoading) {
@@ -1654,7 +1654,7 @@
         }
       }
 
-      const getDeptMeta = (code) => config.departments.find(d => d.code === code) || null;
+      const getDeptMeta = (code) => departments.find(d => d.code === code) || null;
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         const isAllSel = selectedVal === "ALL";
@@ -1734,7 +1734,7 @@
       }
 
       function syncDropdownStates() {
-        renderMenuOptions(ui.deptMenu, config.departments.map(d => d.code), state.dept || null);
+        renderMenuOptions(ui.deptMenu, departments.map(d => d.code), state.dept || null);
         const activeDept = getDeptMeta(state.dept);
 
         if (activeDept && state.dept) {
@@ -1747,10 +1747,10 @@
       }
 
       function updateModalDropdowns(deptCode, secCode, courseCode) {
-        const dept = getDeptMeta(deptCode) || config.departments[0] || { code: "", sections: [], courses: [] };
+        const dept = getDeptMeta(deptCode) || departments[0] || { code: "", sections: [], courses: [] };
         ui.formDept.value = dept.code;
         ui.formDeptLabel.textContent = dept.code;
-        renderMenuOptions(ui.formDeptMenu, config.departments.map(d => d.code), dept.code);
+        renderMenuOptions(ui.formDeptMenu, departments.map(d => d.code), dept.code);
 
         const sec = (dept.sections.includes(secCode) ? secCode : dept.sections[0]) || "";
         ui.formSec.value = sec;
@@ -1805,7 +1805,7 @@
         document.body.classList.add("sheet-open");
         modalEl.style.transform = "";
         if (!modalEl.open) modalEl.showModal();
-        modalEl.classList.add("is-open");
+        requestAnimationFrame(() => modalEl.classList.add("is-open"));
       }
 
       function closeSheetModal(modalEl, onClosed) {
@@ -1860,7 +1860,7 @@
           currentTranslate = 0;
           startTime = Date.now();
           isStartedOnContent = Boolean(scrollableContent?.contains(target));
-          if (isStartedOnContent && scrollableContent.scrollTop > 0) {
+          if (isStartedOnContent) {
             isDragging = false;
             return;
           }
@@ -2236,8 +2236,8 @@
         ui.prevMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() - 1); render(); });
         ui.nextMonthBtn.addEventListener("click", () => { state.viewDate.setMonth(state.viewDate.getMonth() + 1); render(); });
         ui.todayBtn.addEventListener("click", () => {
-          const now = new Date();
-          state.viewDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          const t = new Date();
+          state.viewDate = new Date(t.getFullYear(), t.getMonth(), 1);
           render();
         });
 
@@ -2259,7 +2259,7 @@
           ui.formDate.max = today;
           ui.formDate.value = (state.activeDate && state.activeDate <= today) ? state.activeDate : today;
           ui.formTopic.value = (state.topic !== "ALL") ? state.topic : "";
-          updateModalDropdowns(state.dept || config.departments[0]?.code, state.sec, state.course !== "ALL" ? state.course : "");
+          updateModalDropdowns(state.dept || departments[0]?.code, state.sec, state.course !== "ALL" ? state.course : "");
           openSheetModal(ui.addModal);
         });
 
@@ -2287,7 +2287,7 @@
             closeSheetModal(ui.addModal);
             ui.addForm.reset();
             state.manualTitleEdited = false;
-            updateModalDropdowns(state.dept || config.departments[0]?.code);
+            updateModalDropdowns(state.dept || departments[0]?.code);
             showToast("Note submitted successfully for section review!");
           } catch {
             showToast("Failed to submit note. Please retry.");
@@ -2369,7 +2369,7 @@
       }
 
       function init() {
-        updateModalDropdowns(state.dept || config.departments[0]?.code || "CSE", state.sec);
+        updateModalDropdowns(state.dept || departments[0]?.code || "CSE", state.sec);
         syncDropdownStates();
         bindEvents();
         render();
