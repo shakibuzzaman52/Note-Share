@@ -99,7 +99,6 @@
       padding: 0 clamp(1rem, 3.5vw, 2.5rem);
     }
 
-    /* Core buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -194,7 +193,6 @@
       animation: spin 0.6s linear infinite;
     }
 
-    /* Header & Navigation */
     .site-header {
       width: 100%;
       display: flex;
@@ -254,7 +252,6 @@
       cursor: pointer;
     }
 
-    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -270,7 +267,6 @@
       background-color: var(--bg-class-notes-badge);
     }
 
-    /* Form controls */
     .field {
       margin-bottom: 1rem;
       position: relative;
@@ -301,7 +297,6 @@
       background-color: var(--bg-hover);
     }
 
-    /* Hero */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       text-align: center;
@@ -330,7 +325,6 @@
       margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
-    /* Selection Banner */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -360,7 +354,6 @@
       font-style: normal;
     }
 
-    /* Filters Bar */
     .nav-filters {
       display: flex;
       flex-wrap: nowrap;
@@ -497,7 +490,6 @@
       font-size: 0.8125rem;
     }
 
-    /* Modal Form dropdowns */
     .field .nav-filter__item {
       width: 100%;
     }
@@ -522,7 +514,6 @@
       margin-top: 0.5rem;
     }
 
-    /* Views */
     #calendar-view,
     .course-dates-view {
       padding: 0.5rem 0 1rem;
@@ -709,7 +700,6 @@
       white-space: nowrap;
     }
 
-    /* Modals */
     .dialog-modal {
       position: fixed;
       inset: 0;
@@ -1188,9 +1178,7 @@
 <body>
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
-
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
-
     <nav class="header-nav" id="header-nav">
       <button type="button" class="nav-link">Features</button>
       <button type="button" class="nav-link">How to Find</button>
@@ -1203,7 +1191,6 @@
     <section class="hero">
       <h2 class="hero__title">Lecture archive &amp;<br><span class="badge">class notes</span></h2>
       <p class="hero__desc">Find class notes and academic resources organized by department, section, course and date.</p>
-
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
       </div>
@@ -1302,14 +1289,11 @@
       <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
-
       <div class="dialog-modal__header">
         <h3 class="dialog-modal__title" id="modal-date-label"></h3>
         <span class="dialog-modal__desc" id="modal-notes-total"></span>
       </div>
-
       <div class="notes-stack" id="modal-notes-stack"></div>
-
       <div class="dialog-modal__actions">
         <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
       </div>
@@ -1320,7 +1304,6 @@
       <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet__handle"></div>
       </div>
-
       <form id="add-note-form">
         <div class="dialog-modal__header">
           <h3 class="dialog-modal__title">Add Class Note</h3>
@@ -1455,14 +1438,12 @@
         remove: (key) => { try { localStorage.removeItem(key); } catch {} }
       };
 
-      const savedDept = safeStorage.get("selected_dept") || "";
-      const validDept = config.departments.find(d => d.code === savedDept);
-      const savedSec = safeStorage.get("selected_sec") || "";
-      const validSec = (validDept && validDept.sections.includes(savedSec)) ? savedSec : "";
+      const savedDept = config.departments.find(d => d.code === safeStorage.get("selected_dept"));
+      const savedSec = savedDept?.sections.includes(safeStorage.get("selected_sec")) ? safeStorage.get("selected_sec") : "";
 
       const state = {
-        dept: validDept ? validDept.code : "",
-        sec: validSec,
+        dept: savedDept ? savedDept.code : "",
+        sec: savedSec,
         course: "ALL",
         topic: "ALL",
         viewDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -1474,7 +1455,6 @@
       const ui = {
         mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
         headerNav: document.getElementById("header-nav"),
-
         selectionBanner: document.getElementById("selection-banner"),
         navFilters: document.getElementById("main-nav-filters"),
 
@@ -1602,7 +1582,7 @@
       function copyToClipboard(text) {
         if (!text) return;
         const notify = (ok) => showToast(ok ? "Link copied to clipboard!" : "Unable to copy link.");
-        if (navigator.clipboard && window.isSecureContext) {
+        if (navigator.clipboard?.writeText) {
           navigator.clipboard.writeText(text).then(() => notify(true)).catch(() => fallbackCopy(text, notify));
         } else {
           fallbackCopy(text, notify);
@@ -1634,7 +1614,6 @@
         });
       }
 
-      /* সেকশন-ভিত্তিক অন-ডিমান্ড ক্যাশ ও ফেচ */
       async function loadNotes(forceFetch = false) {
         if (!state.dept || !state.sec) {
           state.notes = [];
@@ -1645,7 +1624,6 @@
 
         const cacheKey = `notes_${state.dept}_${state.sec}`;
 
-        // ১. সেকশনের ক্যাশ পাওয়া গেলে নেটওয়ার্ক রিকোয়েস্ট ছাড়া সরাসরি লোড হবে
         if (!forceFetch) {
           const cached = safeStorage.get(cacheKey);
           if (cached) {
@@ -1661,21 +1639,16 @@
           }
         }
 
-        // ২. ক্যাশ না থাকলে শুধু এই সেকশনের জন্য গুগল থেকে ফেচ হবে
         if (!config.googleAppsScriptUrl) return;
         try {
-          const separator = config.googleAppsScriptUrl.includes("?") ? "&" : "?";
-          const targetUrl = `${config.googleAppsScriptUrl}${separator}department=${encodeURIComponent(state.dept)}&section=${encodeURIComponent(state.sec)}`;
-
-          const res = await fetch(targetUrl);
+          const sep = config.googleAppsScriptUrl.includes("?") ? "&" : "?";
+          const res = await fetch(`${config.googleAppsScriptUrl}${sep}department=${encodeURIComponent(state.dept)}&section=${encodeURIComponent(state.sec)}`);
           const data = await res.json();
           if (data?.success && Array.isArray(data.notes)) {
-            // শুধুমাত্র সিলেক্ট করা ডিপার্টমেন্ট ও সেকশনের নোট ফিল্টার ও সেভ করা হচ্ছে
             const sectionNotes = data.notes.filter(n =>
               (!n.department || n.department === state.dept) &&
               (!n.section || n.section === state.sec)
             );
-
             state.notes = sectionNotes;
             safeStorage.set(cacheKey, JSON.stringify(sectionNotes));
             syncTopicMenu();
@@ -1887,11 +1860,11 @@
 
         function start(clientY, target) {
           if (window.innerWidth > 768 || !sheet.open) return;
-          if (target && target.closest(".nav-filter__menu")) return;
+          if (target?.closest(".nav-filter__menu")) return;
           startY = clientY;
           currentTranslate = 0;
           startTime = Date.now();
-          isStartedOnContent = Boolean(scrollableContent && scrollableContent.contains(target));
+          isStartedOnContent = Boolean(scrollableContent?.contains(target));
           if (isStartedOnContent && scrollableContent.scrollTop > 0) {
             isDragging = false;
             return;
@@ -2176,7 +2149,7 @@
           state.sec = val;
           state.course = state.topic = "ALL";
           safeStorage.set("selected_sec", val);
-          loadNotes(); // নতুন সেকশন বেছে নিলে শুধু ওই সেকশনের ডাটা ক্যাশ থেকে আনবে বা ফেচ করবে
+          loadNotes();
         } else if (key === "course") {
           state.course = val;
           state.topic = "ALL";
@@ -2315,7 +2288,6 @@
               link: normalizeUrl(ui.formLink.value),
               status: "Pending"
             });
-            // যে সেকশনে নোট সাবমিট হলো শুধু সেটির ক্যাশ ক্লিয়ার করা হচ্ছে
             safeStorage.remove(`notes_${ui.formDept.value}_${ui.formSec.value}`);
             closeSheetModal(ui.addModal);
             ui.addForm.reset();
@@ -2406,7 +2378,6 @@
         syncDropdownStates();
         bindEvents();
         render();
-        // পূর্বে যদি কোনো সেকশন সিলেক্ট করা থাকে, কেবল সেই সেকশনের নোট লোড হবে
         if (state.dept && state.sec) {
           loadNotes();
         }
