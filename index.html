@@ -1634,27 +1634,50 @@
         });
       }
 
-      async function loadNotes() {
-        const cached = safeStorage.get("cached_notes");
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length) {
-              state.notes = parsed;
-              syncTopicMenu();
-              render();
-              return;
-            }
-          } catch {}
+      /* সেকশন-ভিত্তিক অন-ডিমান্ড ক্যাশ ও ফেচ */
+      async function loadNotes(forceFetch = false) {
+        if (!state.dept || !state.sec) {
+          state.notes = [];
+          syncTopicMenu();
+          render();
+          return;
         }
 
+        const cacheKey = `notes_${state.dept}_${state.sec}`;
+
+        // ১. সেকশনের ক্যাশ পাওয়া গেলে নেটওয়ার্ক রিকোয়েস্ট ছাড়া সরাসরি লোড হবে
+        if (!forceFetch) {
+          const cached = safeStorage.get(cacheKey);
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (Array.isArray(parsed)) {
+                state.notes = parsed;
+                syncTopicMenu();
+                render();
+                return;
+              }
+            } catch {}
+          }
+        }
+
+        // ২. ক্যাশ না থাকলে শুধু এই সেকশনের জন্য গুগল থেকে ফেচ হবে
         if (!config.googleAppsScriptUrl) return;
         try {
-          const res = await fetch(config.googleAppsScriptUrl);
+          const separator = config.googleAppsScriptUrl.includes("?") ? "&" : "?";
+          const targetUrl = `${config.googleAppsScriptUrl}${separator}department=${encodeURIComponent(state.dept)}&section=${encodeURIComponent(state.sec)}`;
+
+          const res = await fetch(targetUrl);
           const data = await res.json();
           if (data?.success && Array.isArray(data.notes)) {
-            state.notes = data.notes;
-            safeStorage.set("cached_notes", JSON.stringify(data.notes));
+            // শুধুমাত্র সিলেক্ট করা ডিপার্টমেন্ট ও সেকশনের নোট ফিল্টার ও সেভ করা হচ্ছে
+            const sectionNotes = data.notes.filter(n =>
+              (!n.department || n.department === state.dept) &&
+              (!n.section || n.section === state.sec)
+            );
+
+            state.notes = sectionNotes;
+            safeStorage.set(cacheKey, JSON.stringify(sectionNotes));
             syncTopicMenu();
             render();
           }
@@ -2146,12 +2169,14 @@
           state.dept = val;
           state.sec = "";
           state.course = state.topic = "ALL";
+          state.notes = [];
           safeStorage.set("selected_dept", val);
           safeStorage.set("selected_sec", "");
         } else if (key === "sec") {
           state.sec = val;
           state.course = state.topic = "ALL";
           safeStorage.set("selected_sec", val);
+          loadNotes(); // নতুন সেকশন বেছে নিলে শুধু ওই সেকশনের ডাটা ক্যাশ থেকে আনবে বা ফেচ করবে
         } else if (key === "course") {
           state.course = val;
           state.topic = "ALL";
@@ -2290,7 +2315,8 @@
               link: normalizeUrl(ui.formLink.value),
               status: "Pending"
             });
-            safeStorage.remove("cached_notes");
+            // যে সেকশনে নোট সাবমিট হলো শুধু সেটির ক্যাশ ক্লিয়ার করা হচ্ছে
+            safeStorage.remove(`notes_${ui.formDept.value}_${ui.formSec.value}`);
             closeSheetModal(ui.addModal);
             ui.addForm.reset();
             state.manualTitleEdited = false;
@@ -2380,7 +2406,10 @@
         syncDropdownStates();
         bindEvents();
         render();
-        loadNotes();
+        // পূর্বে যদি কোনো সেকশন সিলেক্ট করা থাকে, কেবল সেই সেকশনের নোট লোড হবে
+        if (state.dept && state.sec) {
+          loadNotes();
+        }
       }
 
       init();
