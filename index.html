@@ -32,8 +32,7 @@
 
       --radius-full: 9999px;
       --radius-lg: 16px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
+      --radius-md: 10px;
 
       --font-display: 'Instrument Serif', Georgia, serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -290,7 +289,7 @@
     .field input {
       width: 100%;
       background-color: var(--bg-subtle);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
       color: var(--text-main);
@@ -407,7 +406,7 @@
       user-select: none;
       width: 100%;
       -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
       border: 1px solid transparent;
     }
 
@@ -419,7 +418,6 @@
     .nav-filter__trigger[aria-expanded="true"] {
       background-color: var(--bg-hover);
       border-color: var(--border-subtle);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .nav-filter__text {
@@ -435,17 +433,16 @@
       pointer-events: none;
       flex-shrink: 0;
       color: var(--text-muted);
-      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.2s ease;
     }
 
     .nav-filter__trigger[aria-expanded="true"] .nav-filter__arrow {
       transform: rotate(180deg);
     }
 
-    /* Polished Dropdown Menus */
     .nav-filter__menu {
       position: absolute;
-      top: calc(100% + 6px);
+      top: calc(100% + 5px);
       left: 0;
       width: 100%;
       min-width: 220px;
@@ -453,34 +450,16 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 0.4rem;
+      padding: 0.35rem 0;
       z-index: 150;
-      max-height: 270px;
+      max-height: 260px;
       overflow-y: auto;
-      box-shadow: 0 12px 30px -4px rgba(24, 23, 22, 0.12), 0 4px 12px -2px rgba(24, 23, 22, 0.06);
-      animation: menuFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-      scrollbar-width: thin;
-      scrollbar-color: var(--border-subtle) transparent;
-    }
-
-    @keyframes menuFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-4px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      scrollbar-width: none;
     }
 
     .nav-filter__menu::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .nav-filter__menu::-webkit-scrollbar-thumb {
-      background-color: var(--border-subtle);
-      border-radius: var(--radius-full);
+      display: none;
     }
 
     .nav-filter__menu[hidden] {
@@ -490,19 +469,16 @@
     .nav-filter__option {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.6rem;
       width: 100%;
-      padding: 0.55rem 0.85rem;
-      font-size: 0.84rem;
+      padding: 0.55rem 0.95rem;
+      font-size: 0.8125rem;
       font-weight: 500;
       color: var(--text-main);
       text-align: left;
       cursor: pointer;
-      line-height: 1.35;
-      border-radius: var(--radius-sm);
-      transition: background-color 0.14s ease, color 0.14s ease;
-      user-select: none;
+      word-break: break-word;
+      line-height: 1.4;
+      transition: background-color 0.12s ease;
     }
 
     .nav-filter__option:hover {
@@ -510,31 +486,15 @@
     }
 
     .nav-filter__option.is-selected {
-      font-weight: 600;
+      font-weight: 700;
       background-color: var(--bg-pill);
       color: var(--brand-primary);
     }
 
-    .nav-filter__option-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
-      flex: 1 1 auto;
-    }
-
-    .nav-filter__check {
-      flex-shrink: 0;
-      stroke: var(--brand-primary);
-    }
-
     .nav-filter__empty {
-      padding: 0.85rem 1rem;
+      padding: 0.75rem 1rem;
       color: var(--text-subtle);
       font-size: 0.8125rem;
-      font-weight: 500;
-      text-align: center;
-      line-height: 1.4;
     }
 
     /* Modal Form dropdowns */
@@ -544,15 +504,9 @@
 
     .field .nav-filter__trigger {
       justify-content: space-between;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
-      background-color: var(--bg-subtle);
-    }
-
-    .field .nav-filter__trigger[aria-expanded="true"] {
-      background-color: var(--bg-hover);
-      border-color: var(--border-subtle);
     }
 
     .field .nav-filter__menu {
@@ -561,11 +515,7 @@
       max-width: 100%;
       top: calc(100% + 4px);
       z-index: 200;
-      box-shadow: 0 14px 34px rgba(24, 23, 22, 0.14);
-      border-radius: var(--radius-md);
-      padding: 0.4rem;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
 
     .content-area {
@@ -1079,7 +1029,7 @@
       background: var(--brand-dark);
       color: #FFFFFF;
       padding: 0.75rem 1.25rem;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       font-size: 0.875rem;
       font-weight: 500;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
@@ -1697,23 +1647,11 @@
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         const isAllSel = selectedVal === "ALL";
-        const checkIcon = '<svg class="nav-filter__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-
-        let html = includeAll ? `
-          <button type="button" class="nav-filter__option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">
-            <span class="nav-filter__option-text">${escapeHtml(allLabel)}</span>
-            ${isAllSel ? checkIcon : ''}
-          </button>` : "";
-
+        let html = includeAll ? `<button type="button" class="nav-filter__option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">${escapeHtml(allLabel)}</button>` : "";
         html += (list || []).map(item => {
           const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
-          return `
-            <button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">
-              <span class="nav-filter__option-text">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</span>
-              ${isSel ? checkIcon : ''}
-            </button>`;
+          return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</button>`;
         }).join("");
-
         container.innerHTML = html;
       }
 
