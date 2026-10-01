@@ -46,6 +46,59 @@
       padding: 0;
     }
 
+    /* Intro Preloader */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      background-color: var(--bg-canvas);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      pointer-events: auto;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s ease;
+    }
+
+    .preloader.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .preloader-brand {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(2.75rem, 6.5vw, 4.5rem);
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: baseline;
+      user-select: none;
+    }
+
+    .preloader-char {
+      display: inline-block;
+      opacity: 0;
+      filter: blur(14px);
+      transform: translateY(2px);
+      animation: blurRevealChar 0.48s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+      animation-delay: calc(var(--char-index) * 0.07s);
+      will-change: filter, opacity, transform;
+    }
+
+    @keyframes blurRevealChar {
+      0% {
+        opacity: 0;
+        filter: blur(14px);
+        transform: translateY(2px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0px);
+        transform: translateY(0);
+      }
+    }
+
     html {
       scrollbar-gutter: stable;
       scrollbar-width: thin;
@@ -497,7 +550,7 @@
       overflow-y: auto;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
       scrollbar-width: thin;
-      scrollbar-color: #CDC5B6 transparent;
+      scrollbar-color: var(--border-hover) transparent;
     }
 
     .nav-filter-menu::-webkit-scrollbar {
@@ -511,7 +564,7 @@
     }
 
     .nav-filter-menu::-webkit-scrollbar-thumb {
-      background-color: #CDC5B6;
+      background-color: var(--border-hover);
       border-radius: var(--radius-full);
     }
 
@@ -663,8 +716,8 @@
     }
 
     .calendar-panel {
-      width: 33.333333%;
       flex: 0 0 33.333333%;
+      width: 33.333333%;
       padding: 0 0.15rem;
     }
 
@@ -1287,6 +1340,22 @@
   </style>
 </head>
 <body>
+  <!-- Intro Preloader Overlay -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-brand">
+      <span class="preloader-char" style="--char-index: 0">C</span>
+      <span class="preloader-char" style="--char-index: 1">l</span>
+      <span class="preloader-char" style="--char-index: 2">a</span>
+      <span class="preloader-char" style="--char-index: 3">s</span>
+      <span class="preloader-char" style="--char-index: 4">s</span>
+      <span class="preloader-char" style="--char-index: 5">N</span>
+      <span class="preloader-char" style="--char-index: 6">o</span>
+      <span class="preloader-char" style="--char-index: 7">t</span>
+      <span class="preloader-char" style="--char-index: 8">e</span>
+      <span class="preloader-char" style="--char-index: 9">s</span>
+    </div>
+  </div>
+
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
 
@@ -1578,6 +1647,21 @@
   <script>
     (function () {
       "use strict";
+
+      function dismissPreloader() {
+        const preloader = document.getElementById("preloader");
+        if (!preloader) return;
+        setTimeout(() => {
+          preloader.classList.add("is-hidden");
+          setTimeout(() => preloader.remove(), 650);
+        }, 1150);
+      }
+
+      if (document.readyState === "complete") {
+        dismissPreloader();
+      } else {
+        window.addEventListener("load", dismissPreloader);
+      }
 
       const config = window.APP_CONFIG || {};
       const departments = Array.isArray(config.departments) && config.departments.length ? config.departments : [
@@ -2133,23 +2217,29 @@
           window.addEventListener("touchcancel", onTouchEnd, { passive: true });
         }
 
+        function onMouseMove(e) {
+          move(e.clientY, e.cancelable, () => e.preventDefault());
+        }
+
+        function onMouseUp() {
+          window.removeEventListener("mousemove", onMouseMove);
+          window.removeEventListener("mouseup", onMouseUp);
+          end();
+        }
+
+        function onMouseDown(e) {
+          if (window.innerWidth > 768 || !sheet.open) return;
+          start(e.clientY, e.target);
+          window.addEventListener("mousemove", onMouseMove);
+          window.addEventListener("mouseup", onMouseUp);
+        }
+
         [handle, header, scrollableContent].filter(Boolean).forEach(el => {
           el.addEventListener("touchstart", onTouchStart, { passive: true });
         });
 
         [handle, header].filter(Boolean).forEach(el => {
-          el.addEventListener("mousedown", (e) => {
-            if (window.innerWidth > 768 || !sheet.open) return;
-            start(e.clientY, e.target);
-            function onMouseMove(me) { move(me.clientY, me.cancelable, () => me.preventDefault()); }
-            function onMouseUp() {
-              window.removeEventListener("mousemove", onMouseMove);
-              window.removeEventListener("mouseup", onMouseUp);
-              end();
-            }
-            window.addEventListener("mousemove", onMouseMove);
-            window.addEventListener("mouseup", onMouseUp);
-          });
+          el.addEventListener("mousedown", onMouseDown);
         });
       }
 
@@ -2330,6 +2420,15 @@
           isDragging = false;
           isHorizontalGesture = (e.type === "mousedown") ? true : null;
           hasSwiped = false;
+
+          if (e.type === "touchstart") {
+            window.addEventListener("touchmove", onGestureMove, { passive: false });
+            window.addEventListener("touchend", onGestureEnd, { passive: true });
+            window.addEventListener("touchcancel", onGestureEnd, { passive: true });
+          } else {
+            window.addEventListener("mousemove", onGestureMove);
+            window.addEventListener("mouseup", onGestureEnd);
+          }
         }
 
         function onGestureMove(e) {
@@ -2368,6 +2467,12 @@
         }
 
         function onGestureEnd() {
+          window.removeEventListener("touchmove", onGestureMove);
+          window.removeEventListener("touchend", onGestureEnd);
+          window.removeEventListener("touchcancel", onGestureEnd);
+          window.removeEventListener("mousemove", onGestureMove);
+          window.removeEventListener("mouseup", onGestureEnd);
+
           if (startX === 0 && startY === 0) return;
           const carouselWidth = carousel.offsetWidth || 300;
           const elapsed = Date.now() - startTime;
@@ -2400,13 +2505,7 @@
         }
 
         carousel.addEventListener("touchstart", onGestureStart, { passive: true });
-        window.addEventListener("touchmove", onGestureMove, { passive: false });
-        window.addEventListener("touchend", onGestureEnd, { passive: true });
-        window.addEventListener("touchcancel", onGestureEnd, { passive: true });
-
         carousel.addEventListener("mousedown", onGestureStart);
-        window.addEventListener("mousemove", onGestureMove);
-        window.addEventListener("mouseup", onGestureEnd);
       }
 
       function renderCourseDates() {
@@ -2666,8 +2765,7 @@
           if (state.isLoading || isAnimatingMonth) return;
           const t = new Date();
           const target = new Date(t.getFullYear(), t.getMonth(), 1);
-          const current = new Date(state.viewDate.getFullYear(), state.viewDate.getMonth(), 1);
-          if (target.getTime() === current.getTime()) return;
+          if (target.getFullYear() === state.viewDate.getFullYear() && target.getMonth() === state.viewDate.getMonth()) return;
           state.viewDate = target;
           renderCalendarGrid();
         });
