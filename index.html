@@ -1628,19 +1628,18 @@
         });
       }
 
+      /* Loads statically from data.json for instant performance */
       async function loadNotes() {
-        if (!config.googleAppsScriptUrl) return;
         try {
-          const res = await fetch(config.googleAppsScriptUrl);
+          const res = await fetch("data.json");
+          if (!res.ok) throw new Error("Could not load data.json");
           const data = await res.json();
-          if (data?.success && Array.isArray(data.notes)) {
-            state.notes = data.notes;
-            syncTopicMenu();
-            render();
-          }
+          state.notes = Array.isArray(data) ? data : (data?.notes || []);
         } catch (err) {
-          console.warn("Unable to sync lecture notes:", err);
+          console.warn("Unable to load data.json:", err);
         }
+        syncTopicMenu();
+        render();
       }
 
       const getDeptMeta = (code) => config.departments.find(d => d.code === code) || null;
@@ -2121,11 +2120,27 @@
         showCalendar ? renderCalendarGrid() : renderCourseDates();
       }
 
+      /* Saves department & section to localStorage automatically on user selection */
       function onFilterSelect(key, val) {
-        if (key === "dept") { state.dept = val; state.sec = ""; state.course = state.topic = "ALL"; }
-        else if (key === "sec") { state.sec = val; state.course = state.topic = "ALL"; }
-        else if (key === "course") { state.course = val; state.topic = "ALL"; }
-        else if (key === "topic") { state.topic = val; }
+        if (key === "dept") {
+          state.dept = val;
+          state.sec = "";
+          state.course = state.topic = "ALL";
+          safeStorage.set("user_dept", val);
+          safeStorage.set("user_sec", "");
+        }
+        else if (key === "sec") {
+          state.sec = val;
+          state.course = state.topic = "ALL";
+          safeStorage.set("user_sec", val);
+        }
+        else if (key === "course") {
+          state.course = val;
+          state.topic = "ALL";
+        }
+        else if (key === "topic") {
+          state.topic = val;
+        }
         closeAllMenus();
         syncDropdownStates();
         render();
@@ -2342,8 +2357,20 @@
         });
       }
 
+      /* Reads saved department and section from localStorage on startup */
       function init() {
-        updateModalDropdowns(config.departments[0]?.code || "CSE");
+        const savedDept = safeStorage.get("user_dept");
+        const savedSec = safeStorage.get("user_sec");
+
+        if (savedDept && getDeptMeta(savedDept)) {
+          state.dept = savedDept;
+          const deptMeta = getDeptMeta(savedDept);
+          if (savedSec && deptMeta.sections.includes(savedSec)) {
+            state.sec = savedSec;
+          }
+        }
+
+        updateModalDropdowns(state.dept || config.departments[0]?.code || "CSE", state.sec);
         syncDropdownStates();
         bindEvents();
         render();
