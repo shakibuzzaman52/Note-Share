@@ -54,10 +54,6 @@
       width: 7px;
     }
 
-    html::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
     html::-webkit-scrollbar-thumb {
       background-color: #D2CBC0;
       border-radius: var(--radius-full);
@@ -71,9 +67,6 @@
       font-family: inherit;
       border: 0;
       outline: 0;
-    }
-
-    button {
       background: transparent;
     }
 
@@ -266,7 +259,7 @@
       padding: 0.15rem 0.85rem;
     }
 
-    .hero__title .badge {
+    .hero-title .badge {
       background-color: var(--bg-class-notes-badge);
     }
 
@@ -293,7 +286,7 @@
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
       color: var(--text-main);
-      transition: background-color 0.15s ease, border-color 0.15s ease;
+      transition: background-color 0.15s ease;
       border: 1px solid transparent;
     }
 
@@ -312,7 +305,7 @@
       align-items: center;
     }
 
-    .hero__title {
+    .hero-title {
       font-family: var(--font-display);
       font-size: clamp(2.5rem, 5vw, 4.25rem);
       font-weight: 400;
@@ -322,7 +315,7 @@
       margin-bottom: 1.4rem;
     }
 
-    .hero__desc {
+    .hero-desc {
       font-size: clamp(1rem, 1.2vw, 1.125rem);
       color: var(--text-muted);
       max-width: 500px;
@@ -372,26 +365,28 @@
       position: relative;
       gap: clamp(0.35rem, 1.2vw, 0.75rem);
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
 
-    .nav-filters::-webkit-scrollbar {
+    .nav-filters::-webkit-scrollbar,
+    .nav-filter-menu::-webkit-scrollbar,
+    .notes-stack::-webkit-scrollbar,
+    .modal-body-scroll::-webkit-scrollbar {
       display: none;
     }
 
-    .nav-filter__item {
+    .nav-filter-item {
       position: relative;
       min-width: 0;
     }
 
-    .nav-filters .nav-filter__item {
+    .nav-filters .nav-filter-item {
       flex: 1 1 auto;
       min-width: 72px;
       max-width: 35%;
     }
 
-    .nav-filter__trigger {
+    .nav-filter-trigger {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -405,22 +400,21 @@
       cursor: pointer;
       user-select: none;
       width: 100%;
-      -webkit-tap-highlight-color: transparent;
       transition: background-color 0.15s ease, border-color 0.15s ease;
       border: 1px solid transparent;
     }
 
-    .nav-filter__trigger:hover,
-    .nav-filter__trigger:focus-visible {
+    .nav-filter-trigger:hover,
+    .nav-filter-trigger:focus-visible,
+    .nav-filter-trigger[aria-expanded="true"] {
       background-color: var(--bg-hover);
     }
 
-    .nav-filter__trigger[aria-expanded="true"] {
-      background-color: var(--bg-hover);
+    .nav-filter-trigger[aria-expanded="true"] {
       border-color: var(--border-subtle);
     }
 
-    .nav-filter__text {
+    .nav-filter-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -429,18 +423,18 @@
       text-align: center;
     }
 
-    .nav-filter__arrow {
+    .nav-filter-arrow {
       pointer-events: none;
       flex-shrink: 0;
       color: var(--text-muted);
       transition: transform 0.2s ease;
     }
 
-    .nav-filter__trigger[aria-expanded="true"] .nav-filter__arrow {
+    .nav-filter-trigger[aria-expanded="true"] .nav-filter-arrow {
       transform: rotate(180deg);
     }
 
-    .nav-filter__menu {
+    .nav-filter-menu {
       position: absolute;
       top: calc(100% + 5px);
       left: 0;
@@ -458,15 +452,11 @@
       scrollbar-width: none;
     }
 
-    .nav-filter__menu::-webkit-scrollbar {
+    .nav-filter-menu[hidden] {
       display: none;
     }
 
-    .nav-filter__menu[hidden] {
-      display: none;
-    }
-
-    .nav-filter__option {
+    .nav-filter-option {
       display: flex;
       align-items: center;
       width: 100%;
@@ -481,35 +471,35 @@
       transition: background-color 0.12s ease;
     }
 
-    .nav-filter__option:hover {
+    .nav-filter-option:hover {
       background-color: var(--bg-hover);
     }
 
-    .nav-filter__option.is-selected {
+    .nav-filter-option.is-selected {
       font-weight: 700;
       background-color: var(--bg-pill);
       color: var(--brand-primary);
     }
 
-    .nav-filter__empty {
+    .nav-filter-empty {
       padding: 0.75rem 1rem;
       color: var(--text-subtle);
       font-size: 0.8125rem;
     }
 
     /* Modal Form dropdowns */
-    .field .nav-filter__item {
+    .field .nav-filter-item {
       width: 100%;
     }
 
-    .field .nav-filter__trigger {
+    .field .nav-filter-trigger {
       justify-content: space-between;
       border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
       font-size: 0.9375rem;
     }
 
-    .field .nav-filter__menu {
+    .field .nav-filter-menu {
       width: 100%;
       min-width: 100%;
       max-width: 100%;
@@ -539,7 +529,7 @@
       gap: 1rem;
     }
 
-    .calendar-nav__title {
+    .calendar-nav-title {
       font-family: var(--font-display);
       font-size: 2.75rem;
       font-weight: 400;
@@ -548,11 +538,11 @@
       line-height: 1;
     }
 
-    .calendar-nav__title .month-short {
+    .calendar-nav-title .month-short {
       display: none;
     }
 
-    .calendar-nav__actions {
+    .calendar-nav-actions {
       display: flex;
       align-items: center;
       gap: 0.45rem;
@@ -587,7 +577,7 @@
       pointer-events: none;
     }
 
-    .calendar-cell__btn {
+    .calendar-cell-btn {
       width: 48px;
       height: 48px;
       margin: 0 auto;
@@ -604,27 +594,27 @@
       transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
-    .calendar-cell__btn:hover:not(:disabled) {
+    .calendar-cell-btn:hover:not(:disabled) {
       background-color: var(--bg-hover);
       border-color: #D6CEC0;
     }
 
-    .calendar-cell--today .calendar-cell__btn {
+    .calendar-cell--today .calendar-cell-btn {
       border: 2px solid var(--text-main);
       font-weight: 700;
     }
 
-    .calendar-cell.has-notes .calendar-cell__btn {
+    .calendar-cell.has-notes .calendar-cell-btn {
       border: 2px solid var(--brand-primary);
       color: var(--brand-primary);
       font-weight: 700;
     }
 
-    .calendar-cell.has-notes .calendar-cell__btn:hover:not(:disabled) {
+    .calendar-cell.has-notes .calendar-cell-btn:hover:not(:disabled) {
       border-color: var(--brand-primary-hover);
     }
 
-    .calendar-cell--disabled .calendar-cell__btn {
+    .calendar-cell--disabled .calendar-cell-btn {
       background-color: transparent;
       border-color: transparent;
       color: var(--text-disabled);
@@ -632,7 +622,7 @@
       cursor: default;
     }
 
-    .course-dates__header {
+    .course-dates-header {
       display: flex;
       align-items: baseline;
       gap: 0.75rem;
@@ -642,7 +632,7 @@
       flex-wrap: wrap;
     }
 
-    .course-dates__title {
+    .course-dates-title {
       font-family: var(--font-display);
       font-size: 2.25rem;
       font-weight: 400;
@@ -650,13 +640,13 @@
       line-height: 1.1;
     }
 
-    .course-dates__count {
+    .course-dates-count {
       font-size: 0.875rem;
       color: var(--text-subtle);
       font-weight: 600;
     }
 
-    .course-dates__grid {
+    .course-dates-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 0.85rem;
@@ -682,26 +672,26 @@
       border-color: #D6CEC0;
     }
 
-    .course-card__info {
+    .course-card-info {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
     }
 
-    .course-card__date {
+    .course-card-date {
       font-weight: 600;
       font-size: 0.95rem;
       color: var(--text-main);
       line-height: 1.3;
     }
 
-    .course-card__day {
+    .course-card-day {
       font-size: 0.8125rem;
       color: var(--text-subtle);
       font-weight: 500;
     }
 
-    .course-card__badge {
+    .course-card-badge {
       align-self: flex-start;
       color: var(--text-subtle);
       font-size: 0.8125rem;
@@ -742,7 +732,7 @@
       cursor: pointer;
     }
 
-    .bottom-sheet__handle-wrapper {
+    .bottom-sheet-handle-wrapper {
       display: none;
       width: 100%;
       justify-content: center;
@@ -754,11 +744,11 @@
       cursor: grab;
     }
 
-    .bottom-sheet__handle:active {
+    .bottom-sheet-handle:active {
       cursor: grabbing;
     }
 
-    .bottom-sheet__handle {
+    .bottom-sheet-handle {
       width: 42px;
       height: 4.5px;
       background-color: #D2CBC0;
@@ -766,13 +756,13 @@
       transition: background-color 0.15s ease;
     }
 
-    .dialog-modal__header {
+    .dialog-modal-header {
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border-subtle);
       flex-shrink: 0;
     }
 
-    .dialog-modal__title {
+    .dialog-modal-title {
       font-family: var(--font-display);
       font-size: 1.75rem;
       font-weight: 400;
@@ -780,18 +770,18 @@
       margin-bottom: 0.2rem;
     }
 
-    .dialog-modal__desc {
+    .dialog-modal-desc {
       font-size: 0.8125rem;
       color: var(--text-subtle);
       font-weight: 600;
     }
 
-    .dialog-modal__text {
+    .dialog-modal-text {
       font-size: 0.875rem;
       color: var(--text-muted);
     }
 
-    .dialog-modal__actions {
+    .dialog-modal-actions {
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -808,11 +798,6 @@
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
       scrollbar-width: none;
-    }
-
-    .notes-stack::-webkit-scrollbar,
-    .modal-body-scroll::-webkit-scrollbar {
-      display: none;
     }
 
     .notes-stack {
@@ -842,14 +827,14 @@
       margin: 0 auto;
     }
 
-    .empty-state__icon {
+    .empty-state-icon {
       width: 44px;
       height: 44px;
       color: var(--text-subtle);
       opacity: 0.75;
     }
 
-    .empty-state__text {
+    .empty-state-text {
       font-size: 0.9375rem;
       color: var(--text-subtle);
       font-weight: 500;
@@ -863,31 +848,31 @@
       padding: 0.95rem 1.15rem;
     }
 
-    .note-cluster__course {
+    .note-cluster-course {
       font-size: 1rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 0.4rem;
     }
 
-    .note-cluster__topic-group {
+    .note-cluster-topic-group {
       margin-left: 1.1rem;
       margin-top: 0.45rem;
       margin-bottom: 0.65rem;
     }
 
-    .note-cluster__topic-group:last-child {
+    .note-cluster-topic-group:last-child {
       margin-bottom: 0;
     }
 
-    .note-cluster__topic-header {
+    .note-cluster-topic-header {
       font-size: 0.875rem;
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 0.35rem;
     }
 
-    .note-cluster__list {
+    .note-cluster-list {
       list-style: none;
       margin-left: 0.25rem;
       display: flex;
@@ -904,7 +889,7 @@
       width: 100%;
     }
 
-    .note-row__left {
+    .note-row-left {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
@@ -952,14 +937,14 @@
       min-width: 0;
     }
 
-    .note-row__icon {
+    .note-row-icon {
       width: 14px;
       height: 14px;
       color: var(--text-subtle);
       flex-shrink: 0;
     }
 
-    .note-row__flag {
+    .note-row-flag {
       color: var(--brand-danger);
       font-weight: 600;
       font-size: 0.72rem;
@@ -968,7 +953,7 @@
       flex-shrink: 0;
     }
 
-    .note-row__actions {
+    .note-row-actions {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
@@ -1099,7 +1084,7 @@
       }
 
       .hero { padding-top: 2rem; }
-      .hero__desc { margin-bottom: 1.5rem; }
+      .hero-desc { margin-bottom: 1.5rem; }
       .selection-banner { font-size: 1.2rem; }
 
       .nav-filters {
@@ -1107,29 +1092,29 @@
         padding: 0.35rem 0 0.85rem;
       }
 
-      .nav-filters .nav-filter__item {
+      .nav-filters .nav-filter-item {
         flex: 1 0 auto;
         max-width: 205px;
       }
 
-      .nav-filters .nav-filter__trigger {
+      .nav-filters .nav-filter-trigger {
         padding: 0.55rem 0.65rem;
         font-size: 0.82rem;
         gap: 0.3rem;
       }
 
-      .nav-filters .nav-filter__arrow {
+      .nav-filters .nav-filter-arrow {
         width: 10px;
         height: 6px;
       }
 
-      .calendar-nav__title { font-size: 2.15rem; }
+      .calendar-nav-title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
 
-      .calendar-nav__title .month-full {
+      .calendar-nav-title .month-full {
         display: none;
       }
-      .calendar-nav__title .month-short {
+      .calendar-nav-title .month-short {
         display: inline;
       }
 
@@ -1146,7 +1131,7 @@
 
       .calendar-grid { border-spacing: 0 0.4rem; }
       .calendar-cell { height: 46px; }
-      .calendar-cell__btn { width: 38px; height: 38px; font-size: 0.8125rem; }
+      .calendar-cell-btn { width: 38px; height: 38px; font-size: 0.8125rem; }
 
       .dialog-modal.bottom-sheet {
         inset: auto 0 0 0;
@@ -1171,13 +1156,13 @@
         transition: none;
       }
 
-      .dialog-modal.bottom-sheet .dialog-modal__header {
+      .dialog-modal.bottom-sheet .dialog-modal-header {
         cursor: grab;
         user-select: none;
         touch-action: none;
       }
 
-      .bottom-sheet__handle-wrapper {
+      .bottom-sheet-handle-wrapper {
         display: flex;
       }
 
@@ -1201,8 +1186,8 @@
 
   <div class="shell">
     <section class="hero">
-      <h2 class="hero__title">Lecture archive &amp;<br><span class="badge">class notes</span></h2>
-      <p class="hero__desc">Find class notes and academic resources organized by department, section, course and date.</p>
+      <h2 class="hero-title">Lecture archive &amp;<br><span class="badge">class notes</span></h2>
+      <p class="hero-desc">Find class notes and academic resources organized by department, section, course and date.</p>
 
       <div class="selection-banner-wrapper">
         <div id="selection-banner" class="selection-banner"></div>
@@ -1210,52 +1195,52 @@
     </section>
 
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
-      <div class="nav-filter__item" data-filter="dept">
-        <button type="button" class="nav-filter__trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="nav-filter__text" id="dept-label">Department</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+      <div class="nav-filter-item" data-filter="dept">
+        <button type="button" class="nav-filter-trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter-text" id="dept-label">Department</span>
+          <svg class="nav-filter-arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
             <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <div class="nav-filter__menu" id="dept-menu" hidden role="listbox"></div>
+        <div class="nav-filter-menu" id="dept-menu" hidden role="listbox"></div>
       </div>
 
-      <div class="nav-filter__item" data-filter="sec">
-        <button type="button" class="nav-filter__trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="nav-filter__text" id="sec-label">Section</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+      <div class="nav-filter-item" data-filter="sec">
+        <button type="button" class="nav-filter-trigger" id="sec-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter-text" id="sec-label">Section</span>
+          <svg class="nav-filter-arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
             <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <div class="nav-filter__menu" id="sec-menu" hidden role="listbox"></div>
+        <div class="nav-filter-menu" id="sec-menu" hidden role="listbox"></div>
       </div>
 
-      <div class="nav-filter__item" data-filter="course">
-        <button type="button" class="nav-filter__trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="nav-filter__text" id="course-label">Course</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+      <div class="nav-filter-item" data-filter="course">
+        <button type="button" class="nav-filter-trigger" id="course-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter-text" id="course-label">Course</span>
+          <svg class="nav-filter-arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
             <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <div class="nav-filter__menu" id="course-menu" hidden role="listbox"></div>
+        <div class="nav-filter-menu" id="course-menu" hidden role="listbox"></div>
       </div>
 
-      <div class="nav-filter__item" data-filter="topic">
-        <button type="button" class="nav-filter__trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="nav-filter__text" id="topic-label">Topic</span>
-          <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+      <div class="nav-filter-item" data-filter="topic">
+        <button type="button" class="nav-filter-trigger" id="topic-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="nav-filter-text" id="topic-label">Topic</span>
+          <svg class="nav-filter-arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
             <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <div class="nav-filter__menu" id="topic-menu" hidden role="listbox"></div>
+        <div class="nav-filter-menu" id="topic-menu" hidden role="listbox"></div>
       </div>
     </nav>
 
     <main class="content-area">
       <section id="calendar-view">
         <div class="calendar-nav">
-          <h2 class="calendar-nav__title" id="calendar-header-title"></h2>
-          <div class="calendar-nav__actions">
+          <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
+          <div class="calendar-nav-actions">
             <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 13L5 8L10 3"/>
@@ -1289,69 +1274,69 @@
       </section>
 
       <section class="course-dates-view" id="course-view" hidden>
-        <div class="course-dates__header">
-          <h3 class="course-dates__title" id="course-view-title"></h3>
-          <span class="course-dates__count" id="course-view-count"></span>
+        <div class="course-dates-header">
+          <h3 class="course-dates-title" id="course-view-title"></h3>
+          <span class="course-dates-count" id="course-view-count"></span>
         </div>
-        <div class="course-dates__grid" id="course-dates-list"></div>
+        <div class="course-dates-grid" id="course-dates-list"></div>
       </section>
     </main>
 
     <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
+      <div class="bottom-sheet-handle-wrapper" title="Drag down to close">
+        <div class="bottom-sheet-handle"></div>
       </div>
 
-      <div class="dialog-modal__header">
-        <h3 class="dialog-modal__title" id="modal-date-label"></h3>
-        <span class="dialog-modal__desc" id="modal-notes-total"></span>
+      <div class="dialog-modal-header">
+        <h3 class="dialog-modal-title" id="modal-date-label"></h3>
+        <span class="dialog-modal-desc" id="modal-notes-total"></span>
       </div>
 
       <div class="notes-stack" id="modal-notes-stack"></div>
 
-      <div class="dialog-modal__actions">
+      <div class="dialog-modal-actions">
         <button type="button" class="btn btn--ghost" data-close-modal>Close</button>
       </div>
     </dialog>
 
     <!-- Modal: Add note -->
     <dialog class="dialog-modal bottom-sheet" id="add-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
+      <div class="bottom-sheet-handle-wrapper" title="Drag down to close">
+        <div class="bottom-sheet-handle"></div>
       </div>
 
       <form id="add-note-form">
-        <div class="dialog-modal__header">
-          <h3 class="dialog-modal__title">Add Class Note</h3>
-          <span class="dialog-modal__desc">Share lecture slides, handouts, and notes</span>
+        <div class="dialog-modal-header">
+          <h3 class="dialog-modal-title">Add Class Note</h3>
+          <span class="dialog-modal-desc">Share lecture slides, handouts, and notes</span>
         </div>
 
         <div class="modal-body-scroll">
           <div class="field">
             <label for="form-dept-trigger">Department:</label>
-            <div class="nav-filter__item" data-field="dept">
-              <button type="button" class="nav-filter__trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false">
-                <span class="nav-filter__text" id="form-dept-label">Department</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+            <div class="nav-filter-item" data-field="dept">
+              <button type="button" class="nav-filter-trigger" id="form-dept-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="nav-filter-text" id="form-dept-label">Department</span>
+                <svg class="nav-filter-arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
                   <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <div class="nav-filter__menu" id="form-dept-menu" hidden role="listbox"></div>
+              <div class="nav-filter-menu" id="form-dept-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-dept" name="department" required>
             </div>
           </div>
 
           <div class="field">
             <label for="form-sec-trigger">Section:</label>
-            <div class="nav-filter__item" data-field="sec">
-              <button type="button" class="nav-filter__trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false">
-                <span class="nav-filter__text" id="form-sec-label">Section</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+            <div class="nav-filter-item" data-field="sec">
+              <button type="button" class="nav-filter-trigger" id="form-sec-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="nav-filter-text" id="form-sec-label">Section</span>
+                <svg class="nav-filter-arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
                   <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <div class="nav-filter__menu" id="form-sec-menu" hidden role="listbox"></div>
+              <div class="nav-filter-menu" id="form-sec-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-section" name="section" required>
             </div>
           </div>
@@ -1363,14 +1348,14 @@
 
           <div class="field">
             <label for="form-course-trigger">Course:</label>
-            <div class="nav-filter__item" data-field="course">
-              <button type="button" class="nav-filter__trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false">
-                <span class="nav-filter__text" id="form-course-label">Course</span>
-                <svg class="nav-filter__arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+            <div class="nav-filter-item" data-field="course">
+              <button type="button" class="nav-filter-trigger" id="form-course-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="nav-filter-text" id="form-course-label">Course</span>
+                <svg class="nav-filter-arrow" width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
                   <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <div class="nav-filter__menu" id="form-course-menu" hidden role="listbox"></div>
+              <div class="nav-filter-menu" id="form-course-menu" hidden role="listbox"></div>
               <input type="hidden" id="input-course" name="course" required>
             </div>
           </div>
@@ -1391,7 +1376,7 @@
           </div>
         </div>
 
-        <div class="dialog-modal__actions">
+        <div class="dialog-modal-actions">
           <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--primary" id="btn-submit-note">Submit Note</button>
         </div>
@@ -1400,25 +1385,25 @@
 
     <!-- Modal: Report link -->
     <dialog class="dialog-modal bottom-sheet" id="report-modal">
-      <div class="bottom-sheet__handle-wrapper" title="Drag down to close">
-        <div class="bottom-sheet__handle"></div>
+      <div class="bottom-sheet-handle-wrapper" title="Drag down to close">
+        <div class="bottom-sheet-handle"></div>
       </div>
       <form id="report-link-form">
-        <div class="dialog-modal__header">
-          <h3 class="dialog-modal__title">Report Broken Link</h3>
-          <span class="dialog-modal__desc">Notify classmates about broken links</span>
+        <div class="dialog-modal-header">
+          <h3 class="dialog-modal-title">Report Broken Link</h3>
+          <span class="dialog-modal-desc">Notify classmates about broken links</span>
         </div>
         <div class="modal-body-scroll">
           <p class="field">
             <strong>Resource:</strong> <span id="report-note-title"></span><br>
-            <small id="report-note-context" class="dialog-modal__desc"></small>
+            <small id="report-note-context" class="dialog-modal-desc"></small>
           </p>
-          <p class="field dialog-modal__text">
+          <p class="field dialog-modal-text">
             Flagging this note notifies section classmates that the link is expired or inaccessible.
           </p>
         </div>
 
-        <div class="dialog-modal__actions">
+        <div class="dialog-modal-actions">
           <button type="button" class="btn btn--ghost" data-close-modal>Cancel</button>
           <button type="submit" class="btn btn--danger" id="btn-submit-report">Report Link</button>
         </div>
@@ -1472,7 +1457,6 @@
       const ui = {
         mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
         headerNav: document.getElementById("header-nav"),
-
         selectionBanner: document.getElementById("selection-banner"),
         navFilters: document.getElementById("main-nav-filters"),
 
@@ -1573,12 +1557,12 @@
       function renderEmptyState(message) {
         return `
           <div class="empty-state">
-            <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
               <line x1="9" y1="13" x2="15" y2="13"></line>
             </svg>
-            <p class="empty-state__text">${escapeHtml(message)}</p>
+            <p class="empty-state-text">${escapeHtml(message)}</p>
           </div>
         `;
       }
@@ -1681,20 +1665,20 @@
 
       function renderMenuOptions(container, list, selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         const isAllSel = selectedVal === "ALL";
-        let html = includeAll ? `<button type="button" class="nav-filter__option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">${escapeHtml(allLabel)}</button>` : "";
+        let html = includeAll ? `<button type="button" class="nav-filter-option ${isAllSel ? 'is-selected' : ''}" data-value="ALL" role="option" aria-selected="${isAllSel}">${escapeHtml(allLabel)}</button>` : "";
         html += (list || []).map(item => {
           const isSel = Boolean(selectedVal) && String(selectedVal) === String(item);
-          return `<button type="button" class="nav-filter__option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</button>`;
+          return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(item)}" role="option" aria-selected="${isSel}">${escapeHtml(prefix ? `${prefix} ${item}` : item)}</button>`;
         }).join("");
         container.innerHTML = html;
       }
 
       function closeAllMenus() {
-        document.querySelectorAll(".nav-filter__menu:not([hidden])").forEach(m => {
+        document.querySelectorAll(".nav-filter-menu:not([hidden])").forEach(m => {
           m.hidden = true;
           m.removeAttribute("style");
         });
-        document.querySelectorAll('.nav-filter__trigger[aria-expanded="true"]').forEach(b => {
+        document.querySelectorAll('.nav-filter-trigger[aria-expanded="true"]').forEach(b => {
           b.setAttribute("aria-expanded", "false");
         });
       }
@@ -1739,7 +1723,7 @@
 
       function syncTopicMenu() {
         if (!state.dept || !state.sec) {
-          ui.topicMenu.innerHTML = '<div class="nav-filter__empty">Select Department & Section first</div>';
+          ui.topicMenu.innerHTML = '<div class="nav-filter-empty">Select Department & Section first</div>';
           return;
         }
 
@@ -1764,7 +1748,7 @@
           renderMenuOptions(ui.secMenu, activeDept.sections, state.sec || null, false, "", "Sec");
           renderMenuOptions(ui.courseMenu, activeDept.courses, state.sec ? state.course : "ALL", true, "All Courses");
         } else {
-          ui.secMenu.innerHTML = ui.courseMenu.innerHTML = '<div class="nav-filter__empty">Please select Department first</div>';
+          ui.secMenu.innerHTML = ui.courseMenu.innerHTML = '<div class="nav-filter-empty">Please select Department first</div>';
         }
         syncTopicMenu();
       }
@@ -1878,7 +1862,7 @@
 
         function start(clientY, target) {
           if (window.innerWidth > 768 || !sheet.open) return;
-          if (target?.closest(".nav-filter__menu")) return;
+          if (target?.closest(".nav-filter-menu")) return;
           startY = clientY;
           currentTranslate = 0;
           startTime = Date.now();
@@ -2014,7 +1998,7 @@
 
           markup += `
             <td class="${classes}" data-date="${dateKey}">
-              <button type="button" class="calendar-cell__btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : ""}>
+              <button type="button" class="calendar-cell-btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : ""}>
                 ${d}
               </button>
             </td>
@@ -2053,11 +2037,11 @@
           const dateObj = parseLocalDate(dateStr);
           return `
             <div class="course-card" data-date="${escapeHtml(dateStr)}">
-              <div class="course-card__info">
-                <span class="course-card__date">${formatReadableDate(dateStr)}</span>
-                <span class="course-card__day">${DAY_NAMES[dateObj.getDay()] || ""}</span>
+              <div class="course-card-info">
+                <span class="course-card-date">${formatReadableDate(dateStr)}</span>
+                <span class="course-card-day">${DAY_NAMES[dateObj.getDay()] || ""}</span>
               </div>
-              <span class="course-card__badge">${pluralize(notesCountMap[dateStr] || 0, 'note', 'notes')}</span>
+              <span class="course-card-badge">${pluralize(notesCountMap[dateStr] || 0, 'note', 'notes')}</span>
             </div>
           `;
         }).join("");
@@ -2084,9 +2068,9 @@
 
         let output = "";
         for (const [course, topics] of Object.entries(groups)) {
-          output += `<div class="note-cluster"><h4 class="note-cluster__course">${escapeHtml(course)}</h4>`;
+          output += `<div class="note-cluster"><h4 class="note-cluster-course">${escapeHtml(course)}</h4>`;
           for (const [topic, items] of Object.entries(topics)) {
-            output += `<div class="note-cluster__topic-group"><div class="note-cluster__topic-header">${escapeHtml(topic)}</div><ul class="note-cluster__list">`;
+            output += `<div class="note-cluster-topic-group"><div class="note-cluster-topic-header">${escapeHtml(topic)}</div><ul class="note-cluster-list">`;
             items.forEach(item => {
               const isReported = Number(item.reportCount || 0) >= 3;
               const title = escapeHtml(item.title || "View Note");
@@ -2095,7 +2079,7 @@
               const escapedLink = escapeHtml(link);
 
               const titleBody = `
-                <svg class="note-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -2110,7 +2094,7 @@
                 : `<span class="note-title-plain" title="${title}">${titleBody}</span>`;
 
               const actions = hasLink ? `
-                <div class="note-row__actions">
+                <div class="note-row-actions">
                   <button type="button" class="btn-share" data-title="${title}" data-link="${escapedLink}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <circle cx="18" cy="5" r="3"></circle>
@@ -2131,9 +2115,9 @@
 
               output += `
                 <li class="note-row">
-                  <div class="note-row__left">
+                  <div class="note-row-left">
                     ${titleEl}
-                    ${isReported ? '<span class="note-row__flag">[Issue Reported]</span>' : ""}
+                    ${isReported ? '<span class="note-row-flag">[Issue Reported]</span>' : ""}
                   </div>
                   ${actions}
                 </li>
@@ -2199,7 +2183,7 @@
         }
 
         document.addEventListener("click", (e) => {
-          if (!e.target.closest(".nav-filter__item")) closeAllMenus();
+          if (!e.target.closest(".nav-filter-item")) closeAllMenus();
         });
 
         if (ui.navFilters) ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
@@ -2207,25 +2191,25 @@
         window.addEventListener("resize", closeAllMenus, { passive: true });
 
         ui.navFilters.addEventListener("click", (e) => {
-          const trigger = e.target.closest(".nav-filter__trigger");
+          const trigger = e.target.closest(".nav-filter-trigger");
           if (trigger) {
-            toggleMenu(trigger.closest(".nav-filter__item").querySelector(".nav-filter__menu"), trigger);
+            toggleMenu(trigger.closest(".nav-filter-item").querySelector(".nav-filter-menu"), trigger);
             return;
           }
-          const opt = e.target.closest(".nav-filter__option");
-          if (opt) onFilterSelect(opt.closest(".nav-filter__item").dataset.filter, opt.dataset.value);
+          const opt = e.target.closest(".nav-filter-option");
+          if (opt) onFilterSelect(opt.closest(".nav-filter-item").dataset.filter, opt.dataset.value);
         });
 
         ui.addModal.addEventListener("click", (e) => {
-          const trigger = e.target.closest(".field .nav-filter__trigger");
+          const trigger = e.target.closest(".field .nav-filter-trigger");
           if (trigger) {
-            toggleMenu(trigger.closest(".nav-filter__item").querySelector(".nav-filter__menu"), trigger);
+            toggleMenu(trigger.closest(".nav-filter-item").querySelector(".nav-filter-menu"), trigger);
             return;
           }
-          const opt = e.target.closest(".field .nav-filter__option");
+          const opt = e.target.closest(".field .nav-filter-option");
           if (opt?.dataset.value) {
             const val = opt.dataset.value;
-            const field = opt.closest(".nav-filter__item").dataset.field;
+            const field = opt.closest(".nav-filter-item").dataset.field;
             updateModalDropdowns(
               field === "dept" ? val : ui.formDept.value,
               field === "sec" ? val : ui.formSec.value,
@@ -2384,8 +2368,8 @@
         });
 
         document.querySelectorAll(".dialog-modal.bottom-sheet").forEach(sheet => {
-          const handle = sheet.querySelector(".bottom-sheet__handle-wrapper");
-          const header = sheet.querySelector(".dialog-modal__header");
+          const handle = sheet.querySelector(".bottom-sheet-handle-wrapper");
+          const header = sheet.querySelector(".dialog-modal-header");
           const content = sheet.querySelector(".notes-stack, .modal-body-scroll");
           setupBottomSheetGestures(sheet, handle, header, content, () => closeSheetModal(sheet));
         });
