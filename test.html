@@ -100,7 +100,6 @@
     }
 
     html {
-      scroll-behavior: smooth;
       scrollbar-gutter: stable;
       scrollbar-width: thin;
       scrollbar-color: var(--border-hover) transparent;
@@ -876,120 +875,6 @@
       white-space: nowrap;
     }
 
-    /* Documentation Section (No transforms, clean simple text layout) */
-    .docs-section {
-      margin-top: 3.5rem;
-      padding-top: 2.5rem;
-      border-top: 1px solid var(--border-subtle);
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .docs-header {
-      margin-bottom: 0.25rem;
-    }
-
-    .docs-header-brand {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 3.5vw, 2.75rem);
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      line-height: 1.15;
-    }
-
-    .docs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 1.25rem;
-      align-items: stretch;
-    }
-
-    .docs-card {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: clamp(1.25rem, 2.5vw, 1.75rem);
-      scroll-margin-top: 5.5rem;
-    }
-
-    .docs-card--full {
-      grid-column: 1 / -1;
-    }
-
-    .docs-card-title {
-      font-family: var(--font-display);
-      font-size: 1.55rem;
-      font-weight: 400;
-      letter-spacing: -0.015em;
-      color: var(--text-main);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border-subtle);
-      line-height: 1.25;
-    }
-
-    .docs-list,
-    .docs-ordered-list {
-      color: var(--text-muted);
-      font-size: 0.9375rem;
-      line-height: 1.65;
-      padding-left: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-    }
-
-    .docs-list li strong {
-      color: var(--text-main);
-      font-weight: 600;
-    }
-
-    .docs-sub-block {
-      margin-top: 1.25rem;
-      padding-top: 1rem;
-      border-top: 1px dashed var(--border-subtle);
-    }
-
-    .docs-sub-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-main);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.65rem;
-    }
-
-    .docs-notice {
-      margin-top: 1rem;
-      padding: 0.75rem 1rem;
-      background-color: var(--bg-canvas);
-      border-left: 3px solid var(--brand-primary);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .docs-text {
-      color: var(--text-muted);
-      font-size: 0.9375rem;
-      line-height: 1.65;
-    }
-
-    .docs-link {
-      color: var(--brand-primary);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .docs-link:hover {
-      color: var(--brand-primary-hover);
-    }
-
     /* Modals */
     .dialog-modal {
       position: fixed;
@@ -1418,10 +1303,6 @@
       .calendar-cell { height: 46px; }
       .calendar-cell-btn { width: 38px; height: 38px; font-size: 0.8125rem; }
 
-      .docs-grid {
-        grid-template-columns: 1fr;
-      }
-
       .dialog-modal.bottom-sheet {
         inset: auto 0 0 0;
         margin: 0 auto;
@@ -1481,9 +1362,9 @@
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
 
     <nav class="header-nav" id="header-nav">
-      <a href="#features" class="nav-link">Features</a>
-      <a href="#how-to-find" class="nav-link">How to Find</a>
-      <a href="#how-to-upload" class="nav-link">How to Upload</a>
+      <button type="button" class="nav-link">Features</button>
+      <button type="button" class="nav-link">How to Find</button>
+      <button type="button" class="nav-link">How to Upload</button>
       <button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn-plus">+</span>Add Note</button>
     </nav>
   </header>
@@ -1631,74 +1512,6 @@
         <div class="course-dates-grid" id="course-dates-list"></div>
       </section>
     </main>
-
-    <!-- Documentation Section (Placed below Calendar) -->
-    <section class="docs-section" id="docs" aria-label="Documentation and Guides">
-      <div class="docs-header">
-        <h2 class="docs-header-brand">ClassNotes Guide &amp; Resources</h2>
-      </div>
-
-      <div class="docs-grid">
-        <!-- Features Card -->
-        <article class="docs-card" id="features">
-          <h3 class="docs-card-title">Features</h3>
-          <ul class="docs-list">
-            <li><strong>Department &amp; Section Filter:</strong> Find notes based on your department and section.</li>
-            <li><strong>Course &amp; Topic Filter:</strong> Browse notes by course and topic.</li>
-            <li><strong>Interactive Calendar:</strong> Find notes by selecting a specific date.</li>
-            <li><strong>Shared Study Resources:</strong> Access notes and learning materials shared by classmates.</li>
-            <li><strong>Community Contributions:</strong> Upload and share your own notes to help others.</li>
-            <li><strong>Simple Interface:</strong> Easily browse and access study materials.</li>
-          </ul>
-        </article>
-
-        <!-- How to Find Notes Card -->
-        <article class="docs-card" id="how-to-find">
-          <h3 class="docs-card-title">How to Find Notes</h3>
-          <ol class="docs-ordered-list">
-            <li>Select your Department.</li>
-            <li>Choose your Section.</li>
-            <li>Select a Course to find relevant notes.</li>
-            <li>Choose a Topic if needed.</li>
-            <li>Use the calendar to select a date and view the available notes.</li>
-            <li>Click on a note title to open the shared resource.</li>
-          </ol>
-        </article>
-
-        <!-- How to Upload Notes Card -->
-        <article class="docs-card" id="how-to-upload">
-          <h3 class="docs-card-title">How to Upload Notes</h3>
-          <ol class="docs-ordered-list">
-            <li>Click the Add Note button.</li>
-            <li>Select your Department and Section.</li>
-            <li>Choose the date of the class.</li>
-            <li>Select the relevant Course.</li>
-            <li>Enter the Topic Name and Note Title.</li>
-            <li>Add a shareable link to your note (e.g., a Google Drive link).</li>
-            <li>Submit the note.</li>
-          </ol>
-
-          <div class="docs-sub-block">
-            <h4 class="docs-sub-title">Before submitting:</h4>
-            <ul class="docs-list">
-              <li>Make sure all information is accurate.</li>
-              <li>Use a clear and descriptive title.</li>
-              <li>Ensure the shared link is accessible to others.</li>
-              <li>Share only relevant study materials.</li>
-            </ul>
-            <p class="docs-notice">Submitted notes may require admin approval before appearing on the website.</p>
-          </div>
-        </article>
-
-        <!-- Request Addition Card -->
-        <article class="docs-card docs-card--full" id="request-addition">
-          <h3 class="docs-card-title">Need a New Department, Section, or Course?</h3>
-          <p class="docs-text">
-            If your department, section, or course is not available in the dropdown menu, please <a href="mailto:shakibuzzaman52@gmail.com" class="docs-link">email us</a> to request its addition.
-          </p>
-        </article>
-      </div>
-    </section>
 
     <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
