@@ -887,9 +887,10 @@
       margin-bottom: 2rem;
     }
 
+    /* Explore ClassNotes Title matching calendar title (October 2026) */
     .docs-main-title {
       font-family: var(--font-display);
-      font-size: clamp(2rem, 4vw, 3rem);
+      font-size: 2.75rem;
       font-weight: 400;
       letter-spacing: -0.02em;
       color: var(--text-main);
@@ -1453,7 +1454,8 @@
         height: 6px;
       }
 
-      .calendar-nav-title { font-size: 2.15rem; }
+      .calendar-nav-title,
+      .docs-main-title { font-size: 2.15rem; }
       .calendar-nav { margin-bottom: 0.65rem; padding-bottom: 0.65rem; }
 
       .calendar-nav-title .month-full {
@@ -1899,11 +1901,8 @@
 
   <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
 
-  <!-- ========================================== -->
-  <!-- HTML COMPONENT TEMPLATES (PURE HTML)       -->
-  <!-- ========================================== -->
+  <!-- HTML Templates -->
   <div id="html-templates" hidden aria-hidden="true">
-    <!-- Template: Empty State -->
     <template id="tpl-empty-state">
       <div class="empty-state">
         <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1915,7 +1914,6 @@
       </div>
     </template>
 
-    <!-- Template: Dropdown Filter Option -->
     <template id="tpl-filter-option">
       <button type="button" class="nav-filter-option" role="option">
         <span class="nav-filter-option-text"></span>
@@ -1925,12 +1923,10 @@
       </button>
     </template>
 
-    <!-- Template: Dropdown Notice -->
     <template id="tpl-filter-empty">
       <div class="nav-filter-empty"></div>
     </template>
 
-    <!-- Template: Calendar Elements -->
     <template id="tpl-cal-row">
       <tr></tr>
     </template>
@@ -1951,7 +1947,6 @@
       </td>
     </template>
 
-    <!-- Template: Course Date Card Skeleton -->
     <template id="tpl-course-skeleton">
       <div class="course-card skeleton-card" aria-hidden="true">
         <div class="course-card-info">
@@ -1962,7 +1957,6 @@
       </div>
     </template>
 
-    <!-- Template: Course Date Card -->
     <template id="tpl-course-card">
       <div class="course-card">
         <div class="course-card-info">
@@ -1973,7 +1967,6 @@
       </div>
     </template>
 
-    <!-- Template: Notes Modal Cluster -->
     <template id="tpl-note-cluster">
       <div class="note-cluster">
         <h4 class="note-cluster-course"></h4>
@@ -1981,7 +1974,6 @@
       </div>
     </template>
 
-    <!-- Template: Notes Modal Topic Group -->
     <template id="tpl-note-topic-group">
       <div class="note-cluster-topic-group">
         <div class="note-cluster-topic-header"></div>
@@ -1989,7 +1981,6 @@
       </div>
     </template>
 
-    <!-- Template: Notes Modal Row -->
     <template id="tpl-note-row">
       <li class="note-row">
         <div class="note-row-left">
@@ -2038,9 +2029,7 @@
 
   <script src="config.js"></script>
 
-  <!-- ========================================== -->
-  <!-- PURE JAVASCRIPT LOGIC (NO HTML STRINGS)    -->
-  <!-- ========================================== -->
+  <!-- JavaScript Logic -->
   <script>
     (function () {
       "use strict";
