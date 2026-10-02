@@ -266,6 +266,7 @@
       pointer-events: none;
       user-select: none;
       cursor: default;
+      background-color: transparent;
     }
 
     .skeleton-line {
@@ -830,8 +831,9 @@
       width: 100%;
     }
 
+    /* Course Card - transparent background and simple border */
     .course-card {
-      background-color: var(--bg-pill);
+      background-color: transparent;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.95rem 1.15rem;
@@ -909,8 +911,9 @@
       margin-bottom: 2rem;
     }
 
+    /* Docs Card - no background color and simple border */
     .docs-block {
-      background: var(--bg-surface);
+      background: transparent;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: clamp(1.25rem, 2.5vw, 2rem);
@@ -943,7 +946,7 @@
       padding-left: 1.4rem;
     }
 
-    /* Changed dot color to black */
+    /* Black bullet dot */
     .docs-list-item::before {
       content: "";
       position: absolute;
@@ -1003,7 +1006,7 @@
       margin: 1.4rem 0 0.75rem;
     }
 
-    /* Removed left line and border */
+    /* Notice without left border line */
     .docs-notice {
       background-color: var(--bg-subtle);
       border: none;
@@ -1015,8 +1018,9 @@
       margin-top: 1.25rem;
     }
 
+    /* Contact Card - no background color and simple border */
     .docs-contact-box {
-      background: var(--bg-surface);
+      background: transparent;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: clamp(1.25rem, 2.5vw, 1.75rem);
