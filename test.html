@@ -249,27 +249,25 @@
       50% { opacity: 0.38; }
     }
 
-    .skeleton-line,
-    .calendar-cell-btn.skeleton-btn {
+    .skeleton-line {
       background-color: var(--bg-hover);
+      border-radius: var(--radius-full);
       animation: skeleton-pulse 1.3s ease-in-out infinite;
     }
 
     .calendar-cell-btn.skeleton-btn {
+      background-color: var(--bg-hover);
       border: 1px solid var(--border-subtle);
       color: transparent;
       pointer-events: none;
       cursor: default;
+      animation: skeleton-pulse 1.3s ease-in-out infinite;
     }
 
     .course-card.skeleton-card {
       pointer-events: none;
       user-select: none;
       cursor: default;
-    }
-
-    .skeleton-line {
-      border-radius: var(--radius-full);
     }
 
     .skeleton-line--date {
@@ -694,8 +692,8 @@
       overflow: hidden;
       width: 100%;
       touch-action: pan-y;
-      user-select: none;
       -webkit-user-select: none;
+      user-select: none;
       cursor: grab;
       border-radius: var(--radius-md);
     }
@@ -887,7 +885,6 @@
       margin-bottom: 2rem;
     }
 
-    /* Explore ClassNotes Title matching calendar title (October 2026) */
     .docs-main-title {
       font-family: var(--font-display);
       font-size: 2.75rem;
@@ -1209,9 +1206,7 @@
     }
 
     .note-cluster-topic-group {
-      margin-left: 1.1rem;
-      margin-top: 0.45rem;
-      margin-bottom: 0.65rem;
+      margin: 0.45rem 0 0.65rem 1.1rem;
     }
 
     .note-cluster-topic-group:last-child {
@@ -1927,10 +1922,6 @@
       <div class="nav-filter-empty"></div>
     </template>
 
-    <template id="tpl-cal-row">
-      <tr></tr>
-    </template>
-
     <template id="tpl-cal-cell-empty">
       <td class="calendar-cell calendar-cell--empty"></td>
     </template>
@@ -2058,7 +2049,6 @@
           courses: ["CSE Fundamentals", "CSE101", "CSE102", "CSE103"]
         }
       ];
-      config.departments = departments;
 
       const MONTH_NAMES = [
         "January", "February", "March", "April", "May", "June",
@@ -2073,7 +2063,8 @@
       };
 
       const savedDept = departments.find(d => d.code === safeStorage.get("selected_dept"));
-      const savedSec = savedDept?.sections.includes(safeStorage.get("selected_sec")) ? safeStorage.get("selected_sec") : "";
+      const rawSec = safeStorage.get("selected_sec");
+      const savedSec = savedDept?.sections.includes(rawSec) ? rawSec : "";
       const now = new Date();
 
       const state = {
@@ -2092,7 +2083,6 @@
         emptyState: document.getElementById("tpl-empty-state"),
         filterOption: document.getElementById("tpl-filter-option"),
         filterEmpty: document.getElementById("tpl-filter-empty"),
-        calRow: document.getElementById("tpl-cal-row"),
         calCellEmpty: document.getElementById("tpl-cal-cell-empty"),
         calCellSkeleton: document.getElementById("tpl-cal-cell-skeleton"),
         calCellDay: document.getElementById("tpl-cal-cell-day"),
@@ -2337,28 +2327,27 @@
 
       function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
         container.replaceChildren();
-        const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
-        list.forEach(item => items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) }));
-
         const fragment = document.createDocumentFragment();
-        items.forEach(({ val, text }) => {
+        const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
+        for (const item of list) {
+          items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) });
+        }
+
+        for (const { val, text } of items) {
           const clone = templates.filterOption.content.cloneNode(true);
           const btn = clone.querySelector(".nav-filter-option");
-          const label = clone.querySelector(".nav-filter-option-text");
-          const checkIcon = clone.querySelector(".nav-filter-check");
-
           btn.dataset.value = val;
-          label.textContent = text;
+          clone.querySelector(".nav-filter-option-text").textContent = text;
 
-          const isSel = selectedVal === val;
+          const isSel = (selectedVal === val);
           btn.setAttribute("aria-selected", String(isSel));
           if (isSel) {
             btn.classList.add("is-selected");
           } else {
-            checkIcon.remove();
+            clone.querySelector(".nav-filter-check").remove();
           }
           fragment.appendChild(clone);
-        });
+        }
         container.appendChild(fragment);
       }
 
@@ -2407,19 +2396,16 @@
       }
 
       function updateSelectionBanner() {
-        if (!state.dept) {
-          ui.bannerDeptState.hidden = false;
-          ui.bannerSecState.hidden = true;
-          ui.bannerActiveState.hidden = true;
-        } else if (!state.sec) {
-          ui.bannerDeptState.hidden = true;
-          ui.bannerSecState.hidden = false;
-          ui.bannerActiveState.hidden = true;
+        const hasDept = Boolean(state.dept);
+        const hasSec = Boolean(state.sec);
+
+        ui.bannerDeptState.hidden = hasDept;
+        ui.bannerSecState.hidden = !hasDept || hasSec;
+        ui.bannerActiveState.hidden = !hasDept || !hasSec;
+
+        if (hasDept && !hasSec) {
           ui.bannerDeptName.textContent = state.dept;
-        } else {
-          ui.bannerDeptState.hidden = true;
-          ui.bannerSecState.hidden = true;
-          ui.bannerActiveState.hidden = false;
+        } else if (hasDept && hasSec) {
           ui.bannerActiveDept.textContent = state.dept;
           ui.bannerActiveSec.textContent = state.sec;
         }
@@ -2667,19 +2653,14 @@
         });
       }
 
-      function buildCalendarFragment(dateObj) {
+      function buildCalendarFragment(dateObj, notesCountMap, todayKey) {
         const year = dateObj.getFullYear();
         const month = dateObj.getMonth();
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const notes = state.isLoading ? [] : filterActiveNotes();
-
-        const notesCountMap = {};
-        notes.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
-        const todayKey = formatDateKey(new Date());
 
         const fragment = document.createDocumentFragment();
-        let currentRow = templates.calRow.content.cloneNode(true).querySelector("tr");
+        let currentRow = document.createElement("tr");
         let col = 0;
 
         for (let i = 0; i < firstDay; i++) {
@@ -2690,7 +2671,7 @@
         for (let d = 1; d <= daysInMonth; d++) {
           if (col === 7) {
             fragment.appendChild(currentRow);
-            currentRow = templates.calRow.content.cloneNode(true).querySelector("tr");
+            currentRow = document.createElement("tr");
             col = 0;
           }
 
@@ -2746,13 +2727,20 @@
 
         updateCalendarTitle(state.viewDate);
 
-        ui.calendarCells.replaceChildren(buildCalendarFragment(state.viewDate));
+        const notes = state.isLoading ? [] : filterActiveNotes();
+        const notesCountMap = {};
+        for (const n of notes) {
+          if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1;
+        }
+        const todayKey = formatDateKey(new Date());
+
+        ui.calendarCells.replaceChildren(buildCalendarFragment(state.viewDate, notesCountMap, todayKey));
 
         if (ui.calendarCellsPrev) {
-          ui.calendarCellsPrev.replaceChildren(buildCalendarFragment(new Date(currYear, currMonth - 1, 1)));
+          ui.calendarCellsPrev.replaceChildren(buildCalendarFragment(new Date(currYear, currMonth - 1, 1), notesCountMap, todayKey));
         }
         if (ui.calendarCellsNext) {
-          ui.calendarCellsNext.replaceChildren(buildCalendarFragment(new Date(currYear, currMonth + 1, 1)));
+          ui.calendarCellsNext.replaceChildren(buildCalendarFragment(new Date(currYear, currMonth + 1, 1), notesCountMap, todayKey));
         }
       }
 
@@ -2960,7 +2948,9 @@
 
         const filtered = filterActiveNotes();
         const notesCountMap = {};
-        filtered.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
+        for (const n of filtered) {
+          if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1;
+        }
         const uniqueDates = Object.keys(notesCountMap).sort();
 
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
@@ -2974,7 +2964,7 @@
         ui.courseDatesList.replaceChildren();
         const fragment = document.createDocumentFragment();
 
-        uniqueDates.forEach(dateStr => {
+        for (const dateStr of uniqueDates) {
           const dateObj = parseLocalDate(dateStr);
           const cardClone = templates.courseCard.content.cloneNode(true);
           const card = cardClone.querySelector(".course-card");
@@ -2985,7 +2975,7 @@
           cardClone.querySelector(".course-card-badge").textContent = pluralize(notesCountMap[dateStr] || 0, 'note', 'notes');
 
           fragment.appendChild(cardClone);
-        });
+        }
 
         ui.courseDatesList.appendChild(fragment);
       }
@@ -3003,12 +2993,12 @@
         }
 
         const groups = {};
-        notes.forEach(n => {
+        for (const n of notes) {
           const c = n.course || "General", t = n.topic || "Class Notes";
           if (!groups[c]) groups[c] = {};
           if (!groups[c][t]) groups[c][t] = [];
           groups[c][t].push(n);
-        });
+        }
 
         ui.modalNotesStack.replaceChildren();
         const stackFragment = document.createDocumentFragment();
@@ -3023,7 +3013,7 @@
             topicClone.querySelector(".note-cluster-topic-header").textContent = topic;
             const listEl = topicClone.querySelector(".note-cluster-list");
 
-            items.forEach(item => {
+            for (const item of items) {
               const rowClone = templates.noteRow.content.cloneNode(true);
               const link = sanitizeUrl(item.link);
               const isReported = Number(item.reportCount || 0) >= 3;
@@ -3063,7 +3053,7 @@
               }
 
               listEl.appendChild(rowClone);
-            });
+            }
 
             groupsContainer.appendChild(topicClone);
           }
