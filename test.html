@@ -46,7 +46,6 @@
       padding: 0;
     }
 
-    /* Intro Preloader */
     .preloader {
       position: fixed;
       inset: 0;
@@ -148,7 +147,6 @@
       padding: 0 clamp(1rem, 3.5vw, 2.5rem);
     }
 
-    /* Core buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -243,7 +241,6 @@
       animation: spin 0.6s linear infinite;
     }
 
-    /* Skeleton Loading Animations */
     @keyframes skeleton-pulse {
       0%, 100% { opacity: 0.95; }
       50% { opacity: 0.38; }
@@ -289,7 +286,6 @@
       align-self: flex-start;
     }
 
-    /* Header & Navigation */
     .site-header {
       width: 100%;
       display: flex;
@@ -348,7 +344,6 @@
       cursor: pointer;
     }
 
-    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -364,7 +359,6 @@
       background-color: var(--bg-class-notes-badge);
     }
 
-    /* Form controls */
     .field {
       margin-bottom: 1rem;
       position: relative;
@@ -394,7 +388,6 @@
       background-color: var(--bg-hover);
     }
 
-    /* Hero */
     .hero {
       padding-top: clamp(3.5rem, 6vw, 5.5rem);
       text-align: center;
@@ -423,7 +416,6 @@
       margin: 0 auto clamp(2rem, 3.5vw, 2.75rem);
     }
 
-    /* Selection Banner */
     .selection-banner-wrapper {
       margin: 0 auto 0.85rem;
       display: flex;
@@ -453,7 +445,6 @@
       font-style: normal;
     }
 
-    /* Filters Bar */
     .nav-filters {
       display: flex;
       flex-wrap: nowrap;
@@ -465,9 +456,9 @@
       position: relative;
       gap: clamp(0.35rem, 1.2vw, 0.75rem);
       overflow-x: auto;
+      scrollbar-width: none;
     }
 
-    .nav-filters,
     .notes-stack,
     .modal-body-scroll {
       scrollbar-width: none;
@@ -482,15 +473,10 @@
     .nav-filter-item {
       position: relative;
       min-width: 0;
-    }
-
-    .nav-filters .nav-filter-item {
       flex: 1 1 auto;
-      min-width: 72px;
       max-width: 35%;
     }
 
-    /* Filter Triggers */
     .nav-filter-trigger {
       display: flex;
       align-items: center;
@@ -534,7 +520,6 @@
       transform: rotate(180deg);
     }
 
-    /* Filter Menus */
     .nav-filter-menu {
       position: absolute;
       top: calc(100% + 5px);
@@ -628,9 +613,9 @@
       user-select: none;
     }
 
-    /* Modal Form dropdowns */
     .field .nav-filter-item {
       width: 100%;
+      max-width: 100%;
     }
 
     .field .nav-filter-trigger {
@@ -651,7 +636,6 @@
       margin-top: 0.5rem;
     }
 
-    /* Calendar & Views */
     #calendar-view,
     .course-dates-view {
       padding: 0.5rem 0 1rem;
@@ -688,7 +672,6 @@
       gap: 0.45rem;
     }
 
-    /* Carousel Container */
     .calendar-carousel {
       position: relative;
       overflow: hidden;
@@ -876,7 +859,6 @@
       white-space: nowrap;
     }
 
-    /* Documentation Section */
     .docs-container {
       margin-top: clamp(2.5rem, 5vw, 4rem);
       padding-top: clamp(1.5rem, 3vw, 2.5rem);
@@ -997,7 +979,6 @@
       justify-content: center;
     }
 
-    /* Refined & elegant styling for "Before submitting:" */
     .docs-subheading {
       font-family: var(--font-display);
       font-size: 1.4rem;
@@ -1052,7 +1033,6 @@
       color: var(--brand-primary-hover);
     }
 
-    /* Modals */
     .dialog-modal {
       position: fixed;
       inset: 0;
@@ -1097,8 +1077,7 @@
       cursor: grab;
     }
 
-    .bottom-sheet-handle-wrapper:active,
-    .bottom-sheet-handle:active {
+    .bottom-sheet-handle-wrapper:active {
       cursor: grabbing;
     }
 
@@ -1439,7 +1418,6 @@
       }
 
       .nav-filters .nav-filter-item {
-        flex: 1 0 auto;
         max-width: 205px;
       }
 
@@ -1602,7 +1580,6 @@
     </nav>
 
     <main class="content-area">
-      <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
           <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
@@ -1679,7 +1656,6 @@
         </div>
       </section>
 
-      <!-- Course Dates Cards View -->
       <section class="course-dates-view" id="course-view" hidden>
         <div class="course-dates-header">
           <h3 class="course-dates-title" id="course-view-title"></h3>
@@ -1689,7 +1665,6 @@
       </section>
     </main>
 
-    <!-- Documentation & Information Sections -->
     <section class="docs-container" id="documentation" aria-label="Documentation and Guides">
       <div class="docs-intro">
         <h2 class="docs-main-title">Explore ClassNotes</h2>
@@ -1756,7 +1731,6 @@
       </div>
     </section>
 
-    <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
       <div class="bottom-sheet-handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet-handle"></div>
@@ -1774,7 +1748,6 @@
       </div>
     </dialog>
 
-    <!-- Modal: Add note -->
     <dialog class="dialog-modal bottom-sheet" id="add-modal">
       <div class="bottom-sheet-handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet-handle"></div>
@@ -1857,7 +1830,6 @@
       </form>
     </dialog>
 
-    <!-- Modal: Report link -->
     <dialog class="dialog-modal bottom-sheet" id="report-modal">
       <div class="bottom-sheet-handle-wrapper" title="Drag down to close">
         <div class="bottom-sheet-handle"></div>
@@ -1891,21 +1863,17 @@
     (function () {
       "use strict";
 
-      function dismissPreloader() {
-        const preloader = document.getElementById("preloader");
-        if (!preloader || preloader.dataset.dismissed) return;
-        preloader.dataset.dismissed = "true";
-        setTimeout(() => {
-          preloader.classList.add("is-hidden");
-          setTimeout(() => preloader.remove(), 650);
-        }, 1150);
-      }
+      const CHECK_SVG = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      const NOTE_ICON_SVG = '<svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+      const SHARE_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>';
+      const REPORT_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>';
+      const SKELETON_CARD_HTML = '<div class="course-card skeleton-card" aria-hidden="true"><div class="course-card-info"><div class="skeleton-line skeleton-line--date"></div><div class="skeleton-line skeleton-line--day"></div></div><div class="skeleton-line skeleton-line--badge"></div></div>';
 
-      if (document.readyState === "complete") {
-        dismissPreloader();
-      } else {
-        window.addEventListener("load", dismissPreloader);
-      }
+      const MONTH_NAMES = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
       const config = window.APP_CONFIG || {};
       const departments = Array.isArray(config.departments) && config.departments.length ? config.departments : [
@@ -1917,12 +1885,6 @@
       ];
       config.departments = departments;
 
-      const MONTH_NAMES = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-      ];
-      const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
       const safeStorage = {
         get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
         set: (key, val) => { try { localStorage.setItem(key, val); } catch {} },
@@ -1930,7 +1892,8 @@
       };
 
       const savedDept = departments.find(d => d.code === safeStorage.get("selected_dept"));
-      const savedSec = savedDept?.sections.includes(safeStorage.get("selected_sec")) ? safeStorage.get("selected_sec") : "";
+      const storedSec = safeStorage.get("selected_sec");
+      const savedSec = savedDept?.sections.includes(storedSec) ? storedSec : "";
       const now = new Date();
 
       const state = {
@@ -2011,6 +1974,22 @@
 
         toastTray: document.getElementById("toast-tray")
       };
+
+      function dismissPreloader() {
+        const preloader = document.getElementById("preloader");
+        if (!preloader || preloader.dataset.dismissed) return;
+        preloader.dataset.dismissed = "true";
+        setTimeout(() => {
+          preloader.classList.add("is-hidden");
+          setTimeout(() => preloader.remove(), 650);
+        }, 1150);
+      }
+
+      if (document.readyState === "complete") {
+        dismissPreloader();
+      } else {
+        window.addEventListener("load", dismissPreloader);
+      }
 
       const toDateKey = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
       const formatDateKey = (date) => toDateKey(date.getFullYear(), date.getMonth(), date.getDate());
@@ -2122,6 +2101,26 @@
         };
       }
 
+      function filterActiveNotes() {
+        if (!state.dept || !state.sec) return [];
+        return state.notes.filter(n =>
+          n.department === state.dept &&
+          n.section === state.sec &&
+          String(n.status || "").toLowerCase() === "approved" &&
+          (state.course === "ALL" || n.course === state.course) &&
+          (state.topic === "ALL" || n.topic === state.topic)
+        );
+      }
+
+      function getNotesCountMap() {
+        const counts = {};
+        if (state.isLoading) return counts;
+        filterActiveNotes().forEach(n => {
+          if (n.date) counts[n.date] = (counts[n.date] || 0) + 1;
+        });
+        return counts;
+      }
+
       async function loadNotes(forceFetch = false) {
         if (!state.dept || !state.sec) {
           state.notes = [];
@@ -2180,7 +2179,6 @@
       const getDeptMeta = (code) => departments.find(d => d.code === code) || null;
 
       function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
-        const checkSvg = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
         const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
         list.forEach(item => items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) }));
 
@@ -2188,7 +2186,7 @@
           const isSel = selectedVal === val;
           return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(val)}" role="option" aria-selected="${isSel}">
             <span class="nav-filter-option-text">${escapeHtml(text)}</span>
-            ${isSel ? checkSvg : ''}
+            ${isSel ? CHECK_SVG : ''}
           </button>`;
         }).join("");
       }
@@ -2307,17 +2305,6 @@
           (!ui.formCourse.value || n.course === ui.formCourse.value)
         ).length;
         ui.formTitle.value = `Note ${count + 1}`;
-      }
-
-      function filterActiveNotes() {
-        if (!state.dept || !state.sec) return [];
-        return state.notes.filter(n =>
-          n.department === state.dept &&
-          n.section === state.sec &&
-          String(n.status || "").toLowerCase() === "approved" &&
-          (state.course === "ALL" || n.course === state.course) &&
-          (state.topic === "ALL" || n.topic === state.topic)
-        );
       }
 
       function checkBodyScrollLock() {
@@ -2487,16 +2474,11 @@
         });
       }
 
-      function generateMonthMarkup(dateObj) {
+      function generateMonthMarkup(dateObj, notesCountMap, todayKey) {
         const year = dateObj.getFullYear();
         const month = dateObj.getMonth();
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const notes = state.isLoading ? [] : filterActiveNotes();
-
-        const notesCountMap = {};
-        notes.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
-        const todayKey = formatDateKey(new Date());
 
         let markup = "<tr>";
         let col = 0;
@@ -2554,16 +2536,18 @@
       function renderCalendarGrid() {
         const currYear = state.viewDate.getFullYear();
         const currMonth = state.viewDate.getMonth();
+        const counts = getNotesCountMap();
+        const todayKey = formatDateKey(new Date());
 
         updateCalendarTitle(state.viewDate);
 
-        ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate);
+        ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate, counts, todayKey);
 
         if (ui.calendarCellsPrev) {
-          ui.calendarCellsPrev.innerHTML = generateMonthMarkup(new Date(currYear, currMonth - 1, 1));
+          ui.calendarCellsPrev.innerHTML = generateMonthMarkup(new Date(currYear, currMonth - 1, 1), counts, todayKey);
         }
         if (ui.calendarCellsNext) {
-          ui.calendarCellsNext.innerHTML = generateMonthMarkup(new Date(currYear, currMonth + 1, 1));
+          ui.calendarCellsNext.innerHTML = generateMonthMarkup(new Date(currYear, currMonth + 1, 1), counts, todayKey);
         }
       }
 
@@ -2759,22 +2743,12 @@
         ui.courseTitle.textContent = (titleParts.length ? titleParts : ["Filtered Classes"]).join(" • ");
 
         if (state.isLoading) {
-          ui.courseCount.textContent = "(Loading...)";
-          ui.courseDatesList.innerHTML = Array.from({ length: 6 }, () => `
-            <div class="course-card skeleton-card" aria-hidden="true">
-              <div class="course-card-info">
-                <div class="skeleton-line skeleton-line--date"></div>
-                <div class="skeleton-line skeleton-line--day"></div>
-              </div>
-              <div class="skeleton-line skeleton-line--badge"></div>
-            </div>
-          `).join("");
+          ui.courseCount.textContent = "";
+          ui.courseDatesList.innerHTML = SKELETON_CARD_HTML.repeat(6);
           return;
         }
 
-        const filtered = filterActiveNotes();
-        const notesCountMap = {};
-        filtered.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
+        const notesCountMap = getNotesCountMap();
         const uniqueDates = Object.keys(notesCountMap).sort();
 
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
@@ -2829,16 +2803,7 @@
               const hasLink = Boolean(link);
               const escapedLink = escapeHtml(link);
 
-              const titleBody = `
-                <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                <span class="note-title-text">${title}</span>
-              `;
+              const titleBody = `${NOTE_ICON_SVG}<span class="note-title-text">${title}</span>`;
 
               const titleEl = hasLink
                 ? `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">${titleBody}</a>`
@@ -2847,19 +2812,10 @@
               const actions = hasLink ? `
                 <div class="note-row-actions">
                   <button type="button" class="btn-share" data-title="${title}" data-link="${escapedLink}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <circle cx="18" cy="5" r="3"></circle>
-                      <circle cx="6" cy="12" r="3"></circle>
-                      <circle cx="18" cy="19" r="3"></circle>
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                    </svg>
+                    ${SHARE_ICON_SVG}
                   </button>
                   <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? item.title ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" aria-label="Report broken link" title="Report">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                      <line x1="4" y1="22" x2="4" y2="15"></line>
-                    </svg>
+                    ${REPORT_ICON_SVG}
                   </button>
                 </div>
               ` : "";
