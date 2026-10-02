@@ -997,7 +997,6 @@
       justify-content: center;
     }
 
-    /* Refined & elegant styling for "Before submitting:" */
     .docs-subheading {
       font-family: var(--font-display);
       font-size: 1.4rem;
@@ -1521,6 +1520,7 @@
   </style>
 </head>
 <body>
+  <!-- Preloader Component -->
   <div class="preloader" id="preloader" aria-hidden="true">
     <div class="preloader-brand">
       <span class="preloader-char" style="--char-index: 0">C</span>
@@ -1536,6 +1536,7 @@
     </div>
   </div>
 
+  <!-- Header -->
   <header class="site-header">
     <h1 class="brand-mark">ClassNotes<sup>®</sup></h1>
 
@@ -1550,15 +1551,21 @@
   </header>
 
   <div class="shell">
+    <!-- Hero Section -->
     <section class="hero">
       <h2 class="hero-title">Lecture archive &amp;<br><span class="badge">class notes</span></h2>
       <p class="hero-desc">Find class notes and academic resources organized by department, section, course and date.</p>
 
       <div class="selection-banner-wrapper">
-        <div id="selection-banner" class="selection-banner"></div>
+        <div id="selection-banner" class="selection-banner">
+          <span id="banner-state-dept">Select your <span class="badge">department</span></span>
+          <span id="banner-state-sec" hidden><span class="badge" id="banner-dept-name"></span> &mdash; select <span class="badge">section</span></span>
+          <span id="banner-state-active" hidden>Viewing notes for <span class="badge"><span id="banner-active-dept"></span> &mdash; Sec <span id="banner-active-sec"></span></span></span>
+        </div>
       </div>
     </section>
 
+    <!-- Main Navigation Filter Bar -->
     <nav class="nav-filters" id="main-nav-filters" aria-label="Class and Lecture Filters">
       <div class="nav-filter-item" data-filter="dept">
         <button type="button" class="nav-filter-trigger" id="dept-trigger" aria-haspopup="listbox" aria-expanded="false">
@@ -1601,11 +1608,16 @@
       </div>
     </nav>
 
+    <!-- Main Content Area -->
     <main class="content-area">
       <!-- Calendar View -->
       <section id="calendar-view">
         <div class="calendar-nav">
-          <h2 class="calendar-nav-title" id="calendar-header-title"></h2>
+          <h2 class="calendar-nav-title" id="calendar-header-title">
+            <span class="month-full" id="cal-month-full"></span>
+            <span class="month-short" id="cal-month-short"></span>
+            <span id="cal-year"></span>
+          </h2>
           <div class="calendar-nav-actions">
             <button type="button" class="btn btn--subtle" id="cal-prev" aria-label="Previous Month">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1886,7 +1898,149 @@
   </div>
 
   <div class="toast-tray" id="toast-tray" aria-live="polite"></div>
+
+  <!-- ========================================== -->
+  <!-- HTML COMPONENT TEMPLATES (PURE HTML)       -->
+  <!-- ========================================== -->
+  <div id="html-templates" hidden aria-hidden="true">
+    <!-- Template: Empty State -->
+    <template id="tpl-empty-state">
+      <div class="empty-state">
+        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="9" y1="13" x2="15" y2="13"></line>
+        </svg>
+        <p class="empty-state-text"></p>
+      </div>
+    </template>
+
+    <!-- Template: Dropdown Filter Option -->
+    <template id="tpl-filter-option">
+      <button type="button" class="nav-filter-option" role="option">
+        <span class="nav-filter-option-text"></span>
+        <svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </button>
+    </template>
+
+    <!-- Template: Dropdown Notice -->
+    <template id="tpl-filter-empty">
+      <div class="nav-filter-empty"></div>
+    </template>
+
+    <!-- Template: Calendar Elements -->
+    <template id="tpl-cal-row">
+      <tr></tr>
+    </template>
+
+    <template id="tpl-cal-cell-empty">
+      <td class="calendar-cell calendar-cell--empty"></td>
+    </template>
+
+    <template id="tpl-cal-cell-skeleton">
+      <td class="calendar-cell">
+        <div class="calendar-cell-btn skeleton-btn" aria-hidden="true"></div>
+      </td>
+    </template>
+
+    <template id="tpl-cal-cell-day">
+      <td class="calendar-cell">
+        <button type="button" class="calendar-cell-btn"></button>
+      </td>
+    </template>
+
+    <!-- Template: Course Date Card Skeleton -->
+    <template id="tpl-course-skeleton">
+      <div class="course-card skeleton-card" aria-hidden="true">
+        <div class="course-card-info">
+          <div class="skeleton-line skeleton-line--date"></div>
+          <div class="skeleton-line skeleton-line--day"></div>
+        </div>
+        <div class="skeleton-line skeleton-line--badge"></div>
+      </div>
+    </template>
+
+    <!-- Template: Course Date Card -->
+    <template id="tpl-course-card">
+      <div class="course-card">
+        <div class="course-card-info">
+          <span class="course-card-date"></span>
+          <span class="course-card-day"></span>
+        </div>
+        <span class="course-card-badge"></span>
+      </div>
+    </template>
+
+    <!-- Template: Notes Modal Cluster -->
+    <template id="tpl-note-cluster">
+      <div class="note-cluster">
+        <h4 class="note-cluster-course"></h4>
+        <div class="note-cluster-groups"></div>
+      </div>
+    </template>
+
+    <!-- Template: Notes Modal Topic Group -->
+    <template id="tpl-note-topic-group">
+      <div class="note-cluster-topic-group">
+        <div class="note-cluster-topic-header"></div>
+        <ul class="note-cluster-list"></ul>
+      </div>
+    </template>
+
+    <!-- Template: Notes Modal Row -->
+    <template id="tpl-note-row">
+      <li class="note-row">
+        <div class="note-row-left">
+          <a class="note-title-btn" target="_blank" rel="noopener noreferrer">
+            <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span class="note-title-text"></span>
+          </a>
+          <span class="note-title-plain" hidden>
+            <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span class="note-title-text"></span>
+          </span>
+          <span class="note-row-flag" hidden>[Issue Reported]</span>
+        </div>
+        <div class="note-row-actions">
+          <button type="button" class="btn-share" aria-label="Share note link" title="Share">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          <button type="button" class="btn-report" aria-label="Report broken link" title="Report">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+          </button>
+        </div>
+      </li>
+    </template>
+  </div>
+
   <script src="config.js"></script>
+
+  <!-- ========================================== -->
+  <!-- PURE JAVASCRIPT LOGIC (NO HTML STRINGS)    -->
+  <!-- ========================================== -->
   <script>
     (function () {
       "use strict";
@@ -1945,12 +2099,33 @@
         isLoading: false
       };
 
+      const templates = {
+        emptyState: document.getElementById("tpl-empty-state"),
+        filterOption: document.getElementById("tpl-filter-option"),
+        filterEmpty: document.getElementById("tpl-filter-empty"),
+        calRow: document.getElementById("tpl-cal-row"),
+        calCellEmpty: document.getElementById("tpl-cal-cell-empty"),
+        calCellSkeleton: document.getElementById("tpl-cal-cell-skeleton"),
+        calCellDay: document.getElementById("tpl-cal-cell-day"),
+        courseSkeleton: document.getElementById("tpl-course-skeleton"),
+        courseCard: document.getElementById("tpl-course-card"),
+        noteCluster: document.getElementById("tpl-note-cluster"),
+        noteTopicGroup: document.getElementById("tpl-note-topic-group"),
+        noteRow: document.getElementById("tpl-note-row")
+      };
+
       const ui = {
         mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
         headerNav: document.getElementById("header-nav"),
-        selectionBanner: document.getElementById("selection-banner"),
-        navFilters: document.getElementById("main-nav-filters"),
 
+        bannerDeptState: document.getElementById("banner-state-dept"),
+        bannerSecState: document.getElementById("banner-state-sec"),
+        bannerActiveState: document.getElementById("banner-state-active"),
+        bannerDeptName: document.getElementById("banner-dept-name"),
+        bannerActiveDept: document.getElementById("banner-active-dept"),
+        bannerActiveSec: document.getElementById("banner-active-sec"),
+
+        navFilters: document.getElementById("main-nav-filters"),
         deptMenu: document.getElementById("dept-menu"),
         secMenu: document.getElementById("sec-menu"),
         courseMenu: document.getElementById("course-menu"),
@@ -1963,6 +2138,10 @@
 
         calendarView: document.getElementById("calendar-view"),
         calendarTitle: document.getElementById("calendar-header-title"),
+        calMonthFull: document.getElementById("cal-month-full"),
+        calMonthShort: document.getElementById("cal-month-short"),
+        calYear: document.getElementById("cal-year"),
+
         calendarCarousel: document.getElementById("calendar-carousel"),
         calendarTrack: document.getElementById("calendar-track"),
         calendarCellsPrev: document.getElementById("calendar-cells-prev"),
@@ -2029,11 +2208,6 @@
 
       const pluralize = (count, s, p) => `${count} ${count === 1 ? s : p}`;
 
-      function escapeHtml(text) {
-        if (!text && text !== 0) return "";
-        return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-      }
-
       function normalizeUrl(input) {
         const t = String(input || "").trim();
         return !t ? "" : /^[a-z][a-z0-9+.-]*:/i.test(t) ? t : `https://${t}`;
@@ -2050,23 +2224,16 @@
         btn.classList.toggle("is-loading", isLoading);
       }
 
-      function renderEmptyState(message) {
-        return `
-          <div class="empty-state">
-            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="9" y1="13" x2="15" y2="13"></line>
-            </svg>
-            <p class="empty-state-text">${escapeHtml(message)}</p>
-          </div>
-        `;
+      function createEmptyState(message) {
+        const clone = templates.emptyState.content.cloneNode(true);
+        clone.querySelector(".empty-state-text").textContent = message;
+        return clone;
       }
 
       let toastTimer = null;
       function showToast(message) {
         clearTimeout(toastTimer);
-        ui.toastTray.innerHTML = "";
+        ui.toastTray.replaceChildren();
         const toast = document.createElement("div");
         toast.className = "toast";
         toast.textContent = message;
@@ -2180,21 +2347,37 @@
       const getDeptMeta = (code) => departments.find(d => d.code === code) || null;
 
       function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
-        const checkSvg = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        container.replaceChildren();
         const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
         list.forEach(item => items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) }));
 
-        container.innerHTML = items.map(({ val, text }) => {
+        const fragment = document.createDocumentFragment();
+        items.forEach(({ val, text }) => {
+          const clone = templates.filterOption.content.cloneNode(true);
+          const btn = clone.querySelector(".nav-filter-option");
+          const label = clone.querySelector(".nav-filter-option-text");
+          const checkIcon = clone.querySelector(".nav-filter-check");
+
+          btn.dataset.value = val;
+          label.textContent = text;
+
           const isSel = selectedVal === val;
-          return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(val)}" role="option" aria-selected="${isSel}">
-            <span class="nav-filter-option-text">${escapeHtml(text)}</span>
-            ${isSel ? checkSvg : ''}
-          </button>`;
-        }).join("");
+          btn.setAttribute("aria-selected", String(isSel));
+          if (isSel) {
+            btn.classList.add("is-selected");
+          } else {
+            checkIcon.remove();
+          }
+          fragment.appendChild(clone);
+        });
+        container.appendChild(fragment);
       }
 
       function renderMenuNotice(container, message) {
-        container.innerHTML = `<div class="nav-filter-empty">${escapeHtml(message)}</div>`;
+        container.replaceChildren();
+        const clone = templates.filterEmpty.content.cloneNode(true);
+        clone.querySelector(".nav-filter-empty").textContent = message;
+        container.appendChild(clone);
       }
 
       function closeAllMenus() {
@@ -2235,13 +2418,21 @@
       }
 
       function updateSelectionBanner() {
-        if (!ui.selectionBanner) return;
         if (!state.dept) {
-          ui.selectionBanner.innerHTML = 'Select your <span class="badge">department</span>';
+          ui.bannerDeptState.hidden = false;
+          ui.bannerSecState.hidden = true;
+          ui.bannerActiveState.hidden = true;
         } else if (!state.sec) {
-          ui.selectionBanner.innerHTML = `<span class="badge">${escapeHtml(state.dept)}</span> &mdash; select <span class="badge">section</span>`;
+          ui.bannerDeptState.hidden = true;
+          ui.bannerSecState.hidden = false;
+          ui.bannerActiveState.hidden = true;
+          ui.bannerDeptName.textContent = state.dept;
         } else {
-          ui.selectionBanner.innerHTML = `Viewing notes for <span class="badge">${escapeHtml(state.dept)} &mdash; Sec ${escapeHtml(state.sec)}</span>`;
+          ui.bannerDeptState.hidden = true;
+          ui.bannerSecState.hidden = true;
+          ui.bannerActiveState.hidden = false;
+          ui.bannerActiveDept.textContent = state.dept;
+          ui.bannerActiveSec.textContent = state.sec;
         }
       }
 
@@ -2487,7 +2678,7 @@
         });
       }
 
-      function generateMonthMarkup(dateObj) {
+      function buildCalendarFragment(dateObj) {
         const year = dateObj.getFullYear();
         const month = dateObj.getMonth();
         const firstDay = new Date(year, month, 1).getDay();
@@ -2498,57 +2689,66 @@
         notes.forEach(n => { if (n.date) notesCountMap[n.date] = (notesCountMap[n.date] || 0) + 1; });
         const todayKey = formatDateKey(new Date());
 
-        let markup = "<tr>";
+        const fragment = document.createDocumentFragment();
+        let currentRow = templates.calRow.content.cloneNode(true).querySelector("tr");
         let col = 0;
 
         for (let i = 0; i < firstDay; i++) {
-          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
+          currentRow.appendChild(templates.calCellEmpty.content.cloneNode(true));
           col++;
         }
 
         for (let d = 1; d <= daysInMonth; d++) {
           if (col === 7) {
-            markup += "</tr><tr>";
+            fragment.appendChild(currentRow);
+            currentRow = templates.calRow.content.cloneNode(true).querySelector("tr");
             col = 0;
           }
 
           if (state.isLoading) {
-            markup += '<td class="calendar-cell"><div class="calendar-cell-btn skeleton-btn" aria-hidden="true"></div></td>';
+            currentRow.appendChild(templates.calCellSkeleton.content.cloneNode(true));
           } else {
+            const cellClone = templates.calCellDay.content.cloneNode(true);
+            const cell = cellClone.querySelector("td");
+            const btn = cellClone.querySelector("button");
+
             const dateKey = toDateKey(year, month, d);
             const isFuture = dateKey > todayKey;
             const noteCount = notesCountMap[dateKey] || 0;
             const hasNotes = noteCount > 0;
 
-            const classes = [
-              "calendar-cell",
-              dateKey === todayKey && "calendar-cell--today",
-              isFuture && "calendar-cell--disabled",
-              hasNotes && "has-notes"
-            ].filter(Boolean).join(" ");
+            cell.dataset.date = dateKey;
+            btn.dataset.date = dateKey;
+            btn.textContent = String(d);
 
-            markup += `
-              <td class="${classes}" data-date="${dateKey}">
-                <button type="button" class="calendar-cell-btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : ""}>
-                  ${d}
-                </button>
-              </td>
-            `;
+            if (dateKey === todayKey) cell.classList.add("calendar-cell--today");
+            if (isFuture) {
+              cell.classList.add("calendar-cell--disabled");
+              btn.disabled = true;
+            }
+            if (hasNotes) {
+              cell.classList.add("has-notes");
+              btn.title = pluralize(noteCount, "note", "notes");
+            }
+
+            currentRow.appendChild(cellClone);
           }
           col++;
         }
 
         while (col < 7 && col > 0) {
-          markup += '<td class="calendar-cell calendar-cell--empty"></td>';
+          currentRow.appendChild(templates.calCellEmpty.content.cloneNode(true));
           col++;
         }
-        return markup + "</tr>";
+        fragment.appendChild(currentRow);
+        return fragment;
       }
 
       function updateCalendarTitle(dateObj) {
-        const year = dateObj.getFullYear();
         const month = dateObj.getMonth();
-        ui.calendarTitle.innerHTML = `<span class="month-full">${MONTH_NAMES[month]}</span><span class="month-short">${MONTH_NAMES[month].slice(0, 3)}</span> ${year}`;
+        ui.calMonthFull.textContent = MONTH_NAMES[month];
+        ui.calMonthShort.textContent = MONTH_NAMES[month].slice(0, 3);
+        ui.calYear.textContent = String(dateObj.getFullYear());
       }
 
       function renderCalendarGrid() {
@@ -2557,13 +2757,13 @@
 
         updateCalendarTitle(state.viewDate);
 
-        ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate);
+        ui.calendarCells.replaceChildren(buildCalendarFragment(state.viewDate));
 
         if (ui.calendarCellsPrev) {
-          ui.calendarCellsPrev.innerHTML = generateMonthMarkup(new Date(currYear, currMonth - 1, 1));
+          ui.calendarCellsPrev.replaceChildren(buildCalendarFragment(new Date(currYear, currMonth - 1, 1)));
         }
         if (ui.calendarCellsNext) {
-          ui.calendarCellsNext.innerHTML = generateMonthMarkup(new Date(currYear, currMonth + 1, 1));
+          ui.calendarCellsNext.replaceChildren(buildCalendarFragment(new Date(currYear, currMonth + 1, 1)));
         }
       }
 
@@ -2760,15 +2960,12 @@
 
         if (state.isLoading) {
           ui.courseCount.textContent = "";
-          ui.courseDatesList.innerHTML = Array.from({ length: 6 }, () => `
-            <div class="course-card skeleton-card" aria-hidden="true">
-              <div class="course-card-info">
-                <div class="skeleton-line skeleton-line--date"></div>
-                <div class="skeleton-line skeleton-line--day"></div>
-              </div>
-              <div class="skeleton-line skeleton-line--badge"></div>
-            </div>
-          `).join("");
+          ui.courseDatesList.replaceChildren();
+          const fragment = document.createDocumentFragment();
+          for (let i = 0; i < 6; i++) {
+            fragment.appendChild(templates.courseSkeleton.content.cloneNode(true));
+          }
+          ui.courseDatesList.appendChild(fragment);
           return;
         }
 
@@ -2780,22 +2977,28 @@
         ui.courseCount.textContent = `(${pluralize(uniqueDates.length, 'lecture date', 'lecture dates')})`;
 
         if (!uniqueDates.length) {
-          ui.courseDatesList.innerHTML = renderEmptyState((!state.dept || !state.sec) ? "Please select department and section to view notes." : "No notes found matching your selected filters.");
+          const msg = (!state.dept || !state.sec) ? "Please select department and section to view notes." : "No notes found matching your selected filters.";
+          ui.courseDatesList.replaceChildren(createEmptyState(msg));
           return;
         }
 
-        ui.courseDatesList.innerHTML = uniqueDates.map(dateStr => {
+        ui.courseDatesList.replaceChildren();
+        const fragment = document.createDocumentFragment();
+
+        uniqueDates.forEach(dateStr => {
           const dateObj = parseLocalDate(dateStr);
-          return `
-            <div class="course-card" data-date="${escapeHtml(dateStr)}">
-              <div class="course-card-info">
-                <span class="course-card-date">${formatReadableDate(dateStr)}</span>
-                <span class="course-card-day">${DAY_NAMES[dateObj.getDay()] || ""}</span>
-              </div>
-              <span class="course-card-badge">${pluralize(notesCountMap[dateStr] || 0, 'note', 'notes')}</span>
-            </div>
-          `;
-        }).join("");
+          const cardClone = templates.courseCard.content.cloneNode(true);
+          const card = cardClone.querySelector(".course-card");
+
+          card.dataset.date = dateStr;
+          cardClone.querySelector(".course-card-date").textContent = formatReadableDate(dateStr);
+          cardClone.querySelector(".course-card-day").textContent = DAY_NAMES[dateObj.getDay()] || "";
+          cardClone.querySelector(".course-card-badge").textContent = pluralize(notesCountMap[dateStr] || 0, 'note', 'notes');
+
+          fragment.appendChild(cardClone);
+        });
+
+        ui.courseDatesList.appendChild(fragment);
       }
 
       function renderModalNotes() {
@@ -2805,7 +3008,8 @@
         ui.modalNotesTotal.textContent = `Total: ${pluralize(notes.length, 'note', 'notes')}`;
 
         if (!notes.length) {
-          ui.modalNotesStack.innerHTML = renderEmptyState((!state.dept || !state.sec) ? "Please select department and section first." : "No lecture material attached to this date for the selected criteria.");
+          const msg = (!state.dept || !state.sec) ? "Please select department and section first." : "No lecture material attached to this date for the selected criteria.";
+          ui.modalNotesStack.replaceChildren(createEmptyState(msg));
           return;
         }
 
@@ -2817,68 +3021,68 @@
           groups[c][t].push(n);
         });
 
-        let output = "";
+        ui.modalNotesStack.replaceChildren();
+        const stackFragment = document.createDocumentFragment();
+
         for (const [course, topics] of Object.entries(groups)) {
-          output += `<div class="note-cluster"><h4 class="note-cluster-course">${escapeHtml(course)}</h4>`;
+          const clusterClone = templates.noteCluster.content.cloneNode(true);
+          clusterClone.querySelector(".note-cluster-course").textContent = course;
+          const groupsContainer = clusterClone.querySelector(".note-cluster-groups");
+
           for (const [topic, items] of Object.entries(topics)) {
-            output += `<div class="note-cluster-topic-group"><div class="note-cluster-topic-header">${escapeHtml(topic)}</div><ul class="note-cluster-list">`;
+            const topicClone = templates.noteTopicGroup.content.cloneNode(true);
+            topicClone.querySelector(".note-cluster-topic-header").textContent = topic;
+            const listEl = topicClone.querySelector(".note-cluster-list");
+
             items.forEach(item => {
-              const isReported = Number(item.reportCount || 0) >= 3;
-              const title = escapeHtml(item.title || "View Note");
+              const rowClone = templates.noteRow.content.cloneNode(true);
               const link = sanitizeUrl(item.link);
-              const hasLink = Boolean(link);
-              const escapedLink = escapeHtml(link);
+              const isReported = Number(item.reportCount || 0) >= 3;
+              const title = item.title || "View Note";
 
-              const titleBody = `
-                <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                <span class="note-title-text">${title}</span>
-              `;
+              const titleBtn = rowClone.querySelector(".note-title-btn");
+              const titlePlain = rowClone.querySelector(".note-title-plain");
+              const flagEl = rowClone.querySelector(".note-row-flag");
+              const actionsEl = rowClone.querySelector(".note-row-actions");
 
-              const titleEl = hasLink
-                ? `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">${titleBody}</a>`
-                : `<span class="note-title-plain" title="${title}">${titleBody}</span>`;
+              if (link) {
+                titleBtn.href = link;
+                titleBtn.title = title;
+                titleBtn.querySelector(".note-title-text").textContent = title;
+                titlePlain.remove();
 
-              const actions = hasLink ? `
-                <div class="note-row-actions">
-                  <button type="button" class="btn-share" data-title="${title}" data-link="${escapedLink}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <circle cx="18" cy="5" r="3"></circle>
-                      <circle cx="6" cy="12" r="3"></circle>
-                      <circle cx="18" cy="19" r="3"></circle>
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                    </svg>
-                  </button>
-                  <button type="button" class="btn-report" data-row="${escapeHtml(item.row ?? item.title ?? "")}" data-title="${title}" data-course="${escapeHtml(course)}" aria-label="Report broken link" title="Report">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                      <line x1="4" y1="22" x2="4" y2="15"></line>
-                    </svg>
-                  </button>
-                </div>
-              ` : "";
+                const shareBtn = actionsEl.querySelector(".btn-share");
+                const reportBtn = actionsEl.querySelector(".btn-report");
 
-              output += `
-                <li class="note-row">
-                  <div class="note-row-left">
-                    ${titleEl}
-                    ${isReported ? '<span class="note-row-flag">[Issue Reported]</span>' : ""}
-                  </div>
-                  ${actions}
-                </li>
-              `;
+                shareBtn.dataset.title = title;
+                shareBtn.dataset.link = link;
+                shareBtn.dataset.course = course;
+
+                reportBtn.dataset.row = String(item.row ?? item.title ?? "");
+                reportBtn.dataset.title = title;
+                reportBtn.dataset.course = course;
+              } else {
+                titlePlain.title = title;
+                titlePlain.querySelector(".note-title-text").textContent = title;
+                titlePlain.hidden = false;
+                titleBtn.remove();
+                actionsEl.remove();
+              }
+
+              if (isReported) {
+                flagEl.hidden = false;
+              }
+
+              listEl.appendChild(rowClone);
             });
-            output += `</ul></div>`;
+
+            groupsContainer.appendChild(topicClone);
           }
-          output += `</div>`;
+
+          stackFragment.appendChild(clusterClone);
         }
-        ui.modalNotesStack.innerHTML = output;
+
+        ui.modalNotesStack.appendChild(stackFragment);
       }
 
       function render() {
