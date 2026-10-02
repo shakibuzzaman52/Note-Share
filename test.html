@@ -266,7 +266,6 @@
       pointer-events: none;
       user-select: none;
       cursor: default;
-      background-color: transparent;
     }
 
     .skeleton-line {
@@ -831,7 +830,6 @@
       width: 100%;
     }
 
-    /* Course Card - transparent background and simple border */
     .course-card {
       background-color: transparent;
       border: 1px solid var(--border-subtle);
@@ -878,7 +876,7 @@
       white-space: nowrap;
     }
 
-    /* Documentation Section (Clean, Simple Text Documentation) */
+    /* Documentation Section */
     .docs-container {
       margin-top: clamp(2.5rem, 5vw, 4rem);
       padding-top: clamp(1.5rem, 3vw, 2.5rem);
@@ -911,13 +909,16 @@
       margin-bottom: 2rem;
     }
 
-    /* Docs Card - no background color and simple border */
     .docs-block {
       background: transparent;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: clamp(1.25rem, 2.5vw, 2rem);
       scroll-margin-top: 6rem;
+    }
+
+    #how-to-upload {
+      margin-bottom: 2rem;
     }
 
     .docs-block-title {
@@ -946,7 +947,6 @@
       padding-left: 1.4rem;
     }
 
-    /* Black bullet dot */
     .docs-list-item::before {
       content: "";
       position: absolute;
@@ -1006,7 +1006,6 @@
       margin: 1.4rem 0 0.75rem;
     }
 
-    /* Notice without left border line */
     .docs-notice {
       background-color: var(--bg-subtle);
       border: none;
@@ -1018,7 +1017,6 @@
       margin-top: 1.25rem;
     }
 
-    /* Contact Card - no background color and simple border */
     .docs-contact-box {
       background: transparent;
       border: 1px solid var(--border-subtle);
@@ -1522,7 +1520,6 @@
   </style>
 </head>
 <body>
-  <!-- Intro Preloader Overlay -->
   <div class="preloader" id="preloader" aria-hidden="true">
     <div class="preloader-brand">
       <span class="preloader-char" style="--char-index: 0">C</span>
@@ -1625,10 +1622,8 @@
           </div>
         </div>
 
-        <!-- Swipeable 3-panel Calendar Carousel -->
         <div class="calendar-carousel" id="calendar-carousel">
           <div class="calendar-track" id="calendar-track">
-            <!-- Prev Month Panel -->
             <div class="calendar-panel" id="panel-prev" aria-hidden="true">
               <table class="calendar-grid">
                 <thead>
@@ -1646,7 +1641,6 @@
               </table>
             </div>
 
-            <!-- Current Month Panel -->
             <div class="calendar-panel is-current" id="panel-curr">
               <table class="calendar-grid">
                 <thead>
@@ -1664,7 +1658,6 @@
               </table>
             </div>
 
-            <!-- Next Month Panel -->
             <div class="calendar-panel" id="panel-next" aria-hidden="true">
               <table class="calendar-grid">
                 <thead>
@@ -1703,7 +1696,6 @@
       </div>
 
       <div class="docs-grid">
-        <!-- Features -->
         <article class="docs-block" id="features">
           <h3 class="docs-block-title">Features</h3>
           <ul class="docs-list">
@@ -1716,7 +1708,6 @@
           </ul>
         </article>
 
-        <!-- How to Find Notes -->
         <article class="docs-block" id="how-to-find">
           <h3 class="docs-block-title">How to Find Notes</h3>
           <ol class="docs-steps">
@@ -1730,8 +1721,7 @@
         </article>
       </div>
 
-      <!-- How to Upload Notes -->
-      <article class="docs-block" id="how-to-upload" style="margin-bottom: 2rem;">
+      <article class="docs-block" id="how-to-upload">
         <h3 class="docs-block-title">How to Upload Notes</h3>
         <ol class="docs-steps">
           <li class="docs-step-item">Click the <strong>Add Note</strong> button.</li>
@@ -1756,7 +1746,6 @@
         </div>
       </article>
 
-      <!-- Need a New Department, Section, or Course? -->
       <div class="docs-contact-box" id="contact-request">
         <h3>Need a New Department, Section, or Course?</h3>
         <p>If your department, section, or course is not available in the dropdown menu, please <a href="mailto:shakibuzzaman52@gmail.com">email us</a> to request its addition.</p>
@@ -1900,7 +1889,8 @@
 
       function dismissPreloader() {
         const preloader = document.getElementById("preloader");
-        if (!preloader) return;
+        if (!preloader || preloader.dataset.dismissed) return;
+        preloader.dataset.dismissed = "true";
         setTimeout(() => {
           preloader.classList.add("is-hidden");
           setTimeout(() => preloader.remove(), 650);
