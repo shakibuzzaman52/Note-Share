@@ -100,6 +100,7 @@
     }
 
     html {
+      scroll-behavior: smooth;
       scrollbar-gutter: stable;
       scrollbar-width: thin;
       scrollbar-color: var(--border-hover) transparent;
@@ -322,7 +323,7 @@
     .header-nav {
       display: flex;
       align-items: center;
-      gap: clamp(2.5rem, 4.5vw, 3.75rem);
+      gap: clamp(2rem, 3.5vw, 3rem);
     }
 
     .nav-link {
@@ -830,7 +831,7 @@
     }
 
     .course-card {
-      background-color: var(--bg-pill);
+      background-color: transparent;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.95rem 1.15rem;
@@ -873,6 +874,182 @@
       font-size: 0.8125rem;
       font-weight: 600;
       white-space: nowrap;
+    }
+
+    /* Documentation Section */
+    .docs-container {
+      margin-top: clamp(2.5rem, 5vw, 4rem);
+      padding-top: clamp(1.5rem, 3vw, 2.5rem);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .docs-intro {
+      margin-bottom: 2rem;
+    }
+
+    .docs-main-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      line-height: 1.15;
+    }
+
+    .docs-lead {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: clamp(1.25rem, 2.5vw, 2rem);
+      margin-bottom: 2rem;
+    }
+
+    .docs-block {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: clamp(1.25rem, 2.5vw, 2rem);
+      scroll-margin-top: 6rem;
+    }
+
+    #how-to-upload {
+      margin-bottom: 2rem;
+    }
+
+    .docs-block-title {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      color: var(--text-main);
+      margin-bottom: 1.15rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .docs-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    .docs-list-item {
+      position: relative;
+      padding-left: 1.4rem;
+    }
+
+    .docs-list-item::before {
+      content: "";
+      position: absolute;
+      left: 0.2rem;
+      top: 0.6rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--text-main);
+    }
+
+    .docs-list strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .docs-steps {
+      list-style: none;
+      counter-reset: step-counter;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    .docs-step-item {
+      position: relative;
+      counter-increment: step-counter;
+      padding-left: 2rem;
+    }
+
+    .docs-step-item::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0.15rem;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background-color: var(--bg-subtle);
+      color: var(--text-main);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Refined & elegant styling for "Before submitting:" */
+    .docs-subheading {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      color: var(--text-main);
+      margin: 1.75rem 0 0.85rem;
+    }
+
+    .docs-notice {
+      background-color: var(--bg-subtle);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 1.25rem;
+    }
+
+    .docs-contact-box {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: clamp(1.25rem, 2.5vw, 1.75rem);
+      scroll-margin-top: 6rem;
+    }
+
+    .docs-contact-box h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .docs-contact-box p {
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    .docs-contact-box a {
+      color: var(--brand-primary);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .docs-contact-box a:hover {
+      color: var(--brand-primary-hover);
     }
 
     /* Modals */
@@ -1303,6 +1480,10 @@
       .calendar-cell { height: 46px; }
       .calendar-cell-btn { width: 38px; height: 38px; font-size: 0.8125rem; }
 
+      .docs-grid {
+        grid-template-columns: 1fr;
+      }
+
       .dialog-modal.bottom-sheet {
         inset: auto 0 0 0;
         margin: 0 auto;
@@ -1340,7 +1521,6 @@
   </style>
 </head>
 <body>
-  <!-- Intro Preloader Overlay -->
   <div class="preloader" id="preloader" aria-hidden="true">
     <div class="preloader-brand">
       <span class="preloader-char" style="--char-index: 0">C</span>
@@ -1362,9 +1542,9 @@
     <button type="button" class="header-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="header-nav">Menu</button>
 
     <nav class="header-nav" id="header-nav">
-      <button type="button" class="nav-link">Features</button>
-      <button type="button" class="nav-link">How to Find</button>
-      <button type="button" class="nav-link">How to Upload</button>
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#how-to-find" class="nav-link">How to Find</a>
+      <a href="#how-to-upload" class="nav-link">How to Upload</a>
       <button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn-plus">+</span>Add Note</button>
     </nav>
   </header>
@@ -1443,10 +1623,8 @@
           </div>
         </div>
 
-        <!-- Swipeable 3-panel Calendar Carousel -->
         <div class="calendar-carousel" id="calendar-carousel">
           <div class="calendar-track" id="calendar-track">
-            <!-- Prev Month Panel -->
             <div class="calendar-panel" id="panel-prev" aria-hidden="true">
               <table class="calendar-grid">
                 <thead>
@@ -1464,7 +1642,6 @@
               </table>
             </div>
 
-            <!-- Current Month Panel -->
             <div class="calendar-panel is-current" id="panel-curr">
               <table class="calendar-grid">
                 <thead>
@@ -1482,7 +1659,6 @@
               </table>
             </div>
 
-            <!-- Next Month Panel -->
             <div class="calendar-panel" id="panel-next" aria-hidden="true">
               <table class="calendar-grid">
                 <thead>
@@ -1512,6 +1688,73 @@
         <div class="course-dates-grid" id="course-dates-list"></div>
       </section>
     </main>
+
+    <!-- Documentation & Information Sections -->
+    <section class="docs-container" id="documentation" aria-label="Documentation and Guides">
+      <div class="docs-intro">
+        <h2 class="docs-main-title">Explore ClassNotes</h2>
+        <p class="docs-lead">Find lecture notes, browse study materials, and contribute resources to help your classmates.</p>
+      </div>
+
+      <div class="docs-grid">
+        <article class="docs-block" id="features">
+          <h3 class="docs-block-title">Features</h3>
+          <ul class="docs-list">
+            <li class="docs-list-item"><strong>Department &amp; Section Filter:</strong> Find notes specific to your department and section.</li>
+            <li class="docs-list-item"><strong>Course &amp; Topic Filter:</strong> Browse notes by course and topic.</li>
+            <li class="docs-list-item"><strong>Interactive Calendar:</strong> Find notes by selecting a specific date.</li>
+            <li class="docs-list-item"><strong>Share Notes:</strong> Share useful study resources with your classmates.</li>
+            <li class="docs-list-item"><strong>Report Notes:</strong> Report notes that are incorrect, broken, or inappropriate.</li>
+            <li class="docs-list-item"><strong>Community Contributions:</strong> Upload your own notes and help classmates access useful study materials.</li>
+            <li class="docs-list-item"><strong>Simple Interface:</strong> Easily navigate and access shared resources.</li>
+          </ul>
+        </article>
+
+        <article class="docs-block" id="how-to-find">
+          <h3 class="docs-block-title">How to Find Notes</h3>
+          <ol class="docs-steps">
+            <li class="docs-step-item">Select your Department.</li>
+            <li class="docs-step-item">Choose your Section.</li>
+            <li class="docs-step-item">Select a Course to find relevant notes.</li>
+            <li class="docs-step-item">Choose a Topic if needed.</li>
+            <li class="docs-step-item">Use the calendar to select a date and view available notes.</li>
+            <li class="docs-step-item">Click a note title to open the shared resource.</li>
+            <li class="docs-step-item">Use the available Share option to share a note with others.</li>
+            <li class="docs-step-item">If you find a broken, incorrect, or inappropriate note, use the Report option.</li>
+          </ol>
+        </article>
+      </div>
+
+      <article class="docs-block" id="how-to-upload">
+        <h3 class="docs-block-title">How to Upload Notes</h3>
+        <ol class="docs-steps">
+          <li class="docs-step-item">Click the <strong>Add Note</strong> button.</li>
+          <li class="docs-step-item">Select your <strong>Department</strong> and <strong>Section</strong>.</li>
+          <li class="docs-step-item">Choose the class date.</li>
+          <li class="docs-step-item">Select the relevant <strong>Course</strong>.</li>
+          <li class="docs-step-item">Enter the <strong>Topic Name</strong> and <strong>Note Title</strong>.</li>
+          <li class="docs-step-item">Add a shareable link to your note, such as a Google Drive link.</li>
+          <li class="docs-step-item">Submit the note.</li>
+        </ol>
+
+        <h4 class="docs-subheading">Before submitting:</h4>
+        <ul class="docs-list">
+          <li class="docs-list-item">Make sure all information is accurate.</li>
+          <li class="docs-list-item">Use a clear and descriptive title.</li>
+          <li class="docs-list-item">Ensure the shared link is accessible to others.</li>
+          <li class="docs-list-item">Upload only relevant study materials.</li>
+        </ul>
+
+        <div class="docs-notice">
+          Submitted notes may require admin approval before appearing on the website.
+        </div>
+      </article>
+
+      <div class="docs-contact-box" id="contact-request">
+        <h3>Need a New Department, Section, or Course?</h3>
+        <p>If your department, section, or course is not available in the dropdown menu, please <a href="mailto:your-email@example.com">email us</a> to request its addition.</p>
+      </div>
+    </section>
 
     <!-- Modal: View notes -->
     <dialog class="dialog-modal bottom-sheet" id="notes-modal">
@@ -1650,7 +1893,8 @@
 
       function dismissPreloader() {
         const preloader = document.getElementById("preloader");
-        if (!preloader) return;
+        if (!preloader || preloader.dataset.dismissed) return;
+        preloader.dataset.dismissed = "true";
         setTimeout(() => {
           preloader.classList.add("is-hidden");
           setTimeout(() => preloader.remove(), 650);
@@ -2515,7 +2759,7 @@
         ui.courseTitle.textContent = (titleParts.length ? titleParts : ["Filtered Classes"]).join(" • ");
 
         if (state.isLoading) {
-          ui.courseCount.textContent = "(Loading...)";
+          ui.courseCount.textContent = "";
           ui.courseDatesList.innerHTML = Array.from({ length: 6 }, () => `
             <div class="course-card skeleton-card" aria-hidden="true">
               <div class="course-card-info">
