@@ -1,15 +1,18 @@
 (function () {
   "use strict";
 
+  const SECURITY = {
+    NOTE_COOLDOWN_MS: 45000,
+    REPORT_COOLDOWN_MS: 20000,
+    MAX_TITLE_LENGTH: 80,
+    MAX_TOPIC_LENGTH: 80,
+    MAX_URL_LENGTH: 500
+  };
+
+  const CHECK_SVG = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
   const config = window.APP_CONFIG || {};
-  const departments = Array.isArray(config.departments) && config.departments.length ? config.departments : [
-    {
-      code: "CSE",
-      sections: ["73_A", "73_B", "73_L"],
-      courses: ["CSE Fundamentals", "CSE101", "CSE102", "CSE103"]
-    }
-  ];
-  config.departments = departments;
+  const departments = Array.isArray(config.departments) ? config.departments : [];
 
   const MONTH_NAMES = [
     "January", "February", "March", "April", "May", "June",
@@ -24,7 +27,6 @@
   };
 
   const getDeptMeta = (code) => departments.find(d => d.code === code) || null;
-
   const savedDept = departments.find(d => d.code === safeStorage.get("selected_dept"));
   const savedSec = savedDept?.sections.includes(safeStorage.get("selected_sec")) ? safeStorage.get("selected_sec") : "";
   const now = new Date();
@@ -108,7 +110,7 @@
     toastTray: document.getElementById("toast-tray")
   };
 
-  /* Helper functions */
+  /* Helper & Validation Utilities */
   const toDateKey = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
   const formatDateKey = (date) => toDateKey(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -128,17 +130,47 @@
 
   function escapeHtml(text) {
     if (!text && text !== 0) return "";
-    return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
-  function normalizeUrl(input) {
-    const t = String(input || "").trim();
-    return !t ? "" : /^[a-z][a-z0-9+.-]*:/i.test(t) ? t : `https://${t}`;
+  function sanitizeTextInput(text, maxLen) {
+    return typeof text === "string" ? text.replace(/[<>]/g, "").trim().slice(0, maxLen) : "";
   }
 
-  function sanitizeUrl(rawUrl) {
-    const url = normalizeUrl(rawUrl);
-    return /^https?:\/\//i.test(url) ? url : "";
+  function validateAndSanitizeUrl(raw) {
+    const trimmed = String(raw || "").trim();
+    if (!trimmed) return "";
+    const full = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+    try {
+      const parsed = new URL(full);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return "";
+      return parsed.href.slice(0, SECURITY.MAX_URL_LENGTH);
+    } catch {
+      return "";
+    }
+  }
+
+  function checkRateLimit(storageKey, cooldownMs) {
+    const diff = Date.now() - parseInt(safeStorage.get(storageKey) || "0", 10);
+    return diff < cooldownMs ? Math.ceil((cooldownMs - diff) / 1000) : 0;
+  }
+
+  function injectHoneypot(form) {
+    if (!form || form.querySelector(".bot-field")) return;
+    const hp = document.createElement("input");
+    hp.type = "text";
+    hp.name = "company_address_val";
+    hp.tabIndex = -1;
+    hp.autocomplete = "off";
+    hp.className = "bot-field";
+    hp.style.cssText = "position:absolute;left:-9999px;opacity:0;pointer-events:none;";
+    form.appendChild(hp);
   }
 
   function setButtonLoading(btn, isLoading) {
@@ -156,8 +188,7 @@
           <line x1="9" y1="13" x2="15" y2="13"></line>
         </svg>
         <p class="empty-state-text">${escapeHtml(message)}</p>
-      </div>
-    `;
+      </div>`;
   }
 
   /* Preloader */
@@ -177,7 +208,7 @@
     window.addEventListener("load", dismissPreloader);
   }
 
-  /* Toast & Clipboard */
+  /* Toast & Notification */
   let toastTimer = null;
   function showToast(message) {
     clearTimeout(toastTimer);
@@ -207,8 +238,7 @@
       const textarea = document.createElement("textarea");
       textarea.value = text;
       textarea.readOnly = true;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
+      textarea.style.cssText = "position:fixed;opacity:0;";
       document.body.appendChild(textarea);
       textarea.select();
       const ok = document.execCommand("copy");
@@ -233,12 +263,15 @@
   function normalizeNote(n) {
     return {
       ...n,
+      title: sanitizeTextInput(String(n.title || ""), SECURITY.MAX_TITLE_LENGTH),
+      topic: sanitizeTextInput(String(n.topic || ""), SECURITY.MAX_TOPIC_LENGTH),
       department: n.department || state.dept,
       section: n.section || state.sec
     };
   }
 
-  async function loadNotes(forceFetch = false) {
+  /* Stale-While-Revalidate (SWR) */
+  async function loadNotes() {
     if (!state.dept || !state.sec) {
       state.notes = [];
       state.isLoading = false;
@@ -247,49 +280,71 @@
       return;
     }
 
-    const cacheKey = `notes_${state.dept}_${state.sec}`;
+    const { dept: currentDept, sec: currentSec } = state;
+    const cacheKey = `notes_${currentDept}_${currentSec}`;
+    let hasCache = false;
 
-    if (!forceFetch) {
-      try {
-        const cached = JSON.parse(safeStorage.get(cacheKey) || "null");
-        if (Array.isArray(cached)) {
-          state.notes = cached.map(normalizeNote);
-          state.isLoading = false;
-          syncTopicMenu();
-          render();
-          return;
-        }
-      } catch {}
+    try {
+      const cached = JSON.parse(safeStorage.get(cacheKey) || "null");
+      if (Array.isArray(cached)) {
+        state.notes = cached.map(normalizeNote);
+        hasCache = true;
+        state.isLoading = false;
+        syncTopicMenu();
+        render();
+      }
+    } catch {
+      hasCache = false;
     }
 
     if (!config.googleAppsScriptUrl) {
       state.isLoading = false;
-      syncTopicMenu();
-      render();
+      if (!hasCache) {
+        syncTopicMenu();
+        render();
+      }
       return;
     }
 
-    state.isLoading = true;
-    render();
+    if (!hasCache) {
+      state.isLoading = true;
+      render();
+    }
 
     try {
       const sep = config.googleAppsScriptUrl.includes("?") ? "&" : "?";
-      const res = await fetch(`${config.googleAppsScriptUrl}${sep}department=${encodeURIComponent(state.dept)}&section=${encodeURIComponent(state.sec)}`);
+      const res = await fetch(`${config.googleAppsScriptUrl}${sep}department=${encodeURIComponent(currentDept)}&section=${encodeURIComponent(currentSec)}`);
       const data = await res.json();
+
       if (data?.success && Array.isArray(data.notes)) {
-        const sectionNotes = data.notes
-          .filter(n => (!n.department || n.department === state.dept) && (!n.section || n.section === state.sec))
+        const freshNotes = data.notes
+          .filter(n => (!n.department || n.department === currentDept) && (!n.section || n.section === currentSec))
           .map(normalizeNote);
-        state.notes = sectionNotes;
-        safeStorage.set(cacheKey, JSON.stringify(sectionNotes));
+
+        safeStorage.set(cacheKey, JSON.stringify(freshNotes));
+
+        if (state.dept === currentDept && state.sec === currentSec) {
+          state.notes = freshNotes;
+          state.isLoading = false;
+          syncTopicMenu();
+          render();
+
+          if (state.activeDate && ui.notesModal?.open) {
+            renderModalNotes();
+          }
+        }
       }
     } catch (err) {
       console.warn("Unable to sync lecture notes:", err);
-      showToast("Could not load latest notes. Please check your connection.");
+      if (!hasCache) {
+        showToast("Could not load latest notes. Please check connection.");
+      }
     } finally {
-      state.isLoading = false;
-      syncTopicMenu();
-      render();
+      if (state.dept === currentDept && state.sec === currentSec && state.isLoading) {
+        state.isLoading = false;
+        syncTopicMenu();
+        render();
+      }
     }
   }
 
@@ -312,9 +367,8 @@
     return map;
   }
 
-  /* Dropdown & Menus */
+  /* Menus & Dropdowns */
   function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
-    const checkSvg = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
     const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
     for (const item of list) {
       items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) });
@@ -324,7 +378,7 @@
       const isSel = selectedVal === val;
       return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(val)}" role="option" aria-selected="${isSel}">
         <span class="nav-filter-option-text">${escapeHtml(text)}</span>
-        ${isSel ? checkSvg : ''}
+        ${isSel ? CHECK_SVG : ''}
       </button>`;
     }).join("");
   }
@@ -417,7 +471,7 @@
   function updateModalDropdowns(deptCode, secCode, courseCode) {
     const dept = getDeptMeta(deptCode) || departments[0] || { code: "", sections: [], courses: [] };
     ui.formDept.value = dept.code;
-    ui.formDeptLabel.textContent = dept.code;
+    ui.formDeptLabel.textContent = dept.code || "Department";
     renderMenuOptions(ui.formDeptMenu, departments.map(d => d.code), dept.code);
 
     const sec = (dept.sections.includes(secCode) ? secCode : dept.sections[0]) || "";
@@ -445,7 +499,7 @@
     ui.formTitle.value = `Note ${count + 1}`;
   }
 
-  /* Modal & Sheet Controller */
+  /* Modal Controller */
   function checkBodyScrollLock() {
     document.body.classList.toggle("sheet-open", Boolean(document.querySelector(".dialog-modal[open]") || ui.headerNav?.classList.contains("is-open")));
   }
@@ -516,12 +570,10 @@
       currentTranslate = 0;
       startTime = Date.now();
       isStartedOnContent = Boolean(scrollableContent?.contains(target));
-      if (isStartedOnContent) {
-        isDragging = false;
-        return;
+      if (!isStartedOnContent) {
+        isDragging = true;
+        sheet.classList.add("is-dragging");
       }
-      isDragging = true;
-      sheet.classList.add("is-dragging");
     }
 
     function move(clientY, cancelable, preventDefault) {
@@ -607,13 +659,12 @@
     [handle, header, scrollableContent].filter(Boolean).forEach(el => {
       el.addEventListener("touchstart", onTouchStart, { passive: true });
     });
-
     [handle, header].filter(Boolean).forEach(el => {
       el.addEventListener("mousedown", onMouseDown);
     });
   }
 
-  /* Calendar Rendering */
+  /* Calendar Views & Navigation */
   function generateMonthMarkup(dateObj) {
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
@@ -657,13 +708,12 @@
             <button type="button" class="calendar-cell-btn" data-date="${dateKey}" ${isFuture ? "disabled" : ""} ${hasNotes ? `title="${pluralize(noteCount, 'note', 'notes')}"` : ""}>
               ${d}
             </button>
-          </td>
-        `;
+          </td>`;
       }
       col++;
     }
 
-    while (col < 7 && col > 0) {
+    while (col > 0 && col < 7) {
       markup += '<td class="calendar-cell calendar-cell--empty"></td>';
       col++;
     }
@@ -681,7 +731,6 @@
     const currMonth = state.viewDate.getMonth();
 
     updateCalendarTitle(state.viewDate);
-
     ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate);
 
     if (ui.calendarCellsPrev) {
@@ -708,11 +757,9 @@
       return;
     }
 
-    const targetTransform = direction > 0 ? "translate3d(-66.666666%, 0, 0)" : "translate3d(0%, 0, 0)";
-
     track.classList.remove("is-dragging");
     track.style.transition = "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)";
-    track.style.transform = targetTransform;
+    track.style.transform = direction > 0 ? "translate3d(-66.666666%, 0, 0)" : "translate3d(0%, 0, 0)";
 
     if (ui.calendarTitle) ui.calendarTitle.style.opacity = "0.5";
 
@@ -734,9 +781,7 @@
       if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
       track.style.transition = "";
 
-      setTimeout(() => {
-        isAnimatingMonth = false;
-      }, 40);
+      setTimeout(() => { isAnimatingMonth = false; }, 40);
     }
 
     track.addEventListener("transitionend", onTransitionEnd);
@@ -751,7 +796,6 @@
     track.style.transform = "translate3d(-33.333333%, 0, 0)";
 
     if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
-
     setTimeout(() => {
       track.style.transition = "";
       isAnimatingMonth = false;
@@ -771,15 +815,11 @@
     let isHorizontalGesture = null;
 
     function getClientPos(e) {
-      if (e.touches && e.touches.length > 0) {
-        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      }
-      return { x: e.clientX, y: e.clientY };
+      return (e.touches && e.touches.length > 0) ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
     }
 
     function onGestureStart(e) {
-      if (isAnimatingMonth || state.isLoading) return;
-      if (e.type === "mousedown" && e.button !== 0) return;
+      if (isAnimatingMonth || state.isLoading || (e.type === "mousedown" && e.button !== 0)) return;
 
       const pos = getClientPos(e);
       startX = pos.x;
@@ -801,8 +841,7 @@
     }
 
     function onGestureMove(e) {
-      if (startX === 0 && startY === 0) return;
-      if (isAnimatingMonth) return;
+      if (startX === 0 && startY === 0 || isAnimatingMonth) return;
 
       const pos = getClientPos(e);
       const dx = pos.x - startX;
@@ -819,7 +858,6 @@
       }
 
       if (!isHorizontalGesture) return;
-
       if (e.cancelable) e.preventDefault();
 
       if (!isDragging) {
@@ -844,8 +882,7 @@
 
       if (startX === 0 && startY === 0) return;
       const carouselWidth = carousel.offsetWidth || 300;
-      const elapsed = Date.now() - startTime;
-      const velocity = currentDeltaX / (elapsed || 1);
+      const velocity = currentDeltaX / (Date.now() - startTime || 1);
 
       carousel.classList.remove("is-dragging");
 
@@ -860,16 +897,12 @@
         }
       }
 
-      startX = 0;
-      startY = 0;
-      currentDeltaX = 0;
+      startX = startY = currentDeltaX = 0;
       isDragging = false;
       isHorizontalGesture = null;
 
       if (hasSwiped) {
-        setTimeout(() => {
-          hasSwiped = false;
-        }, 80);
+        setTimeout(() => { hasSwiped = false; }, 80);
       }
     }
 
@@ -877,7 +910,7 @@
     carousel.addEventListener("mousedown", onGestureStart);
   }
 
-  /* Views Rendering */
+  /* Render Course Dates List & Modal Notes */
   function renderCourseDates() {
     const titleParts = [];
     if (state.course !== "ALL") titleParts.push(state.course);
@@ -893,8 +926,7 @@
             <div class="skeleton-line skeleton-line--day"></div>
           </div>
           <div class="skeleton-line skeleton-line--badge"></div>
-        </div>
-      `).join("");
+        </div>`).join("");
       return;
     }
 
@@ -918,8 +950,7 @@
             <span class="course-card-day">${DAY_NAMES[dateObj.getDay()] || ""}</span>
           </div>
           <span class="course-card-badge">${pluralize(notesCountMap[dateStr] || 0, 'note', 'notes')}</span>
-        </div>
-      `;
+        </div>`;
     }).join("");
   }
 
@@ -950,9 +981,9 @@
         for (const item of items) {
           const isReported = Number(item.reportCount || 0) >= 3;
           const title = escapeHtml(item.title || "View Note");
-          const link = sanitizeUrl(item.link);
-          const hasLink = Boolean(link);
-          const escapedLink = escapeHtml(link);
+          const validatedLink = validateAndSanitizeUrl(item.link);
+          const hasLink = Boolean(validatedLink);
+          const escapedLink = escapeHtml(validatedLink);
 
           const titleBody = `
             <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -962,8 +993,7 @@
               <line x1="16" y1="17" x2="8" y2="17"></line>
               <polyline points="10 9 9 9 8 9"></polyline>
             </svg>
-            <span class="note-title-text">${title}</span>
-          `;
+            <span class="note-title-text">${title}</span>`;
 
           const titleEl = hasLink
             ? `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">${titleBody}</a>`
@@ -986,8 +1016,7 @@
                   <line x1="4" y1="22" x2="4" y2="15"></line>
                 </svg>
               </button>
-            </div>
-          ` : "";
+            </div>` : "";
 
           output += `
             <li class="note-row">
@@ -996,8 +1025,7 @@
                 ${isReported ? '<span class="note-row-flag">[Issue Reported]</span>' : ""}
               </div>
               ${actions}
-            </li>
-          `;
+            </li>`;
         }
         output += `</ul></div>`;
       }
@@ -1123,13 +1151,11 @@
     ui.reportModal.addEventListener("close", checkBodyScrollLock);
     ui.addModal.addEventListener("close", () => { closeAllMenus(); checkBodyScrollLock(); });
 
-    ui.prevMonthBtn.addEventListener("click", () => { 
-      if (state.isLoading) return;
-      slideMonth(-1);
+    ui.prevMonthBtn.addEventListener("click", () => {
+      if (!state.isLoading) slideMonth(-1);
     });
-    ui.nextMonthBtn.addEventListener("click", () => { 
-      if (state.isLoading) return;
-      slideMonth(1);
+    ui.nextMonthBtn.addEventListener("click", () => {
+      if (!state.isLoading) slideMonth(1);
     });
     ui.todayBtn.addEventListener("click", () => {
       if (state.isLoading || isAnimatingMonth) return;
@@ -1169,8 +1195,41 @@
       state.manualTitleEdited = ui.formTitle.value.trim().length > 0;
     });
 
+    /* Secure Form Submissions */
     ui.addForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      const botCheck = ui.addForm.querySelector(".bot-field");
+      if (botCheck && botCheck.value.trim() !== "") {
+        closeSheetModal(ui.addModal);
+        showToast("Submission rejected.");
+        return;
+      }
+
+      const remainingSec = checkRateLimit("last_note_submit_ts", SECURITY.NOTE_COOLDOWN_MS);
+      if (remainingSec > 0) {
+        showToast(`Please wait ${remainingSec} seconds before submitting again.`);
+        return;
+      }
+
+      const cleanTitle = sanitizeTextInput(ui.formTitle.value, SECURITY.MAX_TITLE_LENGTH);
+      const cleanTopic = sanitizeTextInput(ui.formTopic.value, SECURITY.MAX_TOPIC_LENGTH);
+      const rawLink = ui.formLink.value.trim();
+
+      if (!cleanTitle || !cleanTopic) {
+        showToast("Please provide valid title and topic.");
+        return;
+      }
+
+      let validatedLink = "";
+      if (rawLink) {
+        validatedLink = validateAndSanitizeUrl(rawLink);
+        if (!validatedLink) {
+          showToast("Please provide a valid web URL (e.g. https://...).");
+          return;
+        }
+      }
+
       setButtonLoading(ui.btnSubmitNote, true);
 
       try {
@@ -1179,17 +1238,17 @@
           section: ui.formSec.value,
           date: ui.formDate.value,
           course: ui.formCourse.value,
-          topic: ui.formTopic.value,
-          title: ui.formTitle.value,
-          link: normalizeUrl(ui.formLink.value),
+          topic: cleanTopic,
+          title: cleanTitle,
+          link: validatedLink,
           status: "Pending"
         });
+
+        safeStorage.set("last_note_submit_ts", String(Date.now()));
         safeStorage.remove(`notes_${ui.formDept.value}_${ui.formSec.value}`);
         closeSheetModal(ui.addModal);
         ui.addForm.reset();
-        state.manualTitleEdited = false;
-        updateModalDropdowns(state.dept || departments[0]?.code, state.sec, state.course !== "ALL" ? state.course : "");
-        showToast("Note submitted successfully for section review!");
+        showToast("Note submitted successfully for review!");
       } catch {
         showToast("Failed to submit note. Please retry.");
       } finally {
@@ -1239,6 +1298,19 @@
 
     ui.reportForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      const botCheck = ui.reportForm.querySelector(".bot-field");
+      if (botCheck && botCheck.value.trim() !== "") {
+        closeSheetModal(ui.reportModal);
+        return;
+      }
+
+      const remainingSec = checkRateLimit("last_report_submit_ts", SECURITY.REPORT_COOLDOWN_MS);
+      if (remainingSec > 0) {
+        showToast(`Please wait ${remainingSec} seconds before reporting again.`);
+        return;
+      }
+
       const row = ui.reportForm.dataset.targetRow;
       const key = `reported_row_${row}`;
 
@@ -1251,11 +1323,12 @@
       setButtonLoading(ui.btnSubmitReport, true);
       try {
         await syncData({ type: "report", row });
+        safeStorage.set("last_report_submit_ts", String(Date.now()));
         safeStorage.set(key, "true");
         closeSheetModal(ui.reportModal);
         showToast("Thank you. Link report has been recorded.");
       } catch {
-        showToast("Could not submit report. Check internet.");
+        showToast("Could not submit report. Check internet connection.");
       } finally {
         setButtonLoading(ui.btnSubmitReport, false);
       }
@@ -1273,7 +1346,9 @@
 
   /* Initialization */
   function init() {
-    updateModalDropdowns(state.dept || departments[0]?.code || "CSE", state.sec);
+    injectHoneypot(ui.addForm);
+    injectHoneypot(ui.reportForm);
+    updateModalDropdowns(state.dept || departments[0]?.code || "", state.sec);
     syncDropdownStates();
     bindEvents();
     render();
