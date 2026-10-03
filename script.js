@@ -27,16 +27,16 @@
   };
 
   const getDeptMeta = (code) => departments.find(d => d.code === code) || null;
-  const savedDept = departments.find(d => d.code === safeStorage.get("selected_dept"));
+  const savedDept = getDeptMeta(safeStorage.get("selected_dept"));
   const savedSec = savedDept?.sections.includes(safeStorage.get("selected_sec")) ? safeStorage.get("selected_sec") : "";
-  const now = new Date();
+  const today = new Date();
 
   const state = {
     dept: savedDept ? savedDept.code : "",
     sec: savedSec,
     course: "ALL",
     topic: "ALL",
-    viewDate: new Date(now.getFullYear(), now.getMonth(), 1),
+    viewDate: new Date(today.getFullYear(), today.getMonth(), 1),
     activeDate: null,
     notes: [],
     manualTitleEdited: false,
@@ -260,13 +260,13 @@
     });
   }
 
-  function normalizeNote(n) {
+  function normalizeNote(n, dept = state.dept, sec = state.sec) {
     return {
       ...n,
       title: sanitizeTextInput(String(n.title || ""), SECURITY.MAX_TITLE_LENGTH),
       topic: sanitizeTextInput(String(n.topic || ""), SECURITY.MAX_TOPIC_LENGTH),
-      department: n.department || state.dept,
-      section: n.section || state.sec
+      department: n.department || dept,
+      section: n.section || sec
     };
   }
 
@@ -287,7 +287,7 @@
     try {
       const cached = JSON.parse(safeStorage.get(cacheKey) || "null");
       if (Array.isArray(cached)) {
-        state.notes = cached.map(normalizeNote);
+        state.notes = cached.map(n => normalizeNote(n, currentDept, currentSec));
         hasCache = true;
         state.isLoading = false;
         syncTopicMenu();
@@ -319,7 +319,7 @@
       if (data?.success && Array.isArray(data.notes)) {
         const freshNotes = data.notes
           .filter(n => (!n.department || n.department === currentDept) && (!n.section || n.section === currentSec))
-          .map(normalizeNote);
+          .map(n => normalizeNote(n, currentDept, currentSec));
 
         safeStorage.set(cacheKey, JSON.stringify(freshNotes));
 
@@ -665,14 +665,11 @@
   }
 
   /* Calendar Views & Navigation */
-  function generateMonthMarkup(dateObj) {
+  function generateMonthMarkup(dateObj, notesCountMap, todayKey) {
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const notes = state.isLoading ? [] : filterActiveNotes();
-    const notesCountMap = getNotesCountMap(notes);
-    const todayKey = formatDateKey(new Date());
 
     let markup = "<tr>";
     let col = 0;
@@ -729,15 +726,18 @@
   function renderCalendarGrid() {
     const currYear = state.viewDate.getFullYear();
     const currMonth = state.viewDate.getMonth();
+    const notes = state.isLoading ? [] : filterActiveNotes();
+    const notesCountMap = getNotesCountMap(notes);
+    const todayKey = formatDateKey(new Date());
 
     updateCalendarTitle(state.viewDate);
-    ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate);
+    ui.calendarCells.innerHTML = generateMonthMarkup(state.viewDate, notesCountMap, todayKey);
 
     if (ui.calendarCellsPrev) {
-      ui.calendarCellsPrev.innerHTML = generateMonthMarkup(new Date(currYear, currMonth - 1, 1));
+      ui.calendarCellsPrev.innerHTML = generateMonthMarkup(new Date(currYear, currMonth - 1, 1), notesCountMap, todayKey);
     }
     if (ui.calendarCellsNext) {
-      ui.calendarCellsNext.innerHTML = generateMonthMarkup(new Date(currYear, currMonth + 1, 1));
+      ui.calendarCellsNext.innerHTML = generateMonthMarkup(new Date(currYear, currMonth + 1, 1), notesCountMap, todayKey);
     }
   }
 
@@ -841,7 +841,7 @@
     }
 
     function onGestureMove(e) {
-      if (startX === 0 && startY === 0 || isAnimatingMonth) return;
+      if ((startX === 0 && startY === 0) || isAnimatingMonth) return;
 
       const pos = getClientPos(e);
       const dx = pos.x - startX;
@@ -885,6 +885,7 @@
       const velocity = currentDeltaX / (Date.now() - startTime || 1);
 
       carousel.classList.remove("is-dragging");
+      track.classList.remove("is-dragging");
 
       if (isDragging) {
         const threshold = Math.min(65, carouselWidth * 0.16);
@@ -1182,11 +1183,11 @@
       setMobileMenu(false);
       state.manualTitleEdited = false;
       ui.addForm.reset();
-      const today = formatDateKey(new Date());
-      ui.formDate.max = today;
-      ui.formDate.value = (state.activeDate && state.activeDate <= today) ? state.activeDate : today;
+      const todayDate = formatDateKey(new Date());
+      ui.formDate.max = todayDate;
+      ui.formDate.value = (state.activeDate && state.activeDate <= todayDate) ? state.activeDate : todayDate;
       ui.formTopic.value = (state.topic !== "ALL") ? state.topic : "";
-      updateModalDropdowns(state.dept || departments[0]?.code, state.sec, state.course !== "ALL" ? state.course : "");
+      updateModalDropdowns(state.dept, state.sec, state.course !== "ALL" ? state.course : "");
       openSheetModal(ui.addModal);
     });
 
@@ -1348,7 +1349,7 @@
   function init() {
     injectHoneypot(ui.addForm);
     injectHoneypot(ui.reportForm);
-    updateModalDropdowns(state.dept || departments[0]?.code || "", state.sec);
+    updateModalDropdowns(state.dept, state.sec);
     syncDropdownStates();
     bindEvents();
     render();
