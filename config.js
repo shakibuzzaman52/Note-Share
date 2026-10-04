@@ -6,58 +6,24 @@ window.APP_CONFIG = {
     {
       code: "CSE",
       name: "Computer Science & Engineering",
-      sections: ["73_L", "73_A", "73_B", "72_C", "71_A"],
+      sections: ["73_L"],
       courses: [
-        "CSE Fundamentals",
-        "Data Structures & Algorithms",
-        "Database Management Systems",
-        "Computer Networks",
-        "Operating Systems",
-        "English"
+        "CSE112 - Computer Fundamentals",
+        "ENG101 - Basic Functional English & English Spoken",
+        "CSE115 - Introduction to Biology & Chemistry for Computation",
+        "MATH101 - Mathematics 1",
       ]
     },
-    {
-      code: "EEE",
-      name: "Electrical & Electronic Engineering",
-      sections: ["65_A", "65_B", "64_A"],
-      courses: [
-        "Circuit Analysis",
-        "Signals & Systems",
-        "Electromagnetic Fields",
-        "Digital Electronics"
-      ]
-    },
-    {
-      code: "BBA",
-      name: "Business Administration",
-      sections: ["42_B", "42_A", "41_A"],
-      courses: [
-        "Principles of Marketing",
-        "Financial Accounting",
-        "Business Statistics",
-        "Organizational Behavior"
-      ]
-    },
-    {
-      code: "ME",
-      name: "Mechanical Engineering",
-      sections: ["50_A", "50_B"],
-      courses: [
-        "Thermodynamics",
-        "Fluid Mechanics",
-        "Solid Mechanics",
-        "Engineering Drawing"
-      ]
-    },
-    {
-      code: "ENG",
-      name: "Department of English",
-      sections: ["28_A", "28_B"],
-      courses: [
-        "English Language & Composition",
-        "Phonetics & Phonology",
-        "Modern Literature"
-      ]
-    }
+    // {
+    //   code: "CSE",
+    //   name: "Computer Science & Engineering",
+    //   sections: ["73_L"],
+    //   courses: [
+    //     "CSE112 - Computer Fundamentals",
+    //     "ENG101 - Basic Functional English & English Spoken",
+    //     "CSE115 - Introduction to Biology & Chemistry for Computation",
+    //     "MATH101 - Mathematics 1",
+    //   ]
+    // }
   ]
 };
