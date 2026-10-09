@@ -4,6 +4,7 @@
   const SECURITY = {
     NOTE_COOLDOWN_MS: 45000,
     REPORT_COOLDOWN_MS: 20000,
+    VIEW_COOLDOWN_MS: 15000,
     MAX_TITLE_LENGTH: 80,
     MAX_TOPIC_LENGTH: 80,
     MAX_URL_LENGTH: 500
@@ -266,8 +267,40 @@
       title: sanitizeTextInput(String(n.title || ""), SECURITY.MAX_TITLE_LENGTH),
       topic: sanitizeTextInput(String(n.topic || ""), SECURITY.MAX_TOPIC_LENGTH),
       department: n.department || dept,
-      section: n.section || sec
+      section: n.section || sec,
+      viewCount: Math.max(0, parseInt(n.viewCount || 0, 10))
     };
+  }
+
+  /* Note View Counter Handler */
+  function recordNoteView(row) {
+    if (!row) return;
+    const now = Date.now();
+    const lastViewed = Number(safeStorage.get(`viewed_${row}`) || 0);
+
+    // Prevent rapid multiple counts from the same browser within cooldown
+    if (now - lastViewed < SECURITY.VIEW_COOLDOWN_MS) return;
+    safeStorage.set(`viewed_${row}`, String(now));
+
+    // Optimistic UI update in the modal
+    const countEls = ui.modalNotesStack.querySelectorAll(`.view-count-num[data-row="${row}"]`);
+    countEls.forEach(el => {
+      const cur = parseInt(el.textContent, 10) || 0;
+      el.textContent = String(cur + 1);
+      const parentBadge = el.closest(".note-view-badge");
+      if (parentBadge) parentBadge.title = `${cur + 1} views`;
+    });
+
+    // Update in-memory state and localStorage cache
+    const targetNote = state.notes.find(n => String(n.row) === String(row));
+    if (targetNote) {
+      targetNote.viewCount = (targetNote.viewCount || 0) + 1;
+      const cacheKey = `notes_${state.dept}_${state.sec}`;
+      safeStorage.set(cacheKey, JSON.stringify(state.notes));
+    }
+
+    // Send view increment to Google Sheets backend
+    syncData({ type: "view", row: row });
   }
 
   /* Stale-While-Revalidate (SWR) */
@@ -985,6 +1018,7 @@
           const validatedLink = validateAndSanitizeUrl(item.link);
           const hasLink = Boolean(validatedLink);
           const escapedLink = escapeHtml(validatedLink);
+          const viewCount = Number(item.viewCount || 0);
 
           const titleBody = `
             <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -997,11 +1031,19 @@
             <span class="note-title-text">${title}</span>`;
 
           const titleEl = hasLink
-            ? `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer" class="note-title-btn" title="${title}">${titleBody}</a>`
+            ? `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer" class="note-title-btn" data-row="${escapeHtml(item.row ?? "")}" title="${title}">${titleBody}</a>`
             : `<span class="note-title-plain" title="${title}">${titleBody}</span>`;
 
-          const actions = hasLink ? `
+          const actions = `
             <div class="note-row-actions">
+              <span class="note-view-badge" title="${viewCount} ${viewCount === 1 ? 'view' : 'views'}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span class="view-count-num" data-row="${escapeHtml(item.row ?? "")}">${viewCount}</span>
+              </span>
+              ${hasLink ? `
               <button type="button" class="btn-share" data-title="${title}" data-link="${escapedLink}" data-course="${escapeHtml(course)}" aria-label="Share note link" title="Share">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <circle cx="18" cy="5" r="3"></circle>
@@ -1016,8 +1058,8 @@
                   <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
                   <line x1="4" y1="22" x2="4" y2="15"></line>
                 </svg>
-              </button>
-            </div>` : "";
+              </button>` : ""}
+            </div>`;
 
           output += `
             <li class="note-row">
@@ -1258,6 +1300,14 @@
     });
 
     ui.modalNotesStack.addEventListener("click", async (e) => {
+      // Track Note View on click
+      const noteLink = e.target.closest(".note-title-btn");
+      if (noteLink) {
+        const row = noteLink.dataset.row;
+        if (row) recordNoteView(row);
+        return;
+      }
+
       const shareBtn = e.target.closest(".btn-share");
       if (shareBtn) {
         const title = shareBtn.dataset.title || "Lecture Note";

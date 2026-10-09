@@ -1327,6 +1327,42 @@ button, input {
   flex-shrink: 0;
 }
 
+/* View Count Badge (32px উচ্চতা ও সিঙ্গেল লাইন) */
+.note-view-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-height: 32px;
+  max-height: 32px;
+  padding: 0 0.65rem;
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  gap: 0.35rem;
+  box-sizing: border-box;
+}
+
+.note-view-badge svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-subtle);
+  flex-shrink: 0;
+  display: block;
+}
+
+.view-count-num {
+  display: inline-block;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
 .btn-share,
 .btn-report {
   display: inline-flex;
@@ -1334,12 +1370,15 @@ button, input {
   justify-content: center;
   width: 32px;
   height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   cursor: pointer;
   border-radius: 50%;
   background-color: var(--bg-subtle);
   color: var(--text-muted);
   transition: background-color 0.15s ease, color 0.15s ease;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .btn-share svg,

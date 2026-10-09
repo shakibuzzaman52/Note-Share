@@ -33,6 +33,7 @@ function doGet(e) {
     const linkIdx   = findCol(["link", "url", "drive"]);
     const statusIdx = findCol(["status"]);
     const reportIdx = findCol(["report"]);
+    const viewIdx   = findCol(["view"]); // ViewCount কলাম (একেবারে ডানে)
 
     const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone() || "GMT+6";
     const notes = [];
@@ -62,7 +63,8 @@ function doGet(e) {
           title:       titleIdx !== -1 ? String(row[titleIdx] || "").trim() : "",
           link:        linkIdx !== -1 ? String(row[linkIdx] || "").trim() : "",
           status:      "Approved",
-          reportCount: reportIdx !== -1 ? Number(row[reportIdx] || 0) : 0
+          reportCount: reportIdx !== -1 ? Number(row[reportIdx] || 0) : 0,
+          viewCount:   viewIdx !== -1 ? Number(row[viewIdx] || 0) : 0
         });
       }
     }
@@ -100,6 +102,28 @@ function doPost(e) {
     if (reportIdx === -1) {
       sheet.getRange(1, headers.length + 1).setValue("ReportCount");
       reportIdx = headers.length;
+      headers.push("reportcount");
+    }
+
+    // ensure view column exists (একেবারে ডানের কলামে ViewCount)
+    let viewIdx = headers.findIndex(h => h.includes("view"));
+    if (viewIdx === -1) {
+      const colToPut = sheet.getLastColumn() + 1;
+      sheet.getRange(1, colToPut).setValue("ViewCount");
+      viewIdx = colToPut - 1;
+      headers.push("viewcount");
+    }
+
+    // action: track and increment note view
+    if (payload.type === "view") {
+      const rowNum = Number(payload.row);
+      if (rowNum >= 2 && rowNum <= sheet.getLastRow()) {
+        const cell = sheet.getRange(rowNum, viewIdx + 1);
+        const currentCount = Number(cell.getValue() || 0);
+        cell.setValue(currentCount + 1);
+        return jsonResponse({ success: true, count: currentCount + 1 });
+      }
+      return jsonResponse({ success: false, error: "Invalid row" });
     }
 
     // action: report broken link
@@ -119,6 +143,7 @@ function doPost(e) {
       return jsonResponse({ success: false, error: "Missing required fields" });
     }
 
+    // new note row: ViewCount is in the very right column (0 initially)
     sheet.appendRow([
       String(payload.department).trim(),
       String(payload.section).trim(),
@@ -128,8 +153,9 @@ function doPost(e) {
       String(payload.title).trim(),
       String(payload.link || "").trim(),
       "Pending",
-      0,
-      new Date()
+      0,          // ReportCount
+      new Date(), // Timestamp
+      0           // ViewCount (একেবারে ডানের কলাম)
     ]);
 
     return jsonResponse({ success: true, message: "Note submitted with Pending status." });
