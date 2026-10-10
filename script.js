@@ -2,12 +2,11 @@
   "use strict";
 
   const SECURITY = {
-    NOTE_COOLDOWN_MS: 45000,
-    REPORT_COOLDOWN_MS: 20000,
-    VIEW_COOLDOWN_MS: 15000,
     MAX_TITLE_LENGTH: 80,
     MAX_TOPIC_LENGTH: 80,
-    MAX_URL_LENGTH: 500
+    MAX_URL_LENGTH: 500,
+    MAX_FILE_SIZE_BYTES: 10 * 1024 * 1024,
+    ALLOWED_EXTENSIONS: ["pdf", "doc", "docx", "ppt", "pptx", "png", "jpg", "jpeg"]
   };
 
   const CHECK_SVG = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
@@ -20,6 +19,11 @@
     "July", "August", "September", "October", "November", "December"
   ];
   const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const MONTH_MAP = {
+    jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
+    jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12"
+  };
 
   const safeStorage = {
     get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
@@ -41,7 +45,8 @@
     activeDate: null,
     notes: [],
     manualTitleEdited: false,
-    isLoading: false
+    isLoading: false,
+    uploadMode: "file"
   };
 
   const ui = {
@@ -91,6 +96,23 @@
     formCourse: document.getElementById("input-course"),
     formTopic: document.getElementById("input-topic"),
     formTitle: document.getElementById("input-title"),
+
+    tabModeFile: document.getElementById("tab-mode-file"),
+    tabModeLink: document.getElementById("tab-mode-link"),
+    fieldFileUpload: document.getElementById("field-file-upload"),
+    fieldLinkUpload: document.getElementById("field-link-upload"),
+
+    formFileInput: document.getElementById("input-file"),
+    fileDropzone: document.getElementById("file-dropzone"),
+    fileDropzoneContent: document.getElementById("file-dropzone-content"),
+    fileSelectedBox: document.getElementById("file-selected-box"),
+    selectedFileName: document.getElementById("selected-file-name"),
+    selectedFileSize: document.getElementById("selected-file-size"),
+    selectedFileStatus: document.getElementById("selected-file-status"),
+    fileProgressBar: document.getElementById("file-progress-bar"),
+    fileProgressPercent: document.getElementById("file-progress-percent"),
+    btnRemoveFile: document.getElementById("btn-remove-file"),
+
     formLink: document.getElementById("input-link"),
     btnSubmitNote: document.getElementById("btn-submit-note"),
 
@@ -111,20 +133,55 @@
     toastTray: document.getElementById("toast-tray")
   };
 
-  /* Helper & Validation Utilities */
   const toDateKey = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
   const formatDateKey = (date) => toDateKey(date.getFullYear(), date.getMonth(), date.getDate());
 
+  function normalizeDateStr(raw) {
+    if (!raw && raw !== 0) return "";
+    const str = String(raw).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+
+    const textMatch = str.match(/(?:[A-Za-z]{3}\s+)?([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/);
+    if (textMatch) {
+      const monthNum = MONTH_MAP[textMatch[1].toLowerCase()];
+      if (monthNum) {
+        return `${textMatch[3]}-${monthNum}-${textMatch[2].padStart(2, "0")}`;
+      }
+    }
+
+    const parsed = new Date(str);
+    return isNaN(parsed.getTime()) ? str : formatDateKey(parsed);
+  }
+
   function parseLocalDate(dateKey) {
     if (!dateKey) return new Date();
-    const [y, m, d] = dateKey.split("-").map(Number);
-    return new Date(y, m - 1, d);
+    const cleanKey = normalizeDateStr(dateKey);
+    const parts = cleanKey.split("-").map(Number);
+    if (parts.length === 3 && !parts.some(isNaN)) {
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    const parsed = new Date(dateKey);
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
   }
 
   function formatReadableDate(dateKey) {
     if (!dateKey) return "";
-    const [y, m, d] = dateKey.split("-");
-    return `${Number(d)} ${MONTH_NAMES[Number(m) - 1]} ${y}`;
+    const cleanKey = normalizeDateStr(dateKey);
+    const parts = cleanKey.split("-");
+    if (parts.length === 3) {
+      const [y, m, d] = parts;
+      const month = MONTH_NAMES[Number(m) - 1];
+      if (month) return `${Number(d)} ${month} ${y}`;
+    }
+    const d = new Date(dateKey);
+    return isNaN(d.getTime()) ? String(dateKey) : `${d.getDate()} ${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function formatFileSize(bytes) {
+    if (!bytes && bytes !== 0) return "0 B";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   const pluralize = (count, s, p) => `${count} ${count === 1 ? s : p}`;
@@ -140,7 +197,7 @@
   }
 
   function sanitizeTextInput(text, maxLen) {
-    return typeof text === "string" ? text.replace(/[<>]/g, "").trim().slice(0, maxLen) : "";
+    return typeof text === "string" ? text.trim().slice(0, maxLen) : "";
   }
 
   function validateAndSanitizeUrl(raw) {
@@ -155,11 +212,6 @@
     } catch {
       return "";
     }
-  }
-
-  function checkRateLimit(storageKey, cooldownMs) {
-    const diff = Date.now() - parseInt(safeStorage.get(storageKey) || "0", 10);
-    return diff < cooldownMs ? Math.ceil((cooldownMs - diff) / 1000) : 0;
   }
 
   function injectHoneypot(form) {
@@ -192,7 +244,130 @@
       </div>`;
   }
 
-  /* Preloader */
+  function updateProgressUI(percent, statusText, customSizeText = null, isComplete = false, isError = false) {
+    const clamped = Math.min(100, Math.max(0, Math.round(percent)));
+    if (ui.fileProgressBar) {
+      ui.fileProgressBar.style.width = `${clamped}%`;
+      ui.fileProgressBar.classList.toggle("is-complete", isComplete || clamped === 100);
+      ui.fileProgressBar.classList.toggle("is-animated", !isComplete && clamped > 0 && clamped < 100);
+    }
+    if (ui.fileProgressPercent) {
+      ui.fileProgressPercent.textContent = `${clamped}%`;
+    }
+    if (customSizeText && ui.selectedFileSize) {
+      ui.selectedFileSize.textContent = customSizeText;
+    }
+    if (ui.selectedFileStatus) {
+      ui.selectedFileStatus.textContent = statusText ? `• ${statusText}` : "";
+      ui.selectedFileStatus.classList.toggle("is-error", isError);
+      ui.selectedFileStatus.classList.toggle("is-success", isComplete || clamped === 100);
+    }
+  }
+
+  function startUploadProgressSimulation(fileSize, onUpdate) {
+    const totalMB = formatFileSize(fileSize);
+    let currentPercent = 15;
+    let isFinished = false;
+
+    const fileSizeMB = Math.max(1, fileSize / (1024 * 1024));
+    const estimatedTotalMs = Math.max(3000, fileSizeMB * 1800);
+    const startTime = Date.now();
+
+    const interval = setInterval(() => {
+      if (isFinished) return;
+
+      const elapsed = Date.now() - startTime;
+      const progressRatio = Math.min(0.94, elapsed / estimatedTotalMs);
+
+      const easedRatio = 1 - Math.pow(1 - progressRatio, 1.5);
+      const targetPercent = Math.min(94, Math.round(15 + easedRatio * 79));
+
+      if (targetPercent > currentPercent) {
+        currentPercent = targetPercent;
+      } else if (currentPercent < 95) {
+        currentPercent = Math.min(95, currentPercent + 0.15);
+      }
+
+      const currentUploadedBytes = Math.round((currentPercent / 100) * fileSize);
+      const currentMB = formatFileSize(currentUploadedBytes);
+      const statusText = currentPercent >= 92 ? "Saving to Drive..." : "Uploading...";
+
+      onUpdate(Math.round(currentPercent), statusText, `${currentMB} of ${totalMB}`);
+    }, 100);
+
+    return {
+      finish: async () => {
+        isFinished = true;
+        clearInterval(interval);
+
+        const startP = currentPercent;
+        const steps = 8;
+        for (let i = 1; i <= steps; i++) {
+          const p = Math.round(startP + ((100 - startP) * (i / steps)));
+          onUpdate(p, p >= 100 ? "Complete!" : "Finalizing...", totalMB, p >= 100);
+          await new Promise(r => setTimeout(r, 30));
+        }
+      },
+      error: () => {
+        isFinished = true;
+        clearInterval(interval);
+        onUpdate(0, "Upload failed", totalMB, false, true);
+      }
+    };
+  }
+
+  function isAllowedFile(file) {
+    if (!file || !file.name) return false;
+    const ext = file.name.split(".").pop().toLowerCase();
+    return SECURITY.ALLOWED_EXTENSIONS.includes(ext);
+  }
+
+  function handleFileSelected(file) {
+    if (!file) {
+      clearSelectedFile();
+      return;
+    }
+
+    if (!isAllowedFile(file)) {
+      showToast("Invalid file type. Allowed: PDF, DOC, PPT, PNG, JPG.");
+      clearSelectedFile();
+      return;
+    }
+
+    if (file.size > SECURITY.MAX_FILE_SIZE_BYTES) {
+      showToast("File size exceeds 10MB limit. Please choose a smaller file or upload via Web Link.");
+      clearSelectedFile();
+      return;
+    }
+
+    if (ui.selectedFileName) ui.selectedFileName.textContent = file.name;
+    if (ui.selectedFileSize) ui.selectedFileSize.textContent = formatFileSize(file.size);
+
+    if (ui.fileDropzoneContent) ui.fileDropzoneContent.hidden = true;
+    if (ui.fileSelectedBox) ui.fileSelectedBox.hidden = false;
+
+    updateProgressUI(0, "Ready to upload");
+  }
+
+  function clearSelectedFile() {
+    if (ui.formFileInput) ui.formFileInput.value = "";
+    if (ui.selectedFileName) ui.selectedFileName.textContent = "";
+    if (ui.selectedFileSize) ui.selectedFileSize.textContent = "";
+    if (ui.fileDropzoneContent) ui.fileDropzoneContent.hidden = false;
+    if (ui.fileSelectedBox) ui.fileSelectedBox.hidden = true;
+    updateProgressUI(0, "");
+  }
+
+  function setUploadMode(mode) {
+    state.uploadMode = mode;
+    if (ui.tabModeFile && ui.tabModeLink) {
+      ui.tabModeFile.classList.toggle("is-active", mode === "file");
+      ui.tabModeLink.classList.toggle("is-active", mode === "link");
+    }
+    if (ui.fieldFileUpload) ui.fieldFileUpload.hidden = (mode !== "file");
+    if (ui.fieldLinkUpload) ui.fieldLinkUpload.hidden = (mode !== "link");
+  }
+
   function dismissPreloader() {
     const preloader = document.getElementById("preloader");
     if (!preloader || preloader.dataset.dismissed) return;
@@ -209,7 +384,6 @@
     window.addEventListener("load", dismissPreloader);
   }
 
-  /* Toast & Notification */
   let toastTimer = null;
   function showToast(message) {
     clearTimeout(toastTimer);
@@ -221,7 +395,7 @@
     toastTimer = setTimeout(() => {
       toast.style.opacity = "0";
       setTimeout(() => toast.remove(), 250);
-    }, 2800);
+    }, 3200);
   }
 
   function copyToClipboard(text) {
@@ -250,7 +424,6 @@
     }
   }
 
-  /* Data Synchronization */
   async function syncData(payload) {
     if (!config.googleAppsScriptUrl) return;
     return fetch(config.googleAppsScriptUrl, {
@@ -268,21 +441,14 @@
       topic: sanitizeTextInput(String(n.topic || ""), SECURITY.MAX_TOPIC_LENGTH),
       department: n.department || dept,
       section: n.section || sec,
+      date: normalizeDateStr(n.date),
       viewCount: Math.max(0, parseInt(n.viewCount || 0, 10))
     };
   }
 
-  /* Note View Counter Handler */
   function recordNoteView(row) {
     if (!row) return;
-    const now = Date.now();
-    const lastViewed = Number(safeStorage.get(`viewed_${row}`) || 0);
 
-    // Prevent rapid multiple counts from the same browser within cooldown
-    if (now - lastViewed < SECURITY.VIEW_COOLDOWN_MS) return;
-    safeStorage.set(`viewed_${row}`, String(now));
-
-    // Optimistic UI update in the modal
     const countEls = ui.modalNotesStack.querySelectorAll(`.view-count-num[data-row="${row}"]`);
     countEls.forEach(el => {
       const cur = parseInt(el.textContent, 10) || 0;
@@ -291,7 +457,6 @@
       if (parentBadge) parentBadge.title = `${cur + 1} views`;
     });
 
-    // Update in-memory state and localStorage cache
     const targetNote = state.notes.find(n => String(n.row) === String(row));
     if (targetNote) {
       targetNote.viewCount = (targetNote.viewCount || 0) + 1;
@@ -299,11 +464,9 @@
       safeStorage.set(cacheKey, JSON.stringify(state.notes));
     }
 
-    // Send view increment to Google Sheets backend
     syncData({ type: "view", row: row });
   }
 
-  /* Stale-While-Revalidate (SWR) */
   async function loadNotes() {
     if (!state.dept || !state.sec) {
       state.notes = [];
@@ -400,7 +563,6 @@
     return map;
   }
 
-  /* Menus & Dropdowns */
   function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
     const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
     for (const item of list) {
@@ -532,7 +694,6 @@
     ui.formTitle.value = `Note ${count + 1}`;
   }
 
-  /* Modal Controller */
   function checkBodyScrollLock() {
     document.body.classList.toggle("sheet-open", Boolean(document.querySelector(".dialog-modal[open]") || ui.headerNav?.classList.contains("is-open")));
   }
@@ -582,7 +743,7 @@
       showToast("Select Department & Section first");
       return;
     }
-    state.activeDate = dateKey;
+    state.activeDate = normalizeDateStr(dateKey);
     renderModalNotes();
     openSheetModal(ui.notesModal);
   }
@@ -697,7 +858,6 @@
     });
   }
 
-  /* Calendar Views & Navigation */
   function generateMonthMarkup(dateObj, notesCountMap, todayKey) {
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
@@ -783,8 +943,7 @@
 
     const track = ui.calendarTrack;
     if (!track) {
-      state.viewDate.setDate(1);
-      state.viewDate.setMonth(state.viewDate.getMonth() + direction);
+      state.viewDate.setMonth(state.viewDate.getMonth() + direction, 1);
       renderCalendarGrid();
       isAnimatingMonth = false;
       return;
@@ -802,8 +961,7 @@
       transitionFired = true;
       track.removeEventListener("transitionend", onTransitionEnd);
 
-      state.viewDate.setDate(1);
-      state.viewDate.setMonth(state.viewDate.getMonth() + direction);
+      state.viewDate.setMonth(state.viewDate.getMonth() + direction, 1);
 
       track.style.transition = "none";
       track.style.transform = "translate3d(-33.333333%, 0, 0)";
@@ -848,7 +1006,7 @@
     let isHorizontalGesture = null;
 
     function getClientPos(e) {
-      return (e.touches && e.touches.length > 0) ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
+      return e.touches?.[0] ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
     }
 
     function onGestureStart(e) {
@@ -944,7 +1102,6 @@
     carousel.addEventListener("mousedown", onGestureStart);
   }
 
-  /* Render Course Dates List & Modal Notes */
   function renderCourseDates() {
     const titleParts = [];
     if (state.course !== "ALL") titleParts.push(state.course);
@@ -1022,11 +1179,8 @@
 
           const titleBody = `
             <svg class="note-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
             </svg>
             <span class="note-title-text">${title}</span>`;
 
@@ -1116,7 +1270,6 @@
     render();
   }
 
-  /* Event Handlers */
   function bindEvents() {
     if (ui.mobileMenuToggle && ui.headerNav) {
       ui.mobileMenuToggle.addEventListener("click", (e) => {
@@ -1192,7 +1345,11 @@
 
     ui.notesModal.addEventListener("close", () => { state.activeDate = null; checkBodyScrollLock(); });
     ui.reportModal.addEventListener("close", checkBodyScrollLock);
-    ui.addModal.addEventListener("close", () => { closeAllMenus(); checkBodyScrollLock(); });
+    ui.addModal.addEventListener("close", () => {
+      closeAllMenus();
+      clearSelectedFile();
+      checkBodyScrollLock();
+    });
 
     ui.prevMonthBtn.addEventListener("click", () => {
       if (!state.isLoading) slideMonth(-1);
@@ -1221,10 +1378,63 @@
       if (card?.dataset.date) openDateDetails(card.dataset.date);
     });
 
+    if (ui.tabModeFile) {
+      ui.tabModeFile.addEventListener("click", () => setUploadMode("file"));
+    }
+    if (ui.tabModeLink) {
+      ui.tabModeLink.addEventListener("click", () => setUploadMode("link"));
+    }
+
+    if (ui.formFileInput) {
+      ui.formFileInput.addEventListener("change", () => {
+        if (ui.formFileInput.files && ui.formFileInput.files[0]) {
+          handleFileSelected(ui.formFileInput.files[0]);
+        } else {
+          clearSelectedFile();
+        }
+      });
+    }
+
+    if (ui.btnRemoveFile) {
+      ui.btnRemoveFile.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clearSelectedFile();
+      });
+    }
+
+    if (ui.fileDropzone) {
+      ["dragenter", "dragover"].forEach(evt => {
+        ui.fileDropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          ui.fileDropzone.classList.add("is-dragover");
+        });
+      });
+
+      ["dragleave", "drop"].forEach(evt => {
+        ui.fileDropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          ui.fileDropzone.classList.remove("is-dragover");
+        });
+      });
+
+      ui.fileDropzone.addEventListener("drop", (e) => {
+        if (e.dataTransfer?.files && e.dataTransfer.files[0]) {
+          ui.formFileInput.files = e.dataTransfer.files;
+          handleFileSelected(e.dataTransfer.files[0]);
+        }
+      });
+    }
+
     ui.addNoteBtn.addEventListener("click", () => {
       setMobileMenu(false);
       state.manualTitleEdited = false;
       ui.addForm.reset();
+      clearSelectedFile();
+      if (ui.formLink) ui.formLink.value = "";
+      setUploadMode("file");
       const todayDate = formatDateKey(new Date());
       ui.formDate.max = todayDate;
       ui.formDate.value = (state.activeDate && state.activeDate <= todayDate) ? state.activeDate : todayDate;
@@ -1238,7 +1448,6 @@
       state.manualTitleEdited = ui.formTitle.value.trim().length > 0;
     });
 
-    /* Secure Form Submissions */
     ui.addForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -1249,58 +1458,140 @@
         return;
       }
 
-      const remainingSec = checkRateLimit("last_note_submit_ts", SECURITY.NOTE_COOLDOWN_MS);
-      if (remainingSec > 0) {
-        showToast(`Please wait ${remainingSec} seconds before submitting again.`);
-        return;
-      }
-
       const cleanTitle = sanitizeTextInput(ui.formTitle.value, SECURITY.MAX_TITLE_LENGTH);
       const cleanTopic = sanitizeTextInput(ui.formTopic.value, SECURITY.MAX_TOPIC_LENGTH);
-      const rawLink = ui.formLink.value.trim();
 
       if (!cleanTitle || !cleanTopic) {
         showToast("Please provide valid title and topic.");
         return;
       }
 
-      let validatedLink = "";
-      if (rawLink) {
-        validatedLink = validateAndSanitizeUrl(rawLink);
+      const basePayload = {
+        department: ui.formDept.value,
+        section: ui.formSec.value,
+        date: ui.formDate.value,
+        course: ui.formCourse.value,
+        topic: cleanTopic,
+        title: cleanTitle,
+        status: "Pending"
+      };
+
+      if (state.uploadMode === "file") {
+        const selectedFile = ui.formFileInput?.files ? ui.formFileInput.files[0] : null;
+
+        if (!selectedFile) {
+          showToast("Please choose a lecture file to upload.");
+          return;
+        }
+
+        if (!isAllowedFile(selectedFile)) {
+          showToast("Invalid file type. Allowed: PDF, DOC, PPT, PNG, JPG.");
+          return;
+        }
+
+        if (selectedFile.size > SECURITY.MAX_FILE_SIZE_BYTES) {
+          showToast("File size exceeds 10MB limit. Please choose a smaller file.");
+          return;
+        }
+
+        setButtonLoading(ui.btnSubmitNote, true);
+        if (ui.btnRemoveFile) ui.btnRemoveFile.disabled = true;
+
+        const totalFormatted = formatFileSize(selectedFile.size);
+
+        updateProgressUI(3, "Preparing file...", `0 B of ${totalFormatted}`);
+
+        let fileBase64 = "";
+        try {
+          fileBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onprogress = (evt) => {
+              if (evt.lengthComputable && evt.total > 0) {
+                const ratio = evt.loaded / evt.total;
+                const p = Math.max(3, Math.round(ratio * 15));
+                const loadedSize = formatFileSize(evt.loaded);
+                updateProgressUI(p, "Reading file...", `${loadedSize} of ${totalFormatted}`);
+              }
+            };
+            reader.onload = () => {
+              const res = reader.result;
+              resolve(typeof res === "string" ? res.split(",")[1] || "" : "");
+            };
+            reader.onerror = () => reject(new Error("Failed to read file"));
+            reader.readAsDataURL(selectedFile);
+          });
+        } catch (readErr) {
+          setButtonLoading(ui.btnSubmitNote, false);
+          if (ui.btnRemoveFile) ui.btnRemoveFile.disabled = false;
+          updateProgressUI(0, "Read failed", totalFormatted, false, true);
+          showToast("Could not read file. Please try again.");
+          return;
+        }
+
+        const progressTracker = startUploadProgressSimulation(selectedFile.size, (pct, status, sizeText, isDone, isErr) => {
+          updateProgressUI(pct, status, sizeText, isDone, isErr);
+        });
+
+        try {
+          await syncData({
+            ...basePayload,
+            fileName: selectedFile.name,
+            fileMimeType: selectedFile.type || "application/octet-stream",
+            fileData: fileBase64
+          });
+
+          await progressTracker.finish();
+          await new Promise(r => setTimeout(r, 450));
+
+          safeStorage.remove(`notes_${ui.formDept.value}_${ui.formSec.value}`);
+          closeSheetModal(ui.addModal);
+          ui.addForm.reset();
+          clearSelectedFile();
+          showToast("Note and file uploaded! Pending admin approval.");
+        } catch (err) {
+          console.error("Upload error:", err);
+          progressTracker.error();
+          showToast("Failed to upload note. Please retry.");
+        } finally {
+          setButtonLoading(ui.btnSubmitNote, false);
+          if (ui.btnRemoveFile) ui.btnRemoveFile.disabled = false;
+        }
+      } else {
+        const rawLink = ui.formLink?.value ? ui.formLink.value.trim() : "";
+        if (!rawLink) {
+          showToast("Please provide a resource URL.");
+          return;
+        }
+
+        const validatedLink = validateAndSanitizeUrl(rawLink);
         if (!validatedLink) {
           showToast("Please provide a valid web URL (e.g. https://...).");
           return;
         }
-      }
 
-      setButtonLoading(ui.btnSubmitNote, true);
+        setButtonLoading(ui.btnSubmitNote, true);
 
-      try {
-        await syncData({
-          department: ui.formDept.value,
-          section: ui.formSec.value,
-          date: ui.formDate.value,
-          course: ui.formCourse.value,
-          topic: cleanTopic,
-          title: cleanTitle,
-          link: validatedLink,
-          status: "Pending"
-        });
+        try {
+          await syncData({
+            ...basePayload,
+            link: validatedLink
+          });
 
-        safeStorage.set("last_note_submit_ts", String(Date.now()));
-        safeStorage.remove(`notes_${ui.formDept.value}_${ui.formSec.value}`);
-        closeSheetModal(ui.addModal);
-        ui.addForm.reset();
-        showToast("Note submitted successfully for review!");
-      } catch {
-        showToast("Failed to submit note. Please retry.");
-      } finally {
-        setButtonLoading(ui.btnSubmitNote, false);
+          safeStorage.remove(`notes_${ui.formDept.value}_${ui.formSec.value}`);
+          closeSheetModal(ui.addModal);
+          ui.addForm.reset();
+          if (ui.formLink) ui.formLink.value = "";
+          showToast("Note link submitted! Pending admin approval.");
+        } catch (err) {
+          console.error("Submit error:", err);
+          showToast("Failed to submit note. Please retry.");
+        } finally {
+          setButtonLoading(ui.btnSubmitNote, false);
+        }
       }
     });
 
     ui.modalNotesStack.addEventListener("click", async (e) => {
-      // Track Note View on click
       const noteLink = e.target.closest(".note-title-btn");
       if (noteLink) {
         const row = noteLink.dataset.row;
@@ -1356,26 +1647,11 @@
         return;
       }
 
-      const remainingSec = checkRateLimit("last_report_submit_ts", SECURITY.REPORT_COOLDOWN_MS);
-      if (remainingSec > 0) {
-        showToast(`Please wait ${remainingSec} seconds before reporting again.`);
-        return;
-      }
-
       const row = ui.reportForm.dataset.targetRow;
-      const key = `reported_row_${row}`;
-
-      if (safeStorage.get(key)) {
-        closeSheetModal(ui.reportModal);
-        showToast("You have already reported this link.");
-        return;
-      }
 
       setButtonLoading(ui.btnSubmitReport, true);
       try {
         await syncData({ type: "report", row });
-        safeStorage.set("last_report_submit_ts", String(Date.now()));
-        safeStorage.set(key, "true");
         closeSheetModal(ui.reportModal);
         showToast("Thank you. Link report has been recorded.");
       } catch {
@@ -1395,7 +1671,6 @@
     setupCalendarSwipe();
   }
 
-  /* Initialization */
   function init() {
     injectHoneypot(ui.addForm);
     injectHoneypot(ui.reportForm);

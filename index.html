@@ -7,7 +7,9 @@
   <meta name="description" content="Find class notes and academic resources organized by department, section, course and date.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Preload -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -38,19 +40,6 @@
       <a href="#how-to-find" class="nav-link">How to Find</a>
       <a href="#how-to-upload" class="nav-link">How to Upload</a>
       <button type="button" class="btn btn--primary" id="trigger-add-note"><span class="btn-plus">+</span>Add Note</button>
-
-      <div class="nav-social-links">
-        <a href="https://github.com/shakibuzzaman52" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="GitHub Profile" title="GitHub">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-          </svg>
-        </a>
-        <a href="https://linkedin.com/in/shakibuzzaman52" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="LinkedIn Profile" title="LinkedIn">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.25c-.9 0-1.63.73-1.63 1.63s.73 1.63 1.63 1.63 1.63-.73 1.63-1.63c0-.9-.73-1.63-1.63-1.63z"/>
-          </svg>
-        </a>
-      </div>
     </nav>
   </header>
 
@@ -211,6 +200,7 @@
             <li class="docs-list-item"><strong>Department &amp; Section Filter:</strong> Find notes specific to your department and section.</li>
             <li class="docs-list-item"><strong>Course &amp; Topic Filter:</strong> Browse notes by course and topic.</li>
             <li class="docs-list-item"><strong>Interactive Calendar:</strong> Find notes by selecting a specific date.</li>
+            <li class="docs-list-item"><strong>Direct Upload &amp; Link Sharing:</strong> Upload lecture slides and PDFs directly (up to 10MB) or share links to Drive, Notion, and other cloud storages.</li>
             <li class="docs-list-item"><strong>Share Notes:</strong> Share useful study resources with your classmates.</li>
             <li class="docs-list-item"><strong>Report Notes:</strong> Report notes that are incorrect, broken, or inappropriate.</li>
             <li class="docs-list-item"><strong>Community Contributions:</strong> Upload your own notes and help classmates access useful study materials.</li>
@@ -241,7 +231,7 @@
           <li class="docs-step-item">Choose the class date.</li>
           <li class="docs-step-item">Select the relevant <strong>Course</strong>.</li>
           <li class="docs-step-item">Enter the <strong>Topic Name</strong> and <strong>Note Title</strong>.</li>
-          <li class="docs-step-item">Add a shareable link to your note, such as a Google Drive link.</li>
+          <li class="docs-step-item">Choose whether to <strong>Upload File</strong> directly (Max 10MB) or provide a <strong>Web Link</strong> (Google Drive, Notion, OneDrive, etc.).</li>
           <li class="docs-step-item">Submit the note.</li>
         </ol>
 
@@ -249,12 +239,13 @@
         <ul class="docs-list">
           <li class="docs-list-item">Make sure all information is accurate.</li>
           <li class="docs-list-item">Use a clear and descriptive title.</li>
-          <li class="docs-list-item">Ensure the shared link is accessible to others.</li>
-          <li class="docs-list-item">Upload only relevant study materials.</li>
+          <li class="docs-list-item">Supported file formats: PDF, DOC, DOCX, PPT, PPTX, PNG, JPG (Max 10MB).</li>
+          <li class="docs-list-item">If providing a web link, ensure the resource permissions are set to public view.</li>
+          <li class="docs-list-item">Upload only relevant academic study materials.</li>
         </ul>
 
         <div class="docs-notice">
-          Submitted notes may require admin approval before appearing on the website.
+          Submitted notes require admin review and approval before appearing on the website.
         </div>
       </article>
 
@@ -352,7 +343,84 @@
             <input type="text" id="input-title" placeholder="e.g. Lecture Slide 12" required>
           </div>
 
+          <!-- Mode Toggle: File Upload vs Web Link -->
           <div class="field">
+            <label>Upload Type:</label>
+            <div class="resource-type-toggle">
+              <button type="button" class="toggle-tab is-active" id="tab-mode-file" data-mode="file">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Upload File</span>
+              </button>
+              <button type="button" class="toggle-tab" id="tab-mode-link" data-mode="link">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <span>Web Link</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Option 1: Direct File Upload -->
+          <div class="field" id="field-file-upload">
+            <label for="input-file">Lecture File / Document:</label>
+            <div class="file-dropzone" id="file-dropzone">
+              <input type="file" id="input-file" class="file-input-hidden" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg">
+              
+              <div class="file-dropzone-content" id="file-dropzone-content">
+                <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <div class="file-prompt-text">
+                  <span class="file-prompt-action">Choose a file</span> or drag &amp; drop
+                </div>
+                <span class="file-limit-text">PDF, DOC, PPT or Images (Max 10MB)</span>
+              </div>
+
+              <!-- Selected File Box with Progress Bar -->
+              <div class="file-selected-box" id="file-selected-box" hidden>
+                <div class="file-selected-main">
+                  <div class="file-selected-left">
+                    <svg class="file-selected-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <div class="file-selected-meta">
+                      <span class="file-selected-name" id="selected-file-name">filename.pdf</span>
+                      <div class="file-selected-subinfo">
+                        <span class="file-selected-size" id="selected-file-size">0 KB</span>
+                        <span class="file-selected-status" id="selected-file-status"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="file-selected-right">
+                    <span class="file-progress-percent" id="file-progress-percent">0%</span>
+                    <button type="button" class="btn-remove-file" id="btn-remove-file" aria-label="Remove selected file" title="Remove file">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="file-progress-container" id="file-progress-container">
+                  <div class="file-progress-bar" id="file-progress-bar" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Option 2: Web / External Link -->
+          <div class="field" id="field-link-upload" hidden>
             <label for="input-link">Resource URL:</label>
             <input type="text" id="input-link" inputmode="url" placeholder="https://... (Drive, Notion, OneDrive, Dropbox, etc.)">
           </div>

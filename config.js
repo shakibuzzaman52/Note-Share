@@ -1,7 +1,7 @@
 // app configuration
 window.APP_CONFIG = {
   siteTitle: "ClassNotes",
-  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbwIoSu64lKDrq_nxhen9GbfJ1tXmllV7Uks7ZnwmMw0P2ksdb5BSOKJJb0DyzNwK7IF/exec",
+  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbyyiAhWM4nh2vblkRlV6Ka9wCwFqAgNhYB-hgm6m4vJQA7IJPPMF5DJm-Anhe4Lp9J9/exec",
   departments: [
     {
       code: "CSE",

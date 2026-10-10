@@ -20,6 +20,7 @@
   --brand-dark-hover: #2B2A28;
   --brand-danger: #DC2626;
   --brand-danger-hover: #B91C1C;
+  --brand-success: #16A34A;
 
   --radius-full: 9999px;
   --radius-lg: 16px;
@@ -328,33 +329,6 @@ button, input {
   color: var(--text-main);
 }
 
-.nav-social-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  margin-left: 0.25rem;
-  flex-shrink: 0;
-}
-
-.social-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background-color: var(--bg-subtle);
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.social-icon-btn:hover {
-  background-color: var(--bg-hover);
-  color: var(--brand-primary);
-}
-
 .header-menu-toggle {
   display: none;
   padding: 0.25rem 0.5rem;
@@ -408,6 +382,259 @@ button, input {
 
 .field input:focus {
   background-color: var(--bg-hover);
+}
+
+/* Resource Type Toggle (Upload File vs Web Link) */
+.resource-type-toggle {
+  display: flex;
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 4px;
+}
+
+.toggle-tab {
+  flex: 1 1 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.toggle-tab:hover {
+  color: var(--text-main);
+}
+
+.toggle-tab.is-active {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* File Upload Field & Dropzone */
+.file-dropzone {
+  position: relative;
+  background-color: var(--bg-subtle);
+  border: 2px dashed var(--border-hover);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.file-dropzone:hover,
+.file-dropzone.is-dragover {
+  background-color: var(--bg-hover);
+  border-color: var(--brand-primary);
+}
+
+.file-input-hidden {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 5;
+}
+
+/* Hidden state */
+.file-dropzone-content[hidden],
+.file-selected-box[hidden] {
+  display: none !important;
+}
+
+.file-dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  pointer-events: none;
+}
+
+.file-upload-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--text-subtle);
+  margin-bottom: 0.15rem;
+}
+
+.file-prompt-text {
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.file-prompt-action {
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.file-limit-text {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+/* Selected File Box with Progress Bar */
+.file-selected-box {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 0.95rem;
+  gap: 0.65rem;
+  position: relative;
+  z-index: 10;
+  text-align: left;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.file-selected-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.file-selected-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.file-selected-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.file-selected-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--brand-primary);
+  flex-shrink: 0;
+}
+
+.file-selected-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+  gap: 0.15rem;
+}
+
+.file-selected-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-selected-subinfo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.file-selected-status {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+.file-selected-status.is-error {
+  color: var(--brand-danger);
+}
+
+.file-selected-status.is-success {
+  color: var(--brand-success);
+}
+
+.file-progress-percent {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+  text-align: right;
+}
+
+.file-progress-container {
+  width: 100%;
+  height: 6px;
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.file-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--brand-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.22s ease-out, background-color 0.25s ease;
+  position: relative;
+}
+
+.file-progress-bar.is-animated {
+  background: linear-gradient(90deg, var(--brand-primary) 0%, #3B82F6 50%, var(--brand-primary) 100%);
+  background-size: 200% 100%;
+  animation: progressShimmer 1.5s infinite linear;
+}
+
+.file-progress-bar.is-complete {
+  background: var(--brand-success);
+}
+
+@keyframes progressShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.btn-remove-file {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-remove-file:hover {
+  background-color: var(--brand-danger);
+  color: #FFFFFF;
+}
+
+.btn-remove-file:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Hero */
@@ -560,7 +787,7 @@ button, input {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 0.35rem 0.25rem 0.35rem 0.35rem;
+  padding: 0.35rem 0.25rem;
   z-index: 250;
   max-height: 240px;
   overflow-y: auto;
@@ -1327,14 +1554,12 @@ button, input {
   flex-shrink: 0;
 }
 
-/* View Count Badge (32px উচ্চতা ও সিঙ্গেল লাইন) */
+/* View Count Badge */
 .note-view-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 32px;
-  min-height: 32px;
-  max-height: 32px;
   padding: 0 0.65rem;
   background-color: var(--bg-subtle);
   border-radius: var(--radius-full);
@@ -1346,7 +1571,6 @@ button, input {
   white-space: nowrap;
   flex-shrink: 0;
   gap: 0.35rem;
-  box-sizing: border-box;
 }
 
 .note-view-badge svg {
@@ -1370,15 +1594,12 @@ button, input {
   justify-content: center;
   width: 32px;
   height: 32px;
-  min-width: 32px;
-  min-height: 32px;
   cursor: pointer;
   border-radius: 50%;
   background-color: var(--bg-subtle);
   color: var(--text-muted);
   transition: background-color 0.15s ease, color 0.15s ease;
   flex-shrink: 0;
-  box-sizing: border-box;
 }
 
 .btn-share svg,
@@ -1475,13 +1696,6 @@ button, input {
     margin-top: 1rem;
     padding: 0.85rem 1.25rem;
     font-size: 0.95rem;
-  }
-
-  .header-nav .nav-social-links {
-    margin-top: auto;
-    width: 100%;
-    padding-top: 1.25rem;
-    gap: 0.85rem;
   }
 
   .hero {
