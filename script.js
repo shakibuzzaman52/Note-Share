@@ -109,8 +109,8 @@
     selectedFileName: document.getElementById("selected-file-name"),
     selectedFileSize: document.getElementById("selected-file-size"),
     selectedFileStatus: document.getElementById("selected-file-status"),
+    fileProgressContainer: document.getElementById("file-progress-container"),
     fileProgressBar: document.getElementById("file-progress-bar"),
-    fileProgressPercent: document.getElementById("file-progress-percent"),
     btnRemoveFile: document.getElementById("btn-remove-file"),
 
     formLink: document.getElementById("input-link"),
@@ -251,9 +251,6 @@
       ui.fileProgressBar.classList.toggle("is-complete", isComplete || clamped === 100);
       ui.fileProgressBar.classList.toggle("is-animated", !isComplete && clamped > 0 && clamped < 100);
     }
-    if (ui.fileProgressPercent) {
-      ui.fileProgressPercent.textContent = `${clamped}%`;
-    }
     if (customSizeText && ui.selectedFileSize) {
       ui.selectedFileSize.textContent = customSizeText;
     }
@@ -345,6 +342,8 @@
 
     if (ui.fileDropzoneContent) ui.fileDropzoneContent.hidden = true;
     if (ui.fileSelectedBox) ui.fileSelectedBox.hidden = false;
+    if (ui.fileDropzone) ui.fileDropzone.classList.add("has-file");
+    if (ui.fileProgressContainer) ui.fileProgressContainer.hidden = true;
 
     updateProgressUI(0, "Ready to upload");
   }
@@ -355,6 +354,8 @@
     if (ui.selectedFileSize) ui.selectedFileSize.textContent = "";
     if (ui.fileDropzoneContent) ui.fileDropzoneContent.hidden = false;
     if (ui.fileSelectedBox) ui.fileSelectedBox.hidden = true;
+    if (ui.fileDropzone) ui.fileDropzone.classList.remove("has-file");
+    if (ui.fileProgressContainer) ui.fileProgressContainer.hidden = true;
     updateProgressUI(0, "");
   }
 
@@ -1499,6 +1500,7 @@
 
         setButtonLoading(ui.btnSubmitNote, true);
         if (ui.btnRemoveFile) ui.btnRemoveFile.disabled = true;
+        if (ui.fileProgressContainer) ui.fileProgressContainer.hidden = false;
 
         const totalFormatted = formatFileSize(selectedFile.size);
 
