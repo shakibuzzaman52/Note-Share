@@ -9,8 +9,6 @@
     ALLOWED_EXTENSIONS: ["pdf", "doc", "docx", "ppt", "pptx", "png", "jpg", "jpeg"]
   };
 
-  const CHECK_SVG = '<svg class="nav-filter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-
   const config = window.APP_CONFIG || {};
   const departments = Array.isArray(config.departments) ? config.departments : [];
 
@@ -608,17 +606,18 @@
       items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) });
     }
 
-    container.innerHTML = items.map(({ val, text }) => {
+    const optionsHtml = items.map(({ val, text }) => {
       const isSel = selectedVal === val;
       return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(val)}" role="option" aria-selected="${isSel}">
         <span class="nav-filter-option-text">${escapeHtml(text)}</span>
-        ${isSel ? CHECK_SVG : ''}
       </button>`;
     }).join("");
+
+    container.innerHTML = `<div class="nav-filter-menu-list">${optionsHtml}</div>`;
   }
 
   function renderMenuNotice(container, message) {
-    container.innerHTML = `<div class="nav-filter-empty">${escapeHtml(message)}</div>`;
+    container.innerHTML = `<div class="nav-filter-menu-list"><div class="nav-filter-empty">${escapeHtml(message)}</div></div>`;
   }
 
   function closeAllMenus() {
@@ -642,11 +641,20 @@
       if (trigger.closest("#main-nav-filters")) {
         const rect = trigger.getBoundingClientRect();
         menu.style.position = "fixed";
-        menu.style.top = `${rect.bottom + 5}px`;
-        const menuWidth = Math.min(280, Math.max(210, rect.width), Math.max(100, window.innerWidth - 32));
+        menu.style.top = `${rect.bottom + 10}px`;
+        const menuWidth = Math.min(290, Math.max(220, rect.width), Math.max(100, window.innerWidth - 32));
         const left = Math.min(rect.left, window.innerWidth - 16 - menuWidth);
-        menu.style.left = `${Math.max(16, left)}px`;
+        const computedLeft = Math.max(16, left);
+        menu.style.left = `${computedLeft}px`;
         menu.style.width = `${menuWidth}px`;
+
+        const triggerCenter = rect.left + (rect.width / 2);
+        const arrowLeft = Math.max(22, Math.min(menuWidth - 22, triggerCenter - computedLeft));
+        menu.style.setProperty("--arrow-left", `${arrowLeft}px`);
+      } else {
+        const triggerWidth = trigger.offsetWidth;
+        const arrowLeft = Math.max(24, Math.min(triggerWidth - 24, triggerWidth / 2));
+        menu.style.setProperty("--arrow-left", `${arrowLeft}px`);
       }
     }
   }
