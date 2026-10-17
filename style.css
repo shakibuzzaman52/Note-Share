@@ -983,8 +983,13 @@ button, input {
   top: calc(100% + 8px);
 }
 
+/* Content Area & Anchors */
 .content-area {
   margin-top: 0.5rem;
+}
+
+#class-notes {
+  scroll-margin-top: 5.5rem;
 }
 
 /* Calendar & Views */
