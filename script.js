@@ -662,8 +662,8 @@
   function updateFilterLabels() {
     ui.deptLabel.textContent = state.dept || "Department";
     ui.secLabel.textContent = state.sec ? `Sec ${state.sec}` : "Section";
-    ui.courseLabel.textContent = state.sec ? (state.course === "ALL" ? "All Courses" : state.course) : "Course";
-    ui.topicLabel.textContent = state.sec ? (state.topic === "ALL" ? "All Topics" : state.topic) : "Topic";
+    ui.courseLabel.textContent = (state.dept && state.sec) ? (state.course === "ALL" ? "All Courses" : state.course) : "Course";
+    ui.topicLabel.textContent = (state.dept && state.sec) ? (state.topic === "ALL" ? "All Topics" : state.topic) : "Topic";
     refreshAutoSlideElements();
   }
 
@@ -679,8 +679,13 @@
   }
 
   function syncTopicMenu() {
-    if (!state.dept || !state.sec) {
-      renderMenuNotice(ui.topicMenu, "Select Department & Section first");
+    if (!state.dept) {
+      renderMenuNotice(ui.topicMenu, "Please select Department first");
+      return;
+    }
+
+    if (!state.sec) {
+      renderMenuNotice(ui.topicMenu, "Please select Section first");
       return;
     }
 
@@ -703,7 +708,12 @@
 
     if (activeDept) {
       renderMenuOptions(ui.secMenu, activeDept.sections, state.sec || null, false, "", "Sec");
-      renderMenuOptions(ui.courseMenu, activeDept.courses, state.sec ? state.course : "ALL", true, "All Courses");
+
+      if (state.sec) {
+        renderMenuOptions(ui.courseMenu, activeDept.courses, state.course, true, "All Courses");
+      } else {
+        renderMenuNotice(ui.courseMenu, "Please select Section first");
+      }
     } else {
       renderMenuNotice(ui.secMenu, "Please select Department first");
       renderMenuNotice(ui.courseMenu, "Please select Department first");
@@ -737,10 +747,16 @@
       ui.formSecLabel.textContent = sec ? `Sec ${sec}` : "Section";
       renderMenuOptions(ui.formSecMenu, dept.sections, sec, false, "", "Sec");
 
-      const course = (dept.courses.includes(courseCode) ? courseCode : "") || "";
-      ui.formCourse.value = course;
-      ui.formCourseLabel.textContent = course || "Course";
-      renderMenuOptions(ui.formCourseMenu, dept.courses, course);
+      if (sec) {
+        const course = (dept.courses.includes(courseCode) ? courseCode : "") || "";
+        ui.formCourse.value = course;
+        ui.formCourseLabel.textContent = course || "Course";
+        renderMenuOptions(ui.formCourseMenu, dept.courses, course);
+      } else {
+        ui.formCourse.value = "";
+        ui.formCourseLabel.textContent = "Course";
+        renderMenuNotice(ui.formCourseMenu, "Please select Section first");
+      }
     } else {
       ui.formDept.value = "";
       ui.formDeptLabel.textContent = "Department";
@@ -1378,9 +1394,11 @@
       safeStorage.set("selected_sec", val);
       loadNotes();
     } else if (key === "course") {
+      if (!state.dept || !state.sec) return;
       state.course = val;
       state.topic = "ALL";
     } else if (key === "topic") {
+      if (!state.dept || !state.sec) return;
       state.topic = val;
     }
     closeAllMenus();
@@ -1449,7 +1467,9 @@
           nextCourse = "";
         } else if (field === "sec") {
           nextSec = val;
+          nextCourse = "";
         } else if (field === "course") {
+          if (!nextDept || !nextSec) return;
           nextCourse = val;
         }
 
