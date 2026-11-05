@@ -935,12 +935,14 @@ button, input {
   pointer-events: none;
 }
 
-/* Search Box */
+/* Search Box with Divider Line */
 .nav-filter-search-box {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.75rem 0.55rem;
+  padding: 0.45rem 0.75rem 0.65rem;
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .nav-filter-search-icon {
@@ -1933,7 +1935,7 @@ button, input {
     max-width: 205px;
   }
 
-  .nav-filters .nav-filter-trigger {
+  .nav-filter-trigger {
     height: 36px;
     min-height: 36px;
     padding: 0 0.75rem;
