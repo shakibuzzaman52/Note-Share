@@ -48,6 +48,8 @@
   };
 
   let lastWindowWidth = window.innerWidth;
+  let activeOpenMenu = null;
+  let activeOpenTrigger = null;
 
   const ui = {
     mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
@@ -690,6 +692,9 @@
   }
 
   function closeAllMenus() {
+    activeOpenMenu = null;
+    activeOpenTrigger = null;
+
     document.querySelectorAll(".nav-filter-menu:not([hidden])").forEach(m => {
       m.hidden = true;
       m.removeAttribute("style");
@@ -707,6 +712,31 @@
     if (topicWrapper) topicWrapper.classList.remove("is-open");
   }
 
+  function updateOpenMenuPosition() {
+    if (!activeOpenMenu || activeOpenMenu.hidden || !activeOpenTrigger) return;
+    if (!activeOpenTrigger.closest("#main-nav-filters")) return;
+
+    const rect = activeOpenTrigger.getBoundingClientRect();
+
+    // বাটন স্ক্রিনের বাইরে চলে গেলে মেনু বন্ধ হবে
+    if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+      closeAllMenus();
+      return;
+    }
+
+    activeOpenMenu.style.position = "fixed";
+    activeOpenMenu.style.top = `${rect.bottom + 10}px`;
+    const menuWidth = Math.min(290, Math.max(220, rect.width), Math.max(100, window.innerWidth - 32));
+    const left = Math.min(rect.left, window.innerWidth - 16 - menuWidth);
+    const computedLeft = Math.max(16, left);
+    activeOpenMenu.style.left = `${computedLeft}px`;
+    activeOpenMenu.style.width = `${menuWidth}px`;
+
+    const triggerCenter = rect.left + (rect.width / 2);
+    const arrowLeft = Math.max(22, Math.min(menuWidth - 22, triggerCenter - computedLeft));
+    activeOpenMenu.style.setProperty("--arrow-left", `${arrowLeft}px`);
+  }
+
   function toggleMenu(menu, trigger) {
     if (!menu || !trigger) return;
     const isClosed = menu.hidden;
@@ -716,18 +746,9 @@
       trigger.setAttribute("aria-expanded", "true");
 
       if (trigger.closest("#main-nav-filters")) {
-        const rect = trigger.getBoundingClientRect();
-        menu.style.position = "fixed";
-        menu.style.top = `${rect.bottom + 10}px`;
-        const menuWidth = Math.min(290, Math.max(220, rect.width), Math.max(100, window.innerWidth - 32));
-        const left = Math.min(rect.left, window.innerWidth - 16 - menuWidth);
-        const computedLeft = Math.max(16, left);
-        menu.style.left = `${computedLeft}px`;
-        menu.style.width = `${menuWidth}px`;
-
-        const triggerCenter = rect.left + (rect.width / 2);
-        const arrowLeft = Math.max(22, Math.min(menuWidth - 22, triggerCenter - computedLeft));
-        menu.style.setProperty("--arrow-left", `${arrowLeft}px`);
+        activeOpenMenu = menu;
+        activeOpenTrigger = trigger;
+        updateOpenMenuPosition();
       } else {
         const triggerWidth = trigger.offsetWidth;
         const arrowLeft = Math.max(24, Math.min(triggerWidth - 24, triggerWidth / 2));
@@ -1552,23 +1573,30 @@
       }
     });
 
-    if (ui.navFilters) {
-      ui.navFilters.addEventListener("scroll", () => {
-        if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
-        closeAllMenus();
-      }, { passive: true });
+    let isScrollRepositioning = false;
+    function handleActiveMenuReposition() {
+      if (!activeOpenMenu) return;
+      if (!isScrollRepositioning) {
+        isScrollRepositioning = true;
+        requestAnimationFrame(() => {
+          updateOpenMenuPosition();
+          isScrollRepositioning = false;
+        });
+      }
     }
 
-    window.addEventListener("scroll", () => {
-      if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
-      closeAllMenus();
-    }, { passive: true });
+    if (ui.navFilters) {
+      ui.navFilters.addEventListener("scroll", handleActiveMenuReposition, { passive: true });
+    }
+
+    window.addEventListener("scroll", handleActiveMenuReposition, { passive: true });
 
     window.addEventListener("resize", () => {
-      // মোবাইলে ভার্চুয়াল কীবোর্ড ওপেন হলে শুধু উচ্চতা পরিবর্তন হয়, প্রস্থ নয়
       if (window.innerWidth !== lastWindowWidth) {
         lastWindowWidth = window.innerWidth;
         closeAllMenus();
+      } else {
+        handleActiveMenuReposition();
       }
       refreshAutoSlideElements();
     }, { passive: true });
