@@ -7,8 +7,6 @@
   <meta name="description" content="Find class notes and academic resources organized by department, section, course and date.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Font Preload -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -46,10 +44,9 @@
 
   <div class="shell">
     <!-- Hero Section -->
-    
     <section class="hero">
       <h2 class="hero-title">Lecture archive &amp;<br><span class="badge">class notes</span></h2>
-      
+
       <!-- Social Proof -->
       <div class="hero-members">
         <div class="avatar-stack">
@@ -244,7 +241,7 @@
           <li class="docs-step-item">Select your <strong>Department</strong> and <strong>Section</strong>.</li>
           <li class="docs-step-item">Choose the class date.</li>
           <li class="docs-step-item">Select the relevant <strong>Course</strong>.</li>
-          <li class="docs-step-item">Enter the <strong>Topic Name</strong> and <strong>Note Title</strong>.</li>
+          <li class="docs-step-item">Enter or choose the <strong>Topic Name</strong> and <strong>Note Title</strong>.</li>
           <li class="docs-step-item">Choose whether to <strong>Upload File</strong> directly (Max 10MB) or provide a <strong>Web Link</strong> (Google Drive, Notion, OneDrive, etc.).</li>
           <li class="docs-step-item">Submit the note.</li>
         </ol>
@@ -347,9 +344,17 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="field" id="field-topic">
             <label for="input-topic">Topic:</label>
-            <input type="text" id="input-topic" placeholder="e.g. Graph Traversal Algorithms" required>
+            <div class="topic-input-wrapper">
+              <input type="text" id="input-topic" name="topic" placeholder="e.g. Graph Traversal Algorithms" autocomplete="off" required>
+              <button type="button" class="topic-input-arrow" id="topic-dropdown-trigger" aria-label="Toggle suggestions" tabindex="-1">
+                <svg width="11.5" height="7" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                  <path d="M1.75 2.25L6 6.25L10.25 2.25" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="nav-filter-menu" id="form-topic-menu" hidden role="listbox"></div>
+            </div>
           </div>
 
           <div class="field">
@@ -384,7 +389,7 @@
             <label for="input-file">Lecture File / Document:</label>
             <div class="file-dropzone" id="file-dropzone">
               <input type="file" id="input-file" class="file-input-hidden" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg">
-              
+
               <div class="file-dropzone-content" id="file-dropzone-content">
                 <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>

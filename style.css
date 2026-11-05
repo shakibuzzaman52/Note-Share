@@ -71,7 +71,7 @@ body {
   font-size: 15px;
   line-height: 1.5;
   min-height: 100vh;
-  padding-bottom: 4rem; 
+  padding-bottom: 4rem;
 }
 
 body.sheet-open {
@@ -91,6 +91,15 @@ button, input {
   width: 100%;
   margin: 0 auto;
   padding: 0 clamp(1rem, 3.5vw, 2.5rem);
+}
+
+/* Hidden Utility & Honeypot */
+.bot-field,
+.clipboard-hidden {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Preloader */
@@ -251,13 +260,10 @@ button, input {
 
 .calendar-cell-btn.skeleton-btn {
   border: 1px solid var(--border-subtle);
-  pointer-events: none;
   cursor: default;
 }
 
 .course-card.skeleton-card {
-  pointer-events: none;
-  user-select: none;
   cursor: default;
 }
 
@@ -290,7 +296,6 @@ button, input {
 
 .auto-slide-text {
   display: inline-block;
-  white-space: nowrap;
 }
 
 .auto-slide-container.is-overflowing .auto-slide-text {
@@ -411,6 +416,53 @@ button, input {
 
 .field input:focus {
   background-color: var(--bg-hover);
+}
+
+/* Editable Topic Input */
+.topic-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.topic-input-wrapper input {
+  padding-right: 2.5rem;
+}
+
+.topic-input-arrow {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+
+.topic-input-arrow svg {
+  transition: transform 0.15s ease;
+}
+
+.topic-input-wrapper.is-open .topic-input-arrow svg {
+  transform: rotate(180deg);
+}
+
+.topic-input-wrapper .nav-filter-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  z-index: 150;
+  padding: 0.35rem 0.25rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.topic-input-wrapper .nav-filter-menu .nav-filter-menu-list {
+  max-height: 140px;
 }
 
 /* Resource Toggle */
@@ -805,7 +857,6 @@ button, input {
   background-color: var(--bg-subtle);
   border-radius: var(--radius-full);
   padding: 0.78rem clamp(0.5rem, 1.2vw, 1.25rem);
-  min-height: 44px;
   color: var(--text-main);
   font-size: clamp(0.78rem, 1.1vw, 0.9rem);
   font-weight: 600;
@@ -813,6 +864,10 @@ button, input {
   user-select: none;
   width: 100%;
   transition: background-color 0.15s ease;
+}
+
+.nav-filters .nav-filter-trigger {
+  min-height: 44px;
 }
 
 .nav-filter-trigger:hover,
@@ -824,17 +879,10 @@ button, input {
 .nav-filter-text {
   overflow: hidden;
   white-space: nowrap;
-  pointer-events: none;
   min-width: 0;
 }
 
-.nav-filter-text-inner {
-  display: inline-block;
-  white-space: nowrap;
-}
-
 .nav-filter-arrow {
-  pointer-events: none;
   flex-shrink: 0;
   color: var(--text-muted);
   transition: transform 0.15s ease;
@@ -850,15 +898,16 @@ button, input {
   top: calc(100% + 9px);
   left: 0;
   width: 100%;
-  min-width: 215px;
+  min-width: 220px;
   max-width: min(420px, calc(100vw - 2rem));
   background-color: var(--dropdown-bg);
   color: var(--dropdown-text);
   border-radius: var(--dropdown-radius);
-  padding: 0.5rem 0.3rem;
+  padding: 0.45rem 0.3rem;
   z-index: 450;
   box-shadow: var(--dropdown-shadow);
   animation: popoverFadeIn 0.14s ease-out forwards;
+  user-select: none;
 }
 
 @keyframes popoverFadeIn {
@@ -872,7 +921,7 @@ button, input {
   }
 }
 
-.nav-filter-menu::before {
+.nav-filter-item > .nav-filter-menu::before {
   content: "";
   position: absolute;
   top: -5px;
@@ -886,8 +935,35 @@ button, input {
   pointer-events: none;
 }
 
+/* Search Box */
+.nav-filter-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem 0.55rem;
+}
+
+.nav-filter-search-icon {
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.nav-filter-search-input {
+  width: 100%;
+  color: #FFFFFF;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  padding: 0;
+}
+
+.nav-filter-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
 .nav-filter-menu-list {
-  max-height: 250px;
+  max-height: 240px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0.1rem 0.15rem;
@@ -921,7 +997,6 @@ button, input {
   line-height: 1.4;
   text-align: left;
   transition: background-color 0.1s ease;
-  user-select: none;
 }
 
 .nav-filter-option-text {
@@ -930,7 +1005,6 @@ button, input {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: left;
 }
 
 .nav-filter-option:hover {
@@ -944,11 +1018,10 @@ button, input {
 }
 
 .nav-filter-empty {
-  padding: 0.85rem 1rem;
-  color: rgba(255, 255, 255, 0.5);
+  padding: 0.75rem 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
   font-size: 0.82rem;
   text-align: left;
-  user-select: none;
 }
 
 /* Modal Form Dropdowns */
@@ -962,13 +1035,19 @@ button, input {
   padding: 0.75rem 1rem;
   font-size: 0.9375rem;
   background-color: var(--bg-subtle);
-  min-height: auto;
 }
 
 .field .nav-filter-menu {
+  position: absolute;
   min-width: 100%;
   max-width: 100%;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);
+  z-index: 100;
+  max-height: 195px;
+}
+
+.field .nav-filter-menu .nav-filter-menu-list {
+  max-height: 145px;
 }
 
 /* Content Area */
@@ -1096,7 +1175,6 @@ button, input {
   align-items: center;
   justify-content: center;
   background-color: var(--bg-pill);
-  border: 1px solid var(--border-subtle);
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--text-main);
@@ -1105,7 +1183,11 @@ button, input {
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.calendar-cell-btn:hover:not(:disabled) {
+.calendar-cell:not(.calendar-cell--disabled) .calendar-cell-btn {
+  border: 1px solid var(--border-subtle);
+}
+
+.calendar-cell:not(.calendar-cell--disabled) .calendar-cell-btn:hover:not(:disabled) {
   background-color: var(--bg-hover);
   border-color: var(--border-hover);
 }
@@ -1126,7 +1208,6 @@ button, input {
 }
 
 .calendar-cell--disabled .calendar-cell-btn {
-  border-color: transparent;
   color: var(--text-disabled);
   opacity: 0.4;
   cursor: default;
@@ -1150,11 +1231,6 @@ button, input {
   color: var(--text-main);
   line-height: 1.1;
   max-width: calc(100% - 100px);
-}
-
-.course-dates-title-inner {
-  display: inline-block;
-  white-space: nowrap;
 }
 
 .course-dates-count {
@@ -1515,7 +1591,7 @@ button, input {
 }
 
 .modal-body-scroll {
-  padding-bottom: 1.5rem;
+  padding-bottom: 6rem;
 }
 
 .empty-state {

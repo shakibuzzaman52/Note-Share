@@ -93,6 +93,8 @@
     formDate: document.getElementById("input-date"),
     formCourse: document.getElementById("input-course"),
     formTopic: document.getElementById("input-topic"),
+    formTopicMenu: document.getElementById("form-topic-menu"),
+    topicDropdownTrigger: document.getElementById("topic-dropdown-trigger"),
     formTitle: document.getElementById("input-title"),
 
     tabModeFile: document.getElementById("tab-mode-file"),
@@ -227,10 +229,26 @@
     }
   }
 
+  function generateCustomFileName(originalFile, sec, course, date, title) {
+    if (!originalFile || !originalFile.name) return "Lecture_Note.pdf";
+
+    const extMatch = originalFile.name.match(/\.([a-zA-Z0-9]+)$/);
+    const ext = extMatch ? extMatch[1].toLowerCase() : "pdf";
+
+    const sanitize = (str) => String(str || "").trim().replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_-]/g, "");
+
+    const safeCourse = sanitize(course) || "Course";
+    const safeSec = sanitize(sec) ? `Sec-${sanitize(sec)}` : "Sec";
+    const safeDate = sanitize(date);
+    const safeTitle = sanitize(title) || "Note";
+
+    return `${safeCourse}_${safeSec}_${safeDate}_${safeTitle}.${ext}`;
+  }
+
   function refreshAutoSlideElements() {
     requestAnimationFrame(() => {
       document.querySelectorAll(".auto-slide-container").forEach(container => {
-        const inner = container.querySelector(".auto-slide-text, .nav-filter-text-inner, .course-dates-title-inner, .file-selected-name");
+        const inner = container.querySelector(".auto-slide-text, .file-selected-name");
         if (!inner) return;
 
         container.classList.remove("is-overflowing");
@@ -257,7 +275,6 @@
     hp.tabIndex = -1;
     hp.autocomplete = "off";
     hp.className = "bot-field";
-    hp.style.cssText = "position:absolute;left:-9999px;opacity:0;pointer-events:none;";
     form.appendChild(hp);
   }
 
@@ -450,7 +467,7 @@
       const textarea = document.createElement("textarea");
       textarea.value = text;
       textarea.readOnly = true;
-      textarea.style.cssText = "position:fixed;opacity:0;";
+      textarea.className = "clipboard-hidden";
       document.body.appendChild(textarea);
       textarea.select();
       const ok = document.execCommand("copy");
@@ -490,15 +507,14 @@
     const newCount = targetNote ? (targetNote.viewCount || 0) + 1 : 1;
     if (targetNote) {
       targetNote.viewCount = newCount;
-      const cacheKey = `notes_${state.dept}_${state.sec}`;
-      safeStorage.set(cacheKey, JSON.stringify(state.notes));
+      safeStorage.set(`notes_${state.dept}_${state.sec}`, JSON.stringify(state.notes));
     }
 
     const countEls = ui.modalNotesStack.querySelectorAll(`.view-count-num[data-row="${row}"]`);
     countEls.forEach(el => {
       el.textContent = formatViewCount(newCount);
       const parentBadge = el.closest(".note-view-badge");
-      if (parentBadge) parentBadge.title = `${newCount} ${newCount === 1 ? 'view' : 'views'}`;
+      if (parentBadge) parentBadge.title = `${newCount} ${newCount === 1 ? "view" : "views"}`;
     });
 
     syncData({ type: "view", row: row });
@@ -600,23 +616,72 @@
     return map;
   }
 
-  function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "") {
+  function smartSearchMatch(text, query) {
+    if (!query) return true;
+    const qWords = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const target = String(text || "").toLowerCase();
+    return qWords.every(word => target.includes(word));
+  }
+
+  function renderOptionsListHtml(items, selectedVal, query = "") {
+    const cleanQ = query.trim();
+    const filtered = cleanQ ? items.filter(it => smartSearchMatch(it.text, cleanQ)) : items;
+
+    const html = filtered.map(({ val, text }) => {
+      const isSel = selectedVal === val;
+      return `<button type="button" class="nav-filter-option ${isSel ? "is-selected" : ""}" data-value="${escapeHtml(val)}" role="option" aria-selected="${isSel}">
+        <span class="nav-filter-option-text">${escapeHtml(text)}</span>
+      </button>`;
+    }).join("");
+
+    return html || `<div class="nav-filter-empty">No results found</div>`;
+  }
+
+  function renderMenuOptions(container, list = [], selectedVal, includeAll = false, allLabel = "All Courses", prefix = "", allowSearch = true) {
+    if (!container) return;
+
     const items = includeAll ? [{ val: "ALL", text: allLabel }] : [];
     for (const item of list) {
       items.push({ val: String(item), text: prefix ? `${prefix} ${item}` : String(item) });
     }
 
-    const optionsHtml = items.map(({ val, text }) => {
-      const isSel = selectedVal === val;
-      return `<button type="button" class="nav-filter-option ${isSel ? 'is-selected' : ''}" data-value="${escapeHtml(val)}" role="option" aria-selected="${isSel}">
-        <span class="nav-filter-option-text">${escapeHtml(text)}</span>
-      </button>`;
-    }).join("");
+    container._menuItems = items;
+    container._menuSelectedVal = selectedVal;
 
-    container.innerHTML = `<div class="nav-filter-menu-list">${optionsHtml}</div>`;
+    const shouldShowSearch = allowSearch && items.length > 5;
+    const searchHtml = shouldShowSearch ? `
+      <div class="nav-filter-search-box">
+        <svg class="nav-filter-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" class="nav-filter-search-input" placeholder="Search..." autocomplete="off" spellcheck="false">
+      </div>` : "";
+
+    container.innerHTML = searchHtml + `<div class="nav-filter-menu-list">${renderOptionsListHtml(items, selectedVal, "")}</div>`;
+
+    const searchInput = container.querySelector(".nav-filter-search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        const listContainer = container.querySelector(".nav-filter-menu-list");
+        if (listContainer) {
+          listContainer.innerHTML = renderOptionsListHtml(container._menuItems, container._menuSelectedVal, e.target.value);
+        }
+      });
+      searchInput.addEventListener("click", (e) => e.stopPropagation());
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const firstOpt = container.querySelector(".nav-filter-option");
+          if (firstOpt) firstOpt.click();
+        }
+      });
+    }
   }
 
   function renderMenuNotice(container, message) {
+    if (!container) return;
+    container._menuItems = [];
     container.innerHTML = `<div class="nav-filter-menu-list"><div class="nav-filter-empty">${escapeHtml(message)}</div></div>`;
   }
 
@@ -624,10 +689,18 @@
     document.querySelectorAll(".nav-filter-menu:not([hidden])").forEach(m => {
       m.hidden = true;
       m.removeAttribute("style");
+      const searchInput = m.querySelector(".nav-filter-search-input");
+      if (searchInput) searchInput.value = "";
+      const listContainer = m.querySelector(".nav-filter-menu-list");
+      if (listContainer && m._menuItems) {
+        listContainer.innerHTML = renderOptionsListHtml(m._menuItems, m._menuSelectedVal, "");
+      }
     });
     document.querySelectorAll('.nav-filter-trigger[aria-expanded="true"]').forEach(b => {
       b.setAttribute("aria-expanded", "false");
     });
+    const topicWrapper = document.querySelector(".topic-input-wrapper");
+    if (topicWrapper) topicWrapper.classList.remove("is-open");
   }
 
   function toggleMenu(menu, trigger) {
@@ -655,6 +728,11 @@
         const triggerWidth = trigger.offsetWidth;
         const arrowLeft = Math.max(24, Math.min(triggerWidth - 24, triggerWidth / 2));
         menu.style.setProperty("--arrow-left", `${arrowLeft}px`);
+      }
+
+      const searchInput = menu.querySelector(".nav-filter-search-input");
+      if (searchInput && window.innerWidth > 768) {
+        setTimeout(() => searchInput.focus(), 60);
       }
     }
   }
@@ -742,20 +820,31 @@
       ui.formDeptLabel.textContent = dept.code;
       renderMenuOptions(ui.formDeptMenu, departments.map(d => d.code), dept.code);
 
-      const sec = (dept.sections.includes(secCode) ? secCode : "") || "";
+      const sec = dept.sections.includes(secCode) ? secCode : "";
       ui.formSec.value = sec;
       ui.formSecLabel.textContent = sec ? `Sec ${sec}` : "Section";
       renderMenuOptions(ui.formSecMenu, dept.sections, sec, false, "", "Sec");
 
       if (sec) {
-        const course = (dept.courses.includes(courseCode) ? courseCode : "") || "";
+        const course = dept.courses.includes(courseCode) ? courseCode : "";
         ui.formCourse.value = course;
         ui.formCourseLabel.textContent = course || "Course";
         renderMenuOptions(ui.formCourseMenu, dept.courses, course);
+
+        const notesPool = getNotesListForDeptSec(dept.code, sec);
+        const matchingNotes = notesPool.filter(n => (!course || n.course === course) && n.topic?.trim());
+        const previousTopics = [...new Set(matchingNotes.map(n => n.topic.trim()))].sort();
+
+        if (previousTopics.length > 0) {
+          renderMenuOptions(ui.formTopicMenu, previousTopics, ui.formTopic.value, false, "", "", false);
+        } else {
+          renderMenuNotice(ui.formTopicMenu, "No previous topics yet.");
+        }
       } else {
         ui.formCourse.value = "";
         ui.formCourseLabel.textContent = "Course";
         renderMenuNotice(ui.formCourseMenu, "Please select Section first");
+        renderMenuNotice(ui.formTopicMenu, "Please select Section first");
       }
     } else {
       ui.formDept.value = "";
@@ -769,6 +858,8 @@
       ui.formCourse.value = "";
       ui.formCourseLabel.textContent = "Course";
       renderMenuNotice(ui.formCourseMenu, "Please select Department first");
+
+      renderMenuNotice(ui.formTopicMenu, "Please select Department first");
     }
 
     calculateDefaultTitle();
@@ -822,7 +913,7 @@
     if (!modalEl) return;
     delete modalEl.dataset.closing;
     document.body.classList.add("sheet-open");
-    modalEl.style.transform = "";
+    modalEl.style.removeProperty("transform");
     if (!modalEl.open) modalEl.showModal();
     requestAnimationFrame(() => {
       modalEl.classList.add("is-open");
@@ -838,7 +929,7 @@
     if (modalEl.dataset.closing === "true") return;
     modalEl.dataset.closing = "true";
     modalEl.classList.remove("is-open");
-    modalEl.style.transform = "";
+    modalEl.style.removeProperty("transform");
     const delay = (modalEl.classList.contains("bottom-sheet") && window.innerWidth <= 768) ? 280 : 0;
     setTimeout(() => {
       delete modalEl.dataset.closing;
@@ -908,7 +999,7 @@
         if (cancelable && preventDefault) preventDefault();
       } else {
         currentTranslate = 0;
-        sheet.style.transform = "translateY(0px)";
+        sheet.style.removeProperty("transform");
       }
     }
 
@@ -928,7 +1019,7 @@
       if (currentTranslate > sheetHeight * 0.4 || (currentTranslate > 45 && velocity > 0.42)) {
         closeCallback();
       } else {
-        sheet.style.transform = "";
+        sheet.style.removeProperty("transform");
       }
     }
 
@@ -1081,14 +1172,13 @@
 
       state.viewDate.setMonth(state.viewDate.getMonth() + direction, 1);
 
-      track.style.transition = "none";
+      track.style.removeProperty("transition");
       track.style.transform = "translate3d(-33.333333%, 0, 0)";
       void track.offsetWidth;
 
       renderCalendarGrid();
 
-      if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
-      track.style.transition = "";
+      if (ui.calendarTitle) ui.calendarTitle.style.removeProperty("opacity");
 
       setTimeout(() => { isAnimatingMonth = false; }, 40);
     }
@@ -1104,9 +1194,9 @@
     track.style.transition = "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
     track.style.transform = "translate3d(-33.333333%, 0, 0)";
 
-    if (ui.calendarTitle) ui.calendarTitle.style.opacity = "1";
+    if (ui.calendarTitle) ui.calendarTitle.style.removeProperty("opacity");
     setTimeout(() => {
-      track.style.transition = "";
+      track.style.removeProperty("transition");
       isAnimatingMonth = false;
     }, 260);
   }
@@ -1406,6 +1496,29 @@
     render();
   }
 
+  function showTopicSuggestions() {
+    if (!ui.formTopicMenu || !ui.formTopicMenu._menuItems?.length) return;
+    const query = ui.formTopic ? ui.formTopic.value.trim() : "";
+    const wrapper = ui.formTopic.closest(".topic-input-wrapper");
+
+    const matches = query
+      ? ui.formTopicMenu._menuItems.filter(it => smartSearchMatch(it.text, query))
+      : ui.formTopicMenu._menuItems;
+
+    if (!matches.length) {
+      ui.formTopicMenu.hidden = true;
+      if (wrapper) wrapper.classList.remove("is-open");
+      return;
+    }
+
+    const listContainer = ui.formTopicMenu.querySelector(".nav-filter-menu-list");
+    if (listContainer) {
+      listContainer.innerHTML = renderOptionsListHtml(matches, "");
+    }
+    ui.formTopicMenu.hidden = false;
+    if (wrapper) wrapper.classList.add("is-open");
+  }
+
   function bindEvents() {
     if (ui.mobileMenuToggle && ui.headerNav) {
       ui.mobileMenuToggle.addEventListener("click", (e) => {
@@ -1426,7 +1539,9 @@
     }
 
     document.addEventListener("click", (e) => {
-      if (!e.target.closest(".nav-filter-item")) closeAllMenus();
+      if (!e.target.closest(".nav-filter-item") && !e.target.closest(".topic-input-wrapper")) {
+        closeAllMenus();
+      }
     });
 
     if (ui.navFilters) ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
@@ -1446,6 +1561,36 @@
       if (opt) onFilterSelect(opt.closest(".nav-filter-item").dataset.filter, opt.dataset.value);
     });
 
+    if (ui.topicDropdownTrigger && ui.formTopicMenu) {
+      ui.topicDropdownTrigger.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isClosed = ui.formTopicMenu.hidden;
+        closeAllMenus();
+        if (isClosed) showTopicSuggestions();
+      });
+    }
+
+    if (ui.formTopic) {
+      ui.formTopic.addEventListener("focus", () => {
+        if (ui.formTopicMenu?.hidden) showTopicSuggestions();
+      });
+
+      ui.formTopic.addEventListener("input", () => {
+        showTopicSuggestions();
+      });
+    }
+
+    if (ui.formTopicMenu) {
+      ui.formTopicMenu.addEventListener("click", (e) => {
+        const opt = e.target.closest(".nav-filter-option");
+        if (opt && opt.dataset.value) {
+          ui.formTopic.value = opt.dataset.value;
+          closeAllMenus();
+        }
+      });
+    }
+
     ui.addModal.addEventListener("click", (e) => {
       const trigger = e.target.closest(".field .nav-filter-trigger");
       if (trigger) {
@@ -1455,7 +1600,7 @@
       const opt = e.target.closest(".field .nav-filter-option");
       if (opt?.dataset.value) {
         const val = opt.dataset.value;
-        const field = opt.closest(".nav-filter-item").dataset.field;
+        const field = opt.closest(".nav-filter-item")?.dataset.field;
 
         let nextDept = ui.formDept.value;
         let nextSec = ui.formSec.value;
@@ -1586,19 +1731,13 @@
       ui.addForm.reset();
       clearSelectedFile();
       if (ui.formLink) ui.formLink.value = "";
+      if (ui.formTopic) ui.formTopic.value = "";
       setUploadMode("file");
 
-      const todayDate = formatDateKey(new Date());
-      ui.formDate.max = todayDate;
+      ui.formDate.max = formatDateKey(new Date());
       ui.formDate.value = "";
 
-      ui.formTopic.value = "";
-
-      const deptToSet = state.dept ? state.dept : "";
-      const secToSet = (state.dept && state.sec) ? state.sec : "";
-      const courseToSet = "";
-
-      updateModalDropdowns(deptToSet, secToSet, courseToSet);
+      updateModalDropdowns(state.dept || "", state.sec || "", "");
       openSheetModal(ui.addModal);
     });
 
@@ -1640,8 +1779,13 @@
       const cleanTitle = sanitizeTextInput(ui.formTitle.value, SECURITY.MAX_TITLE_LENGTH);
       const cleanTopic = sanitizeTextInput(ui.formTopic.value, SECURITY.MAX_TOPIC_LENGTH);
 
-      if (!cleanTitle || !cleanTopic) {
-        showToast("Please provide valid title and topic.");
+      if (!cleanTopic) {
+        showToast("Please enter a Topic name.");
+        return;
+      }
+
+      if (!cleanTitle) {
+        showToast("Please provide a valid title.");
         return;
       }
 
@@ -1678,7 +1822,6 @@
         if (ui.fileProgressContainer) ui.fileProgressContainer.hidden = false;
 
         const totalFormatted = formatFileSize(selectedFile.size);
-
         updateProgressUI(3, "Preparing file...", `0 B of ${totalFormatted}`);
 
         let fileBase64 = "";
@@ -1687,10 +1830,8 @@
             const reader = new FileReader();
             reader.onprogress = (evt) => {
               if (evt.lengthComputable && evt.total > 0) {
-                const ratio = evt.loaded / evt.total;
-                const p = Math.max(3, Math.round(ratio * 15));
                 const loadedSize = formatFileSize(evt.loaded);
-                updateProgressUI(p, "Reading file...", `${loadedSize} of ${totalFormatted}`);
+                updateProgressUI(Math.max(3, Math.round((evt.loaded / evt.total) * 15)), "Reading file...", `${loadedSize} of ${totalFormatted}`);
               }
             };
             reader.onload = () => {
@@ -1700,7 +1841,7 @@
             reader.onerror = () => reject(new Error("Failed to read file"));
             reader.readAsDataURL(selectedFile);
           });
-        } catch (readErr) {
+        } catch {
           setButtonLoading(ui.btnSubmitNote, false);
           if (ui.btnRemoveFile) ui.btnRemoveFile.disabled = false;
           updateProgressUI(0, "Read failed", totalFormatted, false, true);
@@ -1713,9 +1854,17 @@
         });
 
         try {
+          const renamedFileName = generateCustomFileName(
+            selectedFile,
+            ui.formSec.value,
+            ui.formCourse.value,
+            ui.formDate.value,
+            cleanTitle
+          );
+
           await syncData({
             ...basePayload,
-            fileName: selectedFile.name,
+            fileName: renamedFileName,
             fileMimeType: selectedFile.type || "application/octet-stream",
             fileData: fileBase64
           });
