@@ -47,6 +47,8 @@
     uploadMode: "file"
   };
 
+  let lastWindowWidth = window.innerWidth;
+
   const ui = {
     mobileMenuToggle: document.getElementById("mobile-menu-toggle"),
     headerNav: document.getElementById("header-nav"),
@@ -669,6 +671,8 @@
         }
       });
       searchInput.addEventListener("click", (e) => e.stopPropagation());
+      searchInput.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+      searchInput.addEventListener("pointerdown", (e) => e.stopPropagation());
       searchInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -968,7 +972,7 @@
 
     function start(clientY, target) {
       if (window.innerWidth > 768 || !sheet.open) return;
-      if (target?.closest(".nav-filter-menu")) return;
+      if (target?.closest("input, textarea, select, button, label, .nav-filter-menu")) return;
       startY = clientY;
       currentTranslate = 0;
       startTime = Date.now();
@@ -1539,15 +1543,33 @@
     }
 
     document.addEventListener("click", (e) => {
-      if (!e.target.closest(".nav-filter-item") && !e.target.closest(".topic-input-wrapper")) {
+      if (
+        !e.target.closest(".nav-filter-item") &&
+        !e.target.closest(".topic-input-wrapper") &&
+        !e.target.closest(".nav-filter-menu")
+      ) {
         closeAllMenus();
       }
     });
 
-    if (ui.navFilters) ui.navFilters.addEventListener("scroll", closeAllMenus, { passive: true });
-    window.addEventListener("scroll", closeAllMenus, { passive: true });
-    window.addEventListener("resize", () => {
+    if (ui.navFilters) {
+      ui.navFilters.addEventListener("scroll", () => {
+        if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
+        closeAllMenus();
+      }, { passive: true });
+    }
+
+    window.addEventListener("scroll", () => {
+      if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
       closeAllMenus();
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      // মোবাইলে ভার্চুয়াল কীবোর্ড ওপেন হলে শুধু উচ্চতা পরিবর্তন হয়, প্রস্থ নয়
+      if (window.innerWidth !== lastWindowWidth) {
+        lastWindowWidth = window.innerWidth;
+        closeAllMenus();
+      }
       refreshAutoSlideElements();
     }, { passive: true });
 
@@ -1625,7 +1647,10 @@
 
     document.querySelectorAll(".dialog-modal").forEach(modal => {
       modal.addEventListener("click", (e) => {
-        if (e.target === modal && isEventOutside(modal, e)) closeSheetModal(modal);
+        if (e.target === modal && isEventOutside(modal, e)) {
+          if (document.activeElement && document.activeElement.tagName === "INPUT") return;
+          closeSheetModal(modal);
+        }
       });
       modal.addEventListener("cancel", (e) => {
         e.preventDefault();
